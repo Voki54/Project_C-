@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
+using Project_Manager.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +12,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<AppUser, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddMemoryCache();
+builder.Services.AddSession();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	.AddCookie();
+
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//	.AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
