@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+//using AspNetCore.Identity.Database;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
 using Project_Manager.Models;
@@ -12,12 +13,28 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<AppUser, IdentityRole>()
-	.AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddMemoryCache();
-builder.Services.AddSession();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-	.AddCookie();
+//TODO отредактировать в конце!
+builder.Services.AddIdentity<AppUser, IdentityRole>(
+	options => 
+	{
+		options.Password.RequiredUniqueChars = 0;
+		options.Password.RequireNonAlphanumeric = false;
+		options.Password.RequiredLength = 3;
+		options.Password.RequireLowercase = false;
+		options.Password.RequireUppercase = false;
+	})
+	.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+//builder.Services.AddAuthorization();
+//builder.Services.AddAuthentication().AddCookie(IdentityConstatants.App)
+
+//builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+//    options.SignIn.RequireConfirmedAccount = true)
+//	.AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddMemoryCache();
+//builder.Services.AddSession();
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//	.AddCookie();
 
 //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
 //	.AddEntityFrameworkStores<ApplicationDbContext>();
@@ -42,6 +59,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

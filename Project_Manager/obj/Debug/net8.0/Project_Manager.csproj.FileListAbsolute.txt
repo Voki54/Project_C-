@@ -149,3 +149,4 @@ C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\refint\Pr
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_Manager.pdb
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_Manager.genruntimeconfig.cache
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\ref\Project_Manager.dll
+C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_Manager.sourcelink.json
