@@ -140,7 +140,6 @@ C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\staticweb
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Project_Manager.props
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Project_Manager.props
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\staticwebassets.pack.json
-C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\scopedcss\bundle\Project_Manager.styles.css
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\scopedcss\projectbundle\Project_Manager.bundle.scp.css
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_.1611698A.Up2Date
@@ -150,3 +149,4 @@ C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_M
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_Manager.genruntimeconfig.cache
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\ref\Project_Manager.dll
 C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\Project_Manager.sourcelink.json
+C:\Users\Voki\Desktop\Project_Manager\Project_Manager\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
