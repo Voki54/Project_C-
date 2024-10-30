@@ -5,7 +5,7 @@ namespace Project_Manager.Models
 	public class Team
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; }
 		public string Name { get; set; }
 		public string AdminId { get; set; }
 		public ICollection<string> ExecutorsId { get; set; }

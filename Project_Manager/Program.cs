@@ -26,19 +26,6 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(
 	})
 	.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-//builder.Services.AddAuthorization();
-//builder.Services.AddAuthentication().AddCookie(IdentityConstatants.App)
-
-//builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-//    options.SignIn.RequireConfirmedAccount = true)
-//	.AddEntityFrameworkStores<ApplicationDbContext>();
-//builder.Services.AddMemoryCache();
-//builder.Services.AddSession();
-//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//	.AddCookie();
-
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//	.AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
