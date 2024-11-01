@@ -1,51 +1,66 @@
-﻿using LR5.Data;
-using LR5.Interfaces;
-using LR5.Models;
+﻿using Project_Manager.Data;
+using Project_Manager.Interfaces;
+using Project_Manager.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LR5.Repository
+namespace Project_Manager.Repository
 {
-	public class CarRepository : ICarRepository
+	public class TeamRepository : ITeamRepository
 	{
-		private readonly ApplicationContext _context;
-		public CarRepository(ApplicationContext context)
+		private readonly ApplicationDbContext _context;
+		public TeamRepository(ApplicationDbContext context)
 		{
 			_context = context;
 		}
-		public bool Add(Car car)
+		public bool Add(Team team)
 		{
-			_context.Add(car);
+			_context.Add(team);
 			return Save();
 		}
 
-		public bool Delete(Car car)
+		public bool Delete(Team team)
 		{
-			_context.Remove(car);
+			_context.Remove(team);
 			return Save();
 		}
 
-		public async Task<IEnumerable<Car>> GetAll()
+		public async Task<IEnumerable<Team>> GetAll()
 		{
-			return await _context.Cars.ToListAsync();
+			return await _context.Teams.ToListAsync();
 		}
 
-		public async Task<Car> GetCarByIdAsync(int id)
+		public Task<Team> GetTeamByIdAsync(int id)
 		{
-			return await _context.Cars.FirstOrDefaultAsync(i => i.Id == id);
+			throw new NotImplementedException();
 		}
 
-		public async Task<Car> GetCarByIdAsyncNoTracking(int id)
+		public Task<Team> GetTeamByIdAsyncNoTracking(int id)
 		{
-			return await _context.Cars.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+			throw new NotImplementedException();
 		}
 
-		public async Task<IEnumerable<Car>> GetCarsByGroupId(int id)
+		public Task<IEnumerable<Team>> GetTeamsByGroupId(int id)
 		{
-			var result = from car in _context.Cars
-						 where car.GroupId == id
-						 select car;
-			return result;
+			throw new NotImplementedException();
 		}
+
+		//public async Task<Team> GetTeamByIdAsync(int id)
+		//{
+		//	return await _context.Teams.FirstOrDefaultAsync(i => i.Id == id);
+		//}
+
+		//public async Task<Team> GetTeamByIdAsyncNoTracking(int id)
+		//{
+		//	return await _context.Teams.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+		//}
+
+		//public async Task<IEnumerable<Team>> GetTeamsByUserId(int id)
+		//{
+		//	var result = from team in _context.Teams
+		//				 where team.GroupId == id
+		//				 select team;
+		//	return result;
+		//}
 
 		public bool Save()
 		{
@@ -53,9 +68,9 @@ namespace LR5.Repository
 			return saved > 0 ? true : false;
 		}
 
-		public bool Update(Car car)
+		public bool Update(Team team)
 		{
-			_context.Update(car);
+			_context.Update(team);
 			return Save();
 		}
 	}

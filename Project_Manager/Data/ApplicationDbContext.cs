@@ -1,41 +1,42 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Models;
 
 namespace Project_Manager.Data
 {
-	public class ApplicationDbContext : IdentityDbContext<AppUser>
+	public class ApplicationDbContext : IdentityDbContext<AppUser/*, IdentityRole<string>, string*//*, IdentityRole<Guid>, Guid*/>
 	{
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
 			: base(options)
 		{
 		}
-	    public DbSet<Team> Teams { get; set; } = default!;
+	    public DbSet<Team> Teams { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
+        public DbSet<TeamUser> TeamUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TeamRoleEntity>()
-                .Property(tr => tr.Role)
-                .HasConversion<string>(); // Сохраняет значение enum как строку
+            base.OnModelCreating(modelBuilder);
 
-            //// Определяем составной ключ для UserTeam
-            //modelBuilder.Entity<UserTeam>()
-            //    .HasKey(ut => new { ut.UserId, ut.TeamId });
+            /*modelBuilder.Entity<AppUser>()
+	            .HasAlternateKey(u => u.GuidKey);*/
 
-            //modelBuilder.Entity<UserTeam>()
-            //    .HasOne(ut => ut.User)
-            //    .WithMany(u => u.UserTeams)
-            //    .HasForeignKey(ut => ut.UserId);
+            modelBuilder.Entity<TeamUser>()
+                .HasKey(ut => new { ut.UserId, ut.TeamId });
 
-            //modelBuilder.Entity<UserTeam>()
-            //    .HasOne(ut => ut.Team)
-            //    .WithMany(t => t.UserTeams)
-            //    .HasForeignKey(ut => ut.TeamId);
+            modelBuilder.Entity<TeamUser>()
+                .HasOne<AppUser>(ut => ut.AppUser)
+                .WithMany(u => u.TeamUser)
+                .HasForeignKey(ut => ut.UserId);
 
-            //// Настройка хранения enum как строки для UserRole
-            //modelBuilder.Entity<UserTeam>()
-            //    .Property(ut => ut.Role)
-            //    .HasConversion<string>(); // Сохраняет значение enum как строку
+            modelBuilder.Entity<TeamUser>()
+                .HasOne<Team>(ut => ut.Team)
+                .WithMany(t => t.TeamUser)
+                .HasForeignKey(ut => ut.TeamId);
+
+            modelBuilder.Entity<TeamUser>()
+                .Property(ut => ut.Role);
         }
 
     }
