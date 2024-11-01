@@ -13,7 +13,7 @@ namespace Project_Manager.Data
 		}
 	    public DbSet<Team> Teams { get; set; }
 		public DbSet<Notification> Notifications { get; set; }
-        public DbSet<TeamUser> TeamUser { get; set; }
+        public DbSet<TeamUser> TeamsUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

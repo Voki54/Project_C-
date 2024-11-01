@@ -1,29 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
+using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.Data.DAO.Repository;
+using Project_Manager.DTO.Team;
+using Project_Manager.Mappers;
 using Project_Manager.Models;
 
 namespace Project_Manager.Controllers
 {
     public class TeamsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ITeamRepository _teamRepository;
 
-        public TeamsController(ApplicationDbContext context)
+        public TeamsController(ITeamRepository teamRepository)
         {
-            _context = context;
+			_teamRepository = teamRepository;
         }
 
-        // GET: Teams
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Team.ToListAsync());
-        //}
+		[HttpGet]
+		public async Task<IActionResult> Index()
+        {
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
+
+            var teams = await _teamRepository.GetAllAsync();
+            var teamsDTO = teams.Select(t => t.ToStockDto()).ToList();
+
+            return View(teamsDTO);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateTeamRequestDTO teamDTO)
+        {
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
+
+            var team = teamDTO.ToTeamFromCreateDTO();
+
+            await _teamRepository.CreateAsync(team);
+
+            return RedirectToAction("Index", "Teams");
+        }
 
         // GET: Teams/Details/5
         //public async Task<IActionResult> Details(string id)
@@ -43,11 +73,7 @@ namespace Project_Manager.Controllers
         //    return View(team);
         //}
 
-        //// GET: Teams/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
+
 
         //// POST: Teams/Create
         //// To protect from overposting attacks, enable the specific properties you want to bind to.
