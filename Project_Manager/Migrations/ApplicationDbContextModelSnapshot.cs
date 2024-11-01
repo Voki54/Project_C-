@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project_Manager.Data;
 
 #nullable disable
 
-namespace Project_Manager.Data.Migrations
+namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241030140838_AddTeamNotifUser")]
-    partial class AddTeamNotifUser
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -225,11 +222,11 @@ namespace Project_Manager.Data.Migrations
 
             modelBuilder.Entity("Project_Manager.Models.Notification", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -239,39 +236,21 @@ namespace Project_Manager.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("recipientsId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateOnly>("sendDate")
                         .HasColumnType("date");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("Notification");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.Team", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AdminId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ExecutorsId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ManagersId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -279,9 +258,25 @@ namespace Project_Manager.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.ToTable("Teams");
+                });
 
-                    b.ToTable("Team");
+            modelBuilder.Entity("Project_Manager.Models.TeamUser", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("TeamUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -335,25 +330,33 @@ namespace Project_Manager.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.Notification", b =>
+            modelBuilder.Entity("Project_Manager.Models.TeamUser", b =>
                 {
-                    b.HasOne("Project_Manager.Models.AppUser", null)
-                        .WithMany("Notifications")
-                        .HasForeignKey("AppUserId");
-                });
+                    b.HasOne("Project_Manager.Models.Team", "Team")
+                        .WithMany("TeamUser")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("Project_Manager.Models.Team", b =>
-                {
-                    b.HasOne("Project_Manager.Models.AppUser", null)
-                        .WithMany("Teams")
-                        .HasForeignKey("AppUserId");
+                    b.HasOne("Project_Manager.Models.AppUser", "AppUser")
+                        .WithMany("TeamUser")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.AppUser", b =>
                 {
-                    b.Navigation("Notifications");
+                    b.Navigation("TeamUser");
+                });
 
-                    b.Navigation("Teams");
+            modelBuilder.Entity("Project_Manager.Models.Team", b =>
+                {
+                    b.Navigation("TeamUser");
                 });
 #pragma warning restore 612, 618
         }

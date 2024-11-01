@@ -15,7 +15,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();
-builder.Services.AddIdentity<AppUser, IdentityRole>(
+builder.Services.AddIdentity<AppUser, IdentityRole/*<string>*//*<Guid>*/>(
 	options => 
 	{
 		options.Password.RequiredUniqueChars = 0;
