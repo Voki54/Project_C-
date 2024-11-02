@@ -9,6 +9,6 @@ namespace Project_Manager.Models
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
+        public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
     }
 }

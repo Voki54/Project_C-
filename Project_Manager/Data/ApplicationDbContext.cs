@@ -42,15 +42,22 @@ namespace Project_Manager.Data
 
             modelBuilder.Entity<ProjectTask>()
                 .HasOne(task => task.Category)     
-                .WithMany(category => category.Tasks) 
+                .WithMany(category => category.ProjectTasks) 
                 .HasForeignKey(task => task.CategoryId) 
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProjectTask>()
                 .HasOne(task => task.AppUser)
-                .WithMany(executor => executor.Tasks)
+                .WithMany(executor => executor.ProjectTasks)
                 .HasForeignKey(task => task.ExecutorId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasMany(task => task.Comments) 
+                .WithOne(comment => comment.ProjectTask) 
+                .HasForeignKey(comment => comment.ProjectTaskId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
     }

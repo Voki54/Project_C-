@@ -17,5 +17,6 @@ namespace Project_Manager.Models
         public int ExecutorId { get; set; }
         public AppUser AppUser { get; set; }
         public DateTime DueDateTime { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
