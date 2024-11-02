@@ -14,6 +14,8 @@ namespace Project_Manager.Data
 	    public DbSet<Team> Teams { get; set; }
 		public DbSet<Notification> Notifications { get; set; }
         public DbSet<TeamUser> TeamsUsers { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<ProjectTask> Tasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +39,18 @@ namespace Project_Manager.Data
 
             modelBuilder.Entity<TeamUser>()
                 .Property(ut => ut.Role);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasOne(task => task.Category)     
+                .WithMany(category => category.Tasks) 
+                .HasForeignKey(task => task.CategoryId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasOne(task => task.AppUser)
+                .WithMany(executor => executor.Tasks)
+                .HasForeignKey(task => task.ExecutorId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

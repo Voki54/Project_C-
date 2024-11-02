@@ -1,0 +1,43 @@
+[33mcommit 2f2be1569e7e1224861e2ee3b3162df0f2578552[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mTeamAndUser[m[33m, [m[1;31morigin/repair_registr[m[33m, [m[1;31morigin/TeamAndUser[m[33m, [m[1;32mrepair_registr[m[33m, [m[1;32mMorozov[m[33m)[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Wed Oct 30 22:47:19 2024 +0300
+
+    add team-user table
+
+[33mcommit 3084ba5562577052dbd5b91b8b4f1d861b617077[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Wed Oct 30 20:40:53 2024 +0300
+
+    success registration
+
+[33mcommit 3d81666817b70b4fed91b1738789f91f51211f74[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Wed Oct 30 18:44:19 2024 +0300
+
+    Add registration not work
+
+[33mcommit 601a875eb905c32515fc0016c1a3cdb53df4e254[m[33m ([m[1;31morigin/dn_part[m[33m)[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Tue Oct 29 21:28:34 2024 +0300
+
+    Add base class
+
+[33mcommit 56dfd57ff00da5cc766c7ada14fbd95482143791[m[33m ([m[1;32mmaster[m[33m)[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Sun Oct 27 21:34:49 2024 +0300
+
+    Initialization Application
+
+[33mcommit 43a9f886785e7ee9091e2f5c4cbf62b52064d0eb[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Sun Oct 27 21:59:31 2024 +0300
+
+    Revert "Initialization Application"
+    
+    This reverts commit fe87461b3a2f0bf991e8c3bfeafba38d53f5d3de.
+
+[33mcommit fe87461b3a2f0bf991e8c3bfeafba38d53f5d3de[m
+Author: novikov_dima <dzudima@gmail.com>
+Date:   Sun Oct 27 21:34:49 2024 +0300
+
+    Initialization Application
