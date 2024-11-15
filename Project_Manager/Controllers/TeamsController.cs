@@ -16,6 +16,7 @@ using Project_Manager.DTO.Team;
 using Project_Manager.Mappers;
 using Project_Manager.Models;
 using Project_Manager.Services;
+using Project_Manager.ViewModels;
 
 namespace Project_Manager.Controllers
 {
@@ -35,7 +36,7 @@ namespace Project_Manager.Controllers
             _userManager = userManager;
         }
 
-        private async Task<string?> GetUserId()
+        private string? GetUserId()
         {
             return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
@@ -43,10 +44,7 @@ namespace Project_Manager.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Index()
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
-
-            var userId = await GetUserId();
+            var userId = GetUserId();
             if (userId == null)
                 return Unauthorized("User is not authenticated.");
 
@@ -67,7 +65,7 @@ namespace Project_Manager.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userId = await GetUserId();
+            var userId = GetUserId();
             if (userId == null)
                 return Unauthorized("User is not authenticated.");
 
@@ -77,23 +75,30 @@ namespace Project_Manager.Controllers
             return RedirectToAction("Index", "Teams");
         }
 
-        // GET: Teams/Details/5
-        //public async Task<IActionResult> Details(string id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet]
+        public async Task<IActionResult> Details(int teamId)
+        {
+            //TODO логика поиска задач заданной команды
 
-        //    var team = await _context.Team
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (team == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var team = await _teamRepository.GetTeamByIdAsync(teamId);
+            if (team == null) return NotFound("Team not found.");
+            
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized("User is not authenticated.");
 
-        //    return View(team);
-        //}
+            var userRole = await _teamUserRepository.GetUserRoleInTeamAsync(userId, teamId);
+            if (userRole == null) return NotFound("User is not in the team.");
+
+            var teamDetailsVM = new TeamDetailsVM
+            {
+                Team = team,
+                UserRoles = (UserRoles) userRole
+                //TODO список задач команды
+            };
+
+            return View(teamDetailsVM);
+        }
 
 
 

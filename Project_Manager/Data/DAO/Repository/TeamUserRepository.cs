@@ -45,6 +45,13 @@ namespace Project_Manager.Data.DAO.Repository
                 }).ToListAsync();
         }
 
+        public async Task<UserRoles?> GetUserRoleInTeamAsync(string userId, int teamId)
+        {
+            var teamUser = await _context.TeamsUsers.FirstOrDefaultAsync(t => t.UserId == userId && t.TeamId == teamId);
+            if (teamUser == null) return null;
+            return teamUser.Role;
+        }
+
         public Task<List<AppUser>> GetUsersByTeam(Team team)
         {
             throw new NotImplementedException();
