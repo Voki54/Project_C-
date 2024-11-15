@@ -16,6 +16,7 @@ namespace Project_Manager.Data
         public DbSet<TeamUser> TeamsUsers { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProjectTask> Tasks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

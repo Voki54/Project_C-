@@ -1,0 +1,61 @@
+﻿@using Project_Manager.Models.Enums
+@model Project_Manager.Models.ProjectTask
+
+@{
+    ViewData["Title"] = "Редактировать задачу";
+}
+
+<h1>Редактировать задачу</h1>
+
+<h4>ProjectTask</h4>
+<hr />
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Title" class="control-label">Название</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Описание</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status" class="control-label">Статус</label>
+        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ProjectTaskStatus>()"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CategoryId" class="control-label">Категория</label>
+        <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ExecutorId" class="control-label">Исполнитель</label>
+        <select asp-for="ExecutorId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "Id", "UserName"))"></select>
+        <span asp-validation-for="ExecutorId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DueDateTime" class="control-label">Срок выполнения</label>
+        <input asp-for="DueDateTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="DueDateTime" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

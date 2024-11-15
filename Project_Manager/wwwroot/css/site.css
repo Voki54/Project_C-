@@ -1,22 +1,294 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* Общие стили */
 body {
-  margin-bottom: 60px;
+    background-color: rgb(0, 44, 255, 0.05);
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #343a40;
+    min-height: 100vh; /* Минимальная высота равна 100% высоты экрана */
 }
+
+/* Список категорий */
+.category-list h5 {
+    font-size: 24px;
+    margin-top: 5px;
+    margin-bottom: 41px;
+    padding-left: 10px;
+}
+
+.container{
+    max-width:100%;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.category-list {
+    font-size: 16px;
+    width:20%;
+    min-width: 280px;
+    max-width: 400px;
+}
+
+.list-group {
+    width: 100%;
+    margin-bottom: 30px;
+    max-height: 75vh; /* Максимальная высота блока с категориями */
+    overflow-y: auto; /* Включение вертикальной прокрутки, если контент превышает высоту */
+    overflow-x: hidden;
+}
+
+/* Основной стиль скроллбара */
+.list-group::-webkit-scrollbar {
+    width: 10px; /* Ширина скроллбара */
+}
+
+/* Фон скроллбара */
+    .list-group::-webkit-scrollbar-track {
+        background: rgba(0, 44, 255, 0.05); /* Градиент для фона */
+        box-shadow: inset 0 0 1px rgba(0, 44, 255, 1); /* Легкий внутренний тень */
+        border-radius: 0px 6px 6px 0px;
+    }
+
+/* Ползунок скроллбара */
+    .list-group::-webkit-scrollbar-thumb {
+        background: linear-gradient(210deg, #9982f7, #ebffff); /* Градиент для ползунка */
+        border-radius: 5px;
+        border: 2px solid #f8f9fa; /* Легкий контур вокруг ползунка */
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+.category-list .list-group-item {
+    display: flex; /* Включает Flexbox */
+    justify-content: space-between; /* Распределяет элементы по краям */
+    align-items: center; /* Выравнивание по вертикали */
+    transition: background-color 0.3s, color 0.3s;
+    padding-left: 10px;
+    padding-right:10px;
+}
+
+    .category-list .list-group-item a{
+        color: black;
+        font-weight: 400;
+    }
+
+.category-list .list-group-item:hover {
+    background-color: #f0f0f0;
+}
+
+
+    .category-list .list-group-item .btn-group {
+        margin-left: auto; /* Отталкивает кнопки к правому краю */
+    }
+
+/* Список задач */
+.task-list {
+    width: 80%;
+    margin-top: 0px;
+    font-size: 18px;
+}
+
+    .task-list h5 {
+        font-size: 24px;
+        padding-left: 5px;
+    }
+
+
+
+.d-flex {
+    display: flex;
+    justify-content: space-between; /* Выравнивание по краям */
+    align-items: center; /* Выравнивание по вертикали */
+    margin-bottom: 5px;
+}
+
+tbody, td, tfoot, th, thead, tr {
+    border: none;
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.table thead th {
+    font-size: 18px;
+    color: #495057;
+    font-weight: 700;
+    border-bottom: 3px solid #dee2e6;
+}
+
+.task-tr {
+    border-radius: 10px;
+    box-shadow: 0px 0px 6px rgba(0, 44, 255, 0.1);
+    overflow: hidden;
+}
+
+.task-tr:hover {
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 44, 255, 0.2);
+}
+
+/* Стили статуса */
+.status-label {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    text-transform: capitalize;
+}
+
+    .status-label.completed {
+        background-color: #34b933; /* Яркий зеленый фон для завершенных задач */
+    }
+
+    .status-label.in_process {
+        background-color: #1a73e8; /* Яркий синий фон для задач в процессе */
+    }
+
+    .status-label.required {
+        background-color: #ffcc00; /* Яркий желтый фон для задач, требующих выполнения */
+    }
+
+/* Кнопки */
+button, a.btn {
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+button:hover, a.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-edit {
+    background-color: rgb(80, 191, 255, 0.7); /* Яркий синий */
+    border-color: #1a73e8;
+}
+
+    .btn-edit:hover {
+        background-color: rgb(80, 191, 255); /* Темный синий при наведении */
+        border-color: #0a4a8f;
+        box-shadow: 0 4px 8px rgb(0, 136, 196, 0.7); /* Легкая тень */
+    }
+
+.list-group-item .btn-edit1 {
+    background-color: rgb(80, 191, 255, 0.7); /* Яркий синий */
+    border-color: #1a73e8;
+    font-size: 12px;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-right: 4px;
+}
+
+    .btn-edit1:hover {
+        background-color: rgb(80, 191, 255); /* Темный синий при наведении */
+        border-color: #0a4a8f;
+        box-shadow: 0 4px 8px rgb(0, 136, 196, 0.7); /* Легкая тень */
+    }
+
+.btn-view {
+    background-color: rgb(61, 211, 25, 0.6); /* Яркий зеленый */
+    border-color: #34b933;
+}
+
+    .btn-view:hover {
+        background-color: rgb(61, 211, 25); /* Темный зеленый при наведении */
+        border-color: #2a8927;
+        box-shadow: 0 4px 8px rgb(88, 200, 0, 0.7); /* Легкая тень */
+    }
+
+.btn-delete {
+    background-color: rgb(238, 0, 0, 0.6); /* Ярко-красный */
+    font-weight: bold;
+    font-size: 18px;
+    border-color: #f44336;
+}
+
+    .btn-delete:hover {
+        background-color: rgb(238, 0, 0); /* Темно-красный при наведении */
+        border-color: #d32f2f;
+        box-shadow: 0 4px 8px rgb(212, 0, 0, 0.3); /* Легкая тень */
+    }
+
+.btn-delete1 {
+    background-color: rgb(238, 0, 0, 0.6); /* Ярко-красный */
+    font-weight: bold;
+    font-size: 12px;
+    border-color: #f44336;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+    .btn-delete:hover1 {
+        background-color: rgb(238, 0, 0); /* Темно-красный при наведении */
+        border-color: #d32f2f;
+        box-shadow: 0 4px 8px rgb(212, 0, 0, 0.3); /* Легкая тень */
+    }
+
+/* Alerts */
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+/* Описание задачи */
+.description {
+    white-space: nowrap; /* Текст не переносится на новую строку */
+    overflow: hidden; /* Обрезка текста, выходящего за пределы */
+    text-overflow: ellipsis; /* Добавление многоточия */
+    max-width: 200px; /* Установите желаемую ширину */
+}
+
+/* Общее выравнивание кнопок в ячейках */
+td {
+    vertical-align: middle;
+}
+
+    /* Добавление отступов и выравнивание кнопок */
+    td button {
+        vertical-align: middle;
+    }
+
+/* Стиль кнопки "Добавить задачу" */
+.btn-add {
+    background-color: #0084ff; /* Яркий синий фон */
+    color: white; /* Белый цвет текста */
+    border: none;
+    border-radius: 50px; /* Закругленные края */
+    padding: 10px 20px; /* Увеличенные отступы */
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase; /* Сделать текст заглавными */
+    transition: all 0.3s ease; /* Плавный переход для всех изменений */
+    box-shadow: 0 4px 8px rgba(0, 132, 255, 0.3); /* Легкая тень */
+    display: inline-flex;
+    align-items: center;
+}
+
+    /* Эффект при наведении */
+    .btn-add:hover {
+        background-color: #0069d9; /* Более яркий синий при наведении */
+        transform: scale(1.05); /* Увеличение кнопки */
+        box-shadow: 0 6px 12px rgba(0, 132, 255, 0.4); /* Увеличенная тень */
+        color: white; /* Белый текст при наведении */
+    }
+
+    /* Эффект при нажатии */
+    .btn-add:active {
+        transform: scale(1); /* При нажатии возвращается в нормальный размер */
+        box-shadow: 0 4px 8px rgba(0, 132, 255, 0.3); /* Уменьшение тени */
+        color: white; /* Белый текст при нажатии */
+    }
+
+.btn-add-category {
+    width: 98%;
+    display: flex; /* Включает flexbox для выравнивания */
+    justify-content: center; /* Центрирует текст горизонтально */
+}
+

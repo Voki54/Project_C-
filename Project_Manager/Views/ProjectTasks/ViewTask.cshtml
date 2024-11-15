@@ -1,0 +1,32 @@
+﻿@model Project_Manager.Models.ProjectTask
+
+@{
+    ViewData["Title"] = "Просмотр задачи";
+}
+
+<div class="container">
+    <h5>Задача: @Model.Title</h5>
+    <p><strong>Описание:</strong> @Model.Description</p>
+    <p><strong>Статус:</strong> @Model.Status</p>
+    <p><strong>Дедлайн:</strong> @Model.DueDateTime.ToShortDateString()</p>
+
+    <h6>Комментарии</h6>
+    <ul class="list-group mb-3">
+        @foreach (var comment in Model.Comments)
+        {
+            <li class="list-group-item">
+                <p>@comment.Content</p>
+                <small>Добавлено: @comment.CreatedAt.ToString("g")</small>
+            </li>
+        }
+    </ul>
+
+    <form asp-action="AddComment" method="post">
+        <input type="hidden" name="taskId" value="@Model.Id" />
+        <div class="form-group">
+            <label for="content">Добавить комментарий</label>
+            <textarea name="content" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+</div>
