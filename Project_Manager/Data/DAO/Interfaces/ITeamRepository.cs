@@ -12,8 +12,8 @@ namespace Project_Manager.Data.DAO.Interfaces
 		Task<bool> DeleteAsync(int id);
 		Task<bool> UpdateAsync(int id, Team team);
 
-		//Task<Team?> DeleteAsync(int id);
 
+		//Task<Team?> DeleteAsync(int id);
 		//bool Add(Team team);
 		//bool Update(Team team);
 		//bool Delete(Team team);

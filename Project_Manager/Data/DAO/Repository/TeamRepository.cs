@@ -13,7 +13,7 @@ namespace Project_Manager.Data.DAO.Repository
 			_context = context;
 		}
 
-		//TODO добавить возможность обработки запросов
+		//TODO добавить возможность обработки разных sql запросов
 		public async Task<IEnumerable<Team>> GetAllAsync()
 		{
 			return await _context.Teams.ToListAsync();

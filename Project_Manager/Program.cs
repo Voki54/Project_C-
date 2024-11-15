@@ -5,6 +5,7 @@ using Project_Manager.Data;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Data.DAO.Repository;
 using Project_Manager.Models;
+using Project_Manager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +14,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddScoped<ITeamRepository, TeamRepository>();
-builder.Services.AddScoped<ITeamUserRepository, TeamUserRepository>();
 
+builder.Services.AddScoped<ITeamRepository, TeamRepository>()
+                .AddScoped<ITeamUserRepository, TeamUserRepository>()
+                .AddScoped<TeamUserService>();
 
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();

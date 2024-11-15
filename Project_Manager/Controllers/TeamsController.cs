@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +15,29 @@ using Project_Manager.Data.DAO.Repository;
 using Project_Manager.DTO.Team;
 using Project_Manager.Mappers;
 using Project_Manager.Models;
+using Project_Manager.Services;
 
 namespace Project_Manager.Controllers
 {
     public class TeamsController : Controller
     {
         private readonly ITeamRepository _teamRepository;
+        private readonly ITeamUserRepository _teamUserRepository;
+        private readonly TeamUserService _teamUserService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public TeamsController(ITeamRepository teamRepository)
+        public TeamsController(ITeamRepository teamRepository, ITeamUserRepository teamUserRepository, 
+            TeamUserService teamUserService, UserManager<AppUser> userManager)
         {
 			_teamRepository = teamRepository;
+            _teamUserRepository = teamUserRepository;
+            _teamUserService = teamUserService;
+            _userManager = userManager;
+        }
+
+        private async Task<string?> GetUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
 		[HttpGet]
@@ -30,9 +46,12 @@ namespace Project_Manager.Controllers
             //if (!ModelState.IsValid)
             //    return BadRequest(ModelState);
 
-            var teams = await _teamRepository.GetAllAsync();
-            var teamsDTO = teams.Select(t => t.ToStockDto()).ToList();
+            var userId = await GetUserId();
+            if (userId == null)
+                return Unauthorized("User is not authenticated.");
 
+            var teams = await _teamUserService.GetUserTeamsAsync(userId);
+            var teamsDTO = teams.Select(t => t.ToTeamDTO()).ToList();
             return View(teamsDTO);
         }
 
@@ -45,12 +64,15 @@ namespace Project_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateTeamRequestDTO teamDTO)
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var team = teamDTO.ToTeamFromCreateDTO();
+            var userId = await GetUserId();
+            if (userId == null)
+                return Unauthorized("User is not authenticated.");
 
-            await _teamRepository.CreateAsync(team);
+            var createdTeam = await _teamRepository.CreateAsync(teamDTO.ToTeamFromCreateDTO());
+            await _teamUserService.AddUserToTeamAsync(createdTeam.Id, userId, UserRoles.Admin);
 
             return RedirectToAction("Index", "Teams");
         }

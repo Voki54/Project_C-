@@ -5,7 +5,7 @@ namespace Project_Manager.Mappers
 {
     public static class TeamMapper
     {
-        public static TeamDTO ToStockDto(this Team team)
+        public static TeamDTO ToTeamDTO(this Team team)
         {
             return new TeamDTO
             {

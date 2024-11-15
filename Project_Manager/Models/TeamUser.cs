@@ -7,7 +7,7 @@ namespace Project_Manager.Models
     {
         public int TeamId { get; set; }
         public Team Team { get; set; }
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
         public AppUser AppUser { get; set; }
         public UserRoles Role { get; set; }
     }

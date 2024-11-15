@@ -30,6 +30,21 @@ namespace Project_Manager.Data.DAO.Repository
             throw new NotImplementedException();
         }
 
+        //public async Task<IEnumerable<Team>> GetTeamsByUserId1(AppUser user)
+        //{
+        //    return await _context.TeamsUsers.Where(u => u.Id == user.Id);
+        //}
+
+        public async Task<IEnumerable<Team>> GetTeamsByUserIdAsync(string userId)
+        {
+            return await _context.TeamsUsers.Where(u => u.UserId == userId)
+                .Select(teamUser => new Team
+                {
+                    Id = teamUser.TeamId,
+                    Name = teamUser.Team.Name,
+                }).ToListAsync();
+        }
+
         public Task<List<AppUser>> GetUsersByTeam(Team team)
         {
             throw new NotImplementedException();
