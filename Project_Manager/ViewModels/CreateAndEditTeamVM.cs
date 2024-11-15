@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Project_Manager.DTO.Team
+namespace Project_Manager.ViewModels
 {
-    public class CreateTeamRequestDTO
+    public class CreateAndEditTeamVM
     {
         [Required]
         [MaxLength(15, ErrorMessage = "Team name cannot be over 15 over characters")]

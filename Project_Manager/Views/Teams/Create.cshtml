@@ -1,4 +1,4 @@
-﻿@model Project_Manager.DTO.Team.CreateTeamRequestDTO
+﻿@model Project_Manager.ViewModels.CreateAndEditTeamVM
 
 @{
     ViewData["Title"] = "Create Team page";
@@ -8,7 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form method="post" asp-antiforgery="true" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -16,7 +16,7 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            
+            @* TODO Добавить участников *@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

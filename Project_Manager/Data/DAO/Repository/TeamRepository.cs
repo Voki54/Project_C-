@@ -43,9 +43,9 @@ namespace Project_Manager.Data.DAO.Repository
 			return true;
 		}
 
-		public async Task<bool> UpdateAsync(int id, Team team)
+		public async Task<bool> UpdateAsync(Team team)
 		{
-			var existingTeam = await _context.Teams.FindAsync(id);
+			var existingTeam = await _context.Teams.FindAsync(team.Id);
 
 			if (existingTeam == null)
 			{

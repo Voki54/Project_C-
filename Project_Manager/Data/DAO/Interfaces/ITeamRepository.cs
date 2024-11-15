@@ -10,7 +10,7 @@ namespace Project_Manager.Data.DAO.Interfaces
         //Task<IEnumerable<Team>> GetTeamById(int id);
 		Task<Team> CreateAsync(Team team);
 		Task<bool> DeleteAsync(int id);
-		Task<bool> UpdateAsync(int id, Team team);
+		Task<bool> UpdateAsync(Team team);
 
 
 		//Task<Team?> DeleteAsync(int id);
