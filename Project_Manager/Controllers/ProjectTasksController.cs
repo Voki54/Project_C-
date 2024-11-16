@@ -50,6 +50,7 @@ namespace Project_Manager.Controllers
                 tasks = _context.Tasks
                     .Include(t => t.AppUser)
                     .Include(t => t.Category)
+                    .OrderBy(orderBy)
                     .Select(t => new ProjectTaskDTO
                     {
                         Id = t.Id,
@@ -60,7 +61,6 @@ namespace Project_Manager.Controllers
                         DueDateTime = t.DueDateTime,
                         Description = t.Description
                     })
-                    .OrderBy(orderBy)
                     .ToList();
 
                 // Обновляем состояние сортировки
