@@ -21,7 +21,7 @@ namespace Project_Manager.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? categoryId, string? sortColumn)
+        public IActionResult Index(int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
 
             // Получаем список всех категорий
@@ -84,20 +84,6 @@ namespace Project_Manager.Controllers
                     .ToList();
             }
 
-
-            if (tasks == null || !tasks.Any())
-            {
-                Console.WriteLine("Список задач пуст.");
-            }
-            else
-            {
-                Console.WriteLine("Список задач:");
-                foreach (var task in tasks)
-                {
-                    Console.WriteLine($"- {task.Title} (ID: {task.Id}, Статус: {task.Status})");
-                }
-            }
-
             Category selectedCategory = null;
 
             if (categoryId.HasValue)
@@ -112,6 +98,18 @@ namespace Project_Manager.Controllers
                 {
                     Console.WriteLine("Выбранная категория не найдена.");
                 }
+            }
+            if (filterStatus != null)
+            {
+                tasks = tasks.Where(t => t.Status == filterStatus).ToList();
+            }
+            if (filterExecutor != null)
+            {
+                tasks = tasks.Where(t => t.ExecutorName == filterExecutor).ToList();
+            }
+            if (filterDate != null)
+            {
+                tasks = tasks.Where(t => t.DueDateTime <= filterDate).ToList();
             }
 
             var model = new TaskCategoryVM
