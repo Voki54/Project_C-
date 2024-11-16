@@ -65,19 +65,8 @@ namespace Project_Manager.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
-        public IActionResult Delete(int id)
-        {
-            var category = _context.Categories.Find(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
-
         // POST: Categories/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {

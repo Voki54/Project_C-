@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
+using Project_Manager.DTO.ProjectTasks;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using Project_Manager.Helpers;
+using Microsoft.Build.Framework;
 
 namespace Project_Manager.Controllers
 {
@@ -17,7 +21,7 @@ namespace Project_Manager.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? categoryId)
+        public IActionResult Index(int? categoryId, string? sortColumn)
         {
 
             // Получаем список всех категорий
@@ -35,14 +39,52 @@ namespace Project_Manager.Controllers
                 }
             }
 
-            var tasksQuery = _context.Tasks.AsQueryable();
+            List<ProjectTaskDTO> tasks;
 
-            // Включаем зависимость AppUser (исполнителя) и Category (категории)
-            tasksQuery = tasksQuery
-                .Include(t => t.AppUser)    // Включаем исполнителя
-                .Include(t => t.Category);  // Включаем категорию
+            if (sortColumn != null)
+            {
+                // Определяем порядок сортировки
+                var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
+                var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
-            var tasks = tasksQuery.ToList();
+                tasks = _context.Tasks
+                    .Include(t => t.AppUser)
+                    .Include(t => t.Category)
+                    .Select(t => new ProjectTaskDTO
+                    {
+                        Id = t.Id,
+                        Title = t.Title,
+                        Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                        Category = t.Category,
+                        ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                        DueDateTime = t.DueDateTime,
+                        Description = t.Description
+                    })
+                    .OrderBy(orderBy)
+                    .ToList();
+
+                // Обновляем состояние сортировки
+                SortState.isColumnInProjectTaskViewSorted[sortColumn] = isAscending;
+            }
+            else
+            {
+                tasks = _context.Tasks
+                    .Include(t => t.AppUser)
+                    .Include(t => t.Category)
+                    .Select(t => new ProjectTaskDTO
+                    {
+                        Id = t.Id,
+                        Title = t.Title,
+                        Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                        Category = t.Category,
+                        ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                        DueDateTime = t.DueDateTime,
+                        Description = t.Description
+                    })
+                    .ToList();
+            }
+
+
             if (tasks == null || !tasks.Any())
             {
                 Console.WriteLine("Список задач пуст.");
@@ -64,7 +106,7 @@ namespace Project_Manager.Controllers
 
                 if (selectedCategory != null)
                 {
-                    tasks = _context.Tasks.Where(t => t.CategoryId == selectedCategory.Id).ToList();
+                    tasks = tasks.Where(t => t.Category.Id == selectedCategory.Id).ToList();
                 }
                 else
                 {
@@ -74,9 +116,11 @@ namespace Project_Manager.Controllers
 
             var model = new TaskCategoryVM
             {
-                Categories = categories ?? new List<Category>(), 
+                Categories = categories ?? new List<Category>(),
                 SelectedCategory = selectedCategory ?? new Category(),
-                Tasks = tasks ?? new List<ProjectTask>()
+                Tasks = tasks ?? new List<ProjectTaskDTO>(),
+                SortedColumn = sortColumn,
+                IsAsc = sortColumn != null ? !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false) : null,
             };
 
             return View(model);
@@ -176,6 +220,8 @@ namespace Project_Manager.Controllers
         {
             var task = _context.Tasks
                 .Include(t => t.Comments)
+                .Include(t => t.AppUser)
+                .Include(t => t.Category)
                 .FirstOrDefault(t => t.Id == id);
 
             if (task == null)
@@ -183,7 +229,19 @@ namespace Project_Manager.Controllers
                 return NotFound();
             }
 
-            return View(task);
+            var taskDAO = new ProjectTaskDTO
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Status = task.Status.ToString(),
+                Category = task.Category,
+                ExecutorName = task.AppUser.UserName,
+                DueDateTime = task.DueDateTime,
+                Description = task.Description,
+                Comments = task.Comments,
+            };
+
+            return View(taskDAO);
         }
 
         // Метод для добавления комментария

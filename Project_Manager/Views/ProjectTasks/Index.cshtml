@@ -19,7 +19,7 @@
                         <a href="@Url.Action("Edit", "Categories", new { id = category.Id })" class="btn btn-edit1">Редактировать</a>
 
                         <!-- Кнопка Удалить -->
-                        <form action="@Url.Action("Delete", "Categories", new { id = category.Id })" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту категорию?');">
+                        <form asp-action="DeleteConfirmed" asp-controller="Categories" asp-route-id="@category.Id" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту категорию?');">
                             <button type="submit" class="btn btn-delete1">Удалить</button>
                         </form>
                     </div>
@@ -42,12 +42,36 @@
             <table class="table task-table">
                 <thead>
                     <tr>
-                        <th>Название</th>
-                        <th>Статус</th>
-                        <th>Категория</th>
-                        <th>Исполнитель</th>
-                        <th>Дедлайн</th>
-                        <th>Описание</th>
+                        <th>
+                            <a href="@Url.Action("Index", new { sortColumn = "Title" })">
+                                <div>Название @(Model.SortedColumn == "Title" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new { sortColumn = "Status" })">
+                                <div>Статус @(Model.SortedColumn == "Status" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new { sortColumn = "Category" })">
+                                <div>Категория @(Model.SortedColumn == "Category" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new { sortColumn = "ExecutorName" })">
+                                <div>Исполнитель @(Model.SortedColumn == "ExecutorName" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new { sortColumn = "DueDateTime" })">
+                                <div>Дедлайн @(Model.SortedColumn == "DueDateTime" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new { sortColumn = "Description" })">
+                                <div>Описание @(Model.SortedColumn == "Description" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                            </a>
+                        </th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -62,13 +86,13 @@
                                 </span>
                             </td>
                             <td>@task.Category.Name</td>
-                            <td>@(task.AppUser != null ? task.AppUser.UserName : "Не назначен")</td>
+                            <td>@(task.ExecutorName != null ? task.ExecutorName : "Не назначен")</td>
                             <td>@task.DueDateTime.ToShortDateString()</td>
                             <td class="description">@task.Description</td>
                             <td>
                                 <a href="@Url.Action("ViewTask", new { id = task.Id })" class="btn btn-view">Просмотр</a>
                                 <a href="@Url.Action("Edit", new { id = task.Id })" class="btn btn-edit">Редактировать</a>
-                                <form asp-action="DeleteTask" asp-route-id="@task.Id" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
+                                <form asp-action="DeleteConfirmed" asp-route-id="@task.Id" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
                                     <button type="submit" class="btn btn-delete">Удалить</button>
                                 </form>
                             </td>
@@ -79,7 +103,7 @@
         }
         else
         {
-            <div class="alert alert-info mt-3">Нет задач для данной категории.</div>
+            <div class="alert alert-info mt-3">В данной категории нет задач.</div>
         }
     </div>
 </div>

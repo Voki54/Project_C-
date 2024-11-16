@@ -5,15 +5,9 @@
     ViewData["Title"] = "Редактировать задачу";
 }
 
-<h1>Редактировать задачу</h1>
+<h2>Редактировать задачу</h2>
 
-<h4>ProjectTask</h4>
-<hr />
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-<form asp-action="Edit">
-    <input type="hidden" asp-for="Id" />
-
+<form class="formCreate" asp-action="Edit" method="post">
     <div class="form-group">
         <label asp-for="Title" class="control-label">Название</label>
         <input asp-for="Title" class="form-control" />
@@ -28,25 +22,40 @@
 
     <div class="form-group">
         <label asp-for="Status" class="control-label">Статус</label>
-        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ProjectTaskStatus>()"></select>
+        <select asp-for="Status" class="form-control">
+            @foreach (var status in Enum.GetValues(typeof(ProjectTaskStatus)))
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
         <span asp-validation-for="Status" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="CategoryId" class="control-label">Категория</label>
-        <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))"></select>
+        <select asp-for="CategoryId" class="form-control">
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
         <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="ExecutorId" class="control-label">Исполнитель</label>
-        <select asp-for="ExecutorId" class="form-control" asp-items="@(new SelectList(ViewBag.Users, "Id", "UserName"))"></select>
+        <select asp-for="ExecutorId" class="form-control">
+            @foreach (var user in ViewBag.Users)
+            {
+                <option value="@user.Id">@user.UserName</option>
+            }
+        </select>
         <span asp-validation-for="ExecutorId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="DueDateTime" class="control-label">Срок выполнения</label>
-        <input asp-for="DueDateTime" class="form-control" type="datetime-local" />
+        <label asp-for="DueDateTime" class="control-label">Дата завершения</label>
+        <input asp-for="DueDateTime" class="form-control" type="date" />
         <span asp-validation-for="DueDateTime" class="text-danger"></span>
     </div>
 
