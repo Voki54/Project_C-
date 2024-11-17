@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Voki\\Desktop\\Project_Manager\\Project_Manager\\Project_Manager.csproj": {}
+    "C:\\GitCopy\\Project_Manager\\Project_Manager\\Project_Manager.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Voki\\Desktop\\Project_Manager\\Project_Manager\\Project_Manager.csproj": {
+    "C:\\GitCopy\\Project_Manager\\Project_Manager\\Project_Manager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Voki\\Desktop\\Project_Manager\\Project_Manager\\Project_Manager.csproj",
+        "projectUniqueName": "C:\\GitCopy\\Project_Manager\\Project_Manager\\Project_Manager.csproj",
         "projectName": "Project_Manager",
-        "projectPath": "C:\\Users\\Voki\\Desktop\\Project_Manager\\Project_Manager\\Project_Manager.csproj",
-        "packagesPath": "C:\\Users\\Voki\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Voki\\Desktop\\Project_Manager\\Project_Manager\\obj\\",
+        "projectPath": "C:\\GitCopy\\Project_Manager\\Project_Manager\\Project_Manager.csproj",
+        "packagesPath": "C:\\Users\\moroz\\.nuget\\packages\\",
+        "outputPath": "C:\\GitCopy\\Project_Manager\\Project_Manager\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Voki\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\moroz\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
