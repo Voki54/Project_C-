@@ -10,6 +10,7 @@ using System.Linq.Dynamic.Core;
 using Project_Manager.Helpers;
 using Microsoft.Build.Framework;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.CodeAnalysis;
 
 namespace Project_Manager.Controllers
 {
@@ -23,11 +24,11 @@ namespace Project_Manager.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
+        public IActionResult Index(int projectId, int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
 
             // Получаем список всех категорий
-            var categories = _context.Categories.ToList();
+            var categories = _context.Categories.Where(t => t.ProjectId == projectId).ToList();
             if (categories == null || !categories.Any())
             {
                 Console.WriteLine("Список категорий пуст.");
@@ -53,6 +54,7 @@ namespace Project_Manager.Controllers
                     tasks = _context.Tasks
                         .Include(t => t.AppUser)
                         .Include(t => t.Category)
+                        .Where(t => t.Category.ProjectId == projectId)
                         .OrderBy(orderBy)
                         .Select(t => new ProjectTaskDTO
                         {
@@ -69,6 +71,7 @@ namespace Project_Manager.Controllers
                     tasks = _context.Tasks
                         .Include(t => t.AppUser)
                         .Include(t => t.Category)
+                        .Where(t => t.Category.ProjectId == projectId)
                         .Select(t => new ProjectTaskDTO
                         {
                             Id = t.Id,
@@ -91,6 +94,7 @@ namespace Project_Manager.Controllers
                 tasks = _context.Tasks
                     .Include(t => t.AppUser)
                     .Include(t => t.Category)
+                    .Where(t => t.Category.ProjectId == projectId)
                     .Select(t => new ProjectTaskDTO
                     {
                         Id = t.Id,
@@ -103,6 +107,7 @@ namespace Project_Manager.Controllers
                     })
                     .ToList();
             }
+
 
             Category selectedCategory = null;
 
@@ -139,14 +144,16 @@ namespace Project_Manager.Controllers
                 Tasks = tasks ?? new List<ProjectTaskDTO>(),
                 SortedColumn = sortColumn,
                 IsAsc = sortColumn != null ? !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false) : null,
+                ProjectId = projectId
             };
 
             return View(model);
         }
 
 
-        public IActionResult Create()
+        public IActionResult Create(int projectId)
         {
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = _context.Categories.ToList(); 
             ViewBag.Users = _context.Users.ToList();          
             return View();
@@ -154,15 +161,15 @@ namespace Project_Manager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProjectTask task)
+        public async Task<IActionResult> Create(ProjectTask task, int projectId)
         {
             if (ModelState.IsValid)
             {
                 await _context.Tasks.AddAsync(task); 
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index"); 
+                return RedirectToAction("Index", new { projectId }); 
             }
-
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = await _context.Categories.ToListAsync(); 
             ViewBag.Users = await _context.Users.ToListAsync();
             return View(task);
@@ -186,7 +193,7 @@ namespace Project_Manager.Controllers
         // POST: ProjectTasks/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ProjectTask projectTask)
+        public async Task<IActionResult> Edit(int id, ProjectTask projectTask, int projectId)
         {
             if (id != projectTask.Id)
             {
@@ -211,9 +218,10 @@ namespace Project_Manager.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { projectId });
             }
 
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.Users = await _context.Users.ToListAsync();
             return View(projectTask);

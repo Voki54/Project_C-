@@ -6,12 +6,12 @@
         <h5>Категории</h5>
         <ul class="list-group">
             <li class="list-group-item @(Model.SelectedCategory == null ? "active" : "")">
-                <a href="@Url.Action("Index")" class="text-decoration-none">Все категории</a>
+                <a href="@Url.Action("Index", new{ projectId = Model.ProjectId})" class="text-decoration-none">Все категории</a>
             </li>
             @foreach (var category in Model.Categories)
             {
                 <li class="list-group-item @(category.Id == Model.SelectedCategory?.Id ? "active" : "")">
-                    <a href="@Url.Action("Index", new { categoryId = category.Id })" class="text-decoration-none">
+                    <a href="@Url.Action("Index", new { categoryId = category.Id, projectId = Model.ProjectId })" class="text-decoration-none">
                         @category.Name
                     </a>
                     <div class="btn-group" role="group" aria-label="Basic example">
@@ -26,7 +26,7 @@
                 </li>
             }
         </ul>
-        <a href="@Url.Action("Create", "Categories")" class="btn btn-add btn-add-category">Добавить категорию</a>
+        <a href="@Url.Action("Create", "Categories", new{ projectId = Model.ProjectId})" class="btn btn-add btn-add-category">Добавить категорию</a>
     </div>
 
 
@@ -80,12 +80,12 @@
                                 </div>
                             </li>
                             <li class="filter-item">
-                                <a href="@Url.Action("Index")">Отменить фильтр</a>
+                                <a href="@Url.Action("Index", new{ projectId = Model.ProjectId})">Отменить фильтр</a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <a href="@Url.Action("Create", new { categoryId = Model.SelectedCategory?.Id })" class="btn btn-add">Добавить задачу</a>
+                <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
             </div>
         </div>
 

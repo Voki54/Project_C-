@@ -38,6 +38,12 @@ namespace Project_Manager.Data
                 .WithMany(t => t.ProjectUser)
                 .HasForeignKey(ut => ut.ProjectId);
 
+            modelBuilder.Entity<Category>()
+                .HasOne<Project>(ut => ut.Project)
+                .WithMany(t => t.Categories)
+                .HasForeignKey(ut => ut.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<ProjectUser>()
                 .Property(ut => ut.Role);
 

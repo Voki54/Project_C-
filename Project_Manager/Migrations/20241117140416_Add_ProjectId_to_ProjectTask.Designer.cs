@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project_Manager.Data;
 
@@ -11,9 +12,11 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241117140416_Add_ProjectId_to_ProjectTask")]
+    partial class Add_ProjectId_to_ProjectTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,12 +235,7 @@ namespace Project_Manager.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
 
                     b.ToTable("Category");
                 });
@@ -328,6 +326,9 @@ namespace Project_Manager.Migrations
                     b.Property<string>("ExecutorId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Status")
                         .HasColumnType("int");
 
@@ -339,6 +340,8 @@ namespace Project_Manager.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("ExecutorId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectTask");
                 });
@@ -412,17 +415,6 @@ namespace Project_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.Category", b =>
-                {
-                    b.HasOne("Project_Manager.Models.Project", "Project")
-                        .WithMany("Categories")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
             modelBuilder.Entity("Project_Manager.Models.Comment", b =>
                 {
                     b.HasOne("Project_Manager.Models.ProjectTask", "ProjectTask")
@@ -446,9 +438,15 @@ namespace Project_Manager.Migrations
                         .HasForeignKey("ExecutorId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Project_Manager.Models.Project", "Project")
+                        .WithMany("ProjectTasks")
+                        .HasForeignKey("ProjectId");
+
                     b.Navigation("AppUser");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.ProjectUser", b =>
@@ -484,7 +482,7 @@ namespace Project_Manager.Migrations
 
             modelBuilder.Entity("Project_Manager.Models.Project", b =>
                 {
-                    b.Navigation("Categories");
+                    b.Navigation("ProjectTasks");
 
                     b.Navigation("ProjectUser");
                 });

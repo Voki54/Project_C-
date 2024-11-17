@@ -65,7 +65,7 @@ namespace Project_Manager.Controllers
 
             //return RedirectToAction("Index", "Projects");
 
-            return RedirectToAction("Details", "Projects", new { projectId = createdProject.Id });
+            return RedirectToAction("Index", "Projects", new { projectId = createdProject.Id });
         }
 
         [HttpGet]

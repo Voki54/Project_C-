@@ -18,8 +18,9 @@ namespace Project_Manager.Controllers
         }
 
         // GET: Categories/Create
-        public IActionResult Create()
+        public IActionResult Create(int projectId)
         {
+            ViewBag.ProjectId = projectId;
             return View();
         }
 
@@ -32,7 +33,7 @@ namespace Project_Manager.Controllers
             {
                 _context.Categories.Add(category);
                 _context.SaveChanges();
-                return RedirectToAction("Index", "ProjectTasks"); // Перенаправление на страницу задач
+                return RedirectToAction("Index", "ProjectTasks", new { projectId = category.ProjectId});
             }
             return View(category);
         }
@@ -62,7 +63,7 @@ namespace Project_Manager.Controllers
             {
                 _context.Update(category);
                 _context.SaveChanges();
-                return RedirectToAction("Index", "ProjectTasks"); // Перенаправление на страницу задач
+                return RedirectToAction("Index", "ProjectTasks", new { projectId = category.ProjectId }); // Перенаправление на страницу задач
             }
             return View(category);
         }
@@ -78,7 +79,7 @@ namespace Project_Manager.Controllers
                 _context.Categories.Remove(category);
                 _context.SaveChanges();
             }
-            return RedirectToAction("Index", "ProjectTasks"); // Перенаправление на страницу задач
+            return RedirectToAction("Index", "ProjectTasks", new { projectId = category.ProjectId }); // Перенаправление на страницу задач
         }
     }
 }
