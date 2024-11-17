@@ -11,9 +11,12 @@ namespace Project_Manager.Data
 			: base(options)
 		{
 		}
-	    public DbSet<Team> Teams { get; set; }
-		public DbSet<Notification> Notifications { get; set; }
-        public DbSet<TeamUser> TeamUser { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<ProjectTask> Tasks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<ProjectUser> ProjectsUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,21 +25,40 @@ namespace Project_Manager.Data
             /*modelBuilder.Entity<AppUser>()
 	            .HasAlternateKey(u => u.GuidKey);*/
 
-            modelBuilder.Entity<TeamUser>()
-                .HasKey(ut => new { ut.UserId, ut.TeamId });
+            modelBuilder.Entity<ProjectUser>()
+                .HasKey(ut => new { ut.UserId, ut.ProjectId });
 
-            modelBuilder.Entity<TeamUser>()
+            modelBuilder.Entity<ProjectUser>()
                 .HasOne<AppUser>(ut => ut.AppUser)
-                .WithMany(u => u.TeamUser)
+                .WithMany(u => u.ProjectUser)
                 .HasForeignKey(ut => ut.UserId);
 
-            modelBuilder.Entity<TeamUser>()
-                .HasOne<Team>(ut => ut.Team)
-                .WithMany(t => t.TeamUser)
-                .HasForeignKey(ut => ut.TeamId);
+            modelBuilder.Entity<ProjectUser>()
+                .HasOne<Project>(ut => ut.Project)
+                .WithMany(t => t.ProjectUser)
+                .HasForeignKey(ut => ut.ProjectId);
 
-            modelBuilder.Entity<TeamUser>()
+            modelBuilder.Entity<ProjectUser>()
                 .Property(ut => ut.Role);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasOne(task => task.Category)     
+                .WithMany(category => category.ProjectTasks) 
+                .HasForeignKey(task => task.CategoryId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasOne(task => task.AppUser)
+                .WithMany(executor => executor.ProjectTasks)
+                .HasForeignKey(task => task.ExecutorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProjectTask>()
+                .HasMany(task => task.Comments) 
+                .WithOne(comment => comment.ProjectTask) 
+                .HasForeignKey(comment => comment.ProjectTaskId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
     }

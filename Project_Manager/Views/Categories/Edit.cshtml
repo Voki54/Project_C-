@@ -1,0 +1,17 @@
+﻿@model Project_Manager.Models.Category
+
+@{
+    ViewData["Title"] = "Редактировать категорию";
+}
+
+<h2>Редактировать категорию</h2>
+
+<form class="formCreate" asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Название категории</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    <a asp-action="Index" asp-controller="ProjectTasks" class="btn btn-secondary">Назад</a>
+</form>
