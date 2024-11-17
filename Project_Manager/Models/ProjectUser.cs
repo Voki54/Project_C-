@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Project_Manager.Models.Enum;
 
 namespace Project_Manager.Models
 {

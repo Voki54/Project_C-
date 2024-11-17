@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Mappers;
 using Project_Manager.Models;
+using Project_Manager.Models.Enum;
 using Project_Manager.Services;
 using Project_Manager.ViewModels;
 using System.Security.Claims;
@@ -14,15 +15,15 @@ namespace Project_Manager.Controllers
         private readonly IProjectRepository _projectRepository;
         private readonly IProjectUserRepository _projectUserRepository;
         private readonly ProjectUserService _projectUserService;
-        private readonly UserManager<AppUser> _userManager;
+        //private readonly UserManager<AppUser> _userManager;
 
         public ProjectsController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            ProjectUserService projectUserService, UserManager<AppUser> userManager)
+            ProjectUserService projectUserService/*, UserManager<AppUser> userManager*/)
         {
             _projectRepository = projectRepository;
             _projectUserRepository = projectUserRepository;
             _projectUserService = projectUserService;
-            _userManager = userManager;
+            //_userManager = userManager;
         }
 
         private string? GetUserId()
@@ -61,8 +62,6 @@ namespace Project_Manager.Controllers
             var createdProject = await _projectRepository.CreateAsync(createProjectVM.ToProject());
             await _projectUserService.AddUserToProjectAsync(createdProject.Id, userId, UserRoles.Admin);
 
-            //return RedirectToAction("Index", "Projects");
-
             return RedirectToAction("Details", "Projects", new { projectId = createdProject.Id });
         }
 
@@ -83,8 +82,10 @@ namespace Project_Manager.Controllers
 
             var projectDetailsVM = new ProjectDetailsVM
             {
-                Project = project,
-                UserRoles = (UserRoles)userRole
+                ProjectId = projectId,
+                ProjectName = project.Name,
+                UserRoles = (UserRoles)userRole,
+                InvitationLink = Url.Action("Index", "JoinProject", new { projectId }, Request.Scheme)
                 //TODO список задач команды
             };
 
@@ -121,8 +122,6 @@ namespace Project_Manager.Controllers
 
             return RedirectToAction("Details", "Projects", new { projectId = id });
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)

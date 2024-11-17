@@ -1,4 +1,5 @@
 ﻿using Project_Manager.Models;
+using Project_Manager.Models.Enum;
 
 namespace Project_Manager.Data.DAO.Interfaces
 {
@@ -8,6 +9,6 @@ namespace Project_Manager.Data.DAO.Interfaces
         Task<UserRoles?> GetUserRoleInProjectAsync(string userId, int projectId);
         Task<List<AppUser>> GetUsersByProject(Project project);
         Task<ProjectUser> CreateAsync(ProjectUser projectUser);
-        Task<ProjectUser> DeleteAsync(Project project, AppUser appUser);
+        Task<bool> DeleteAsync(int projectId, string userId);
     }
 }

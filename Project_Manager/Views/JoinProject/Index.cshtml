@@ -1,0 +1,20 @@
+﻿@model Project_Manager.ViewModels.JoinProjectVM
+
+@{
+    ViewData["Title"] = "Join Project page";
+}
+
+@if (Model.RequestStatus == null)
+{
+    <h2>Присоединиться к проекту: @Model.ProjectName</h2>
+    <form asp-action="SubmitJoinRequest" method="post">
+        <input type="hidden" name="projectId" value="@Model.ProjectId" />
+        <button type="submit" class="btn btn-primary">Подать заявку</button>
+    </form>
+}
+else
+{
+    <h2>Заявка на присоединение к проекту @Model.ProjectName успешно подана</h2>
+}
+
+

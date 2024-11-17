@@ -1,5 +1,6 @@
 ﻿using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
+using Project_Manager.Models.Enum;
 
 namespace Project_Manager.Services
 {
