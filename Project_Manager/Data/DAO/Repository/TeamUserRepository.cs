@@ -30,11 +30,6 @@ namespace Project_Manager.Data.DAO.Repository
             throw new NotImplementedException();
         }
 
-        //public async Task<IEnumerable<Team>> GetTeamsByUserId1(AppUser user)
-        //{
-        //    return await _context.TeamsUsers.Where(u => u.Id == user.Id);
-        //}
-
         public async Task<IEnumerable<Team>> GetTeamsByUserIdAsync(string userId)
         {
             return await _context.TeamsUsers.Where(u => u.UserId == userId)

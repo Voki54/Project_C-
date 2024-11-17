@@ -23,22 +23,6 @@ namespace Project_Manager.Mappers
             };
         }
 
-        public static EditTeamDTO ToEditTeamDTO(this Team team)
-        {
-            return new EditTeamDTO
-            {
-                Name = team.Name
-            };
-        }
-
-        public static Team ToTeam(this EditTeamDTO createAndEditTeamDTO)
-        {
-            return new Team
-            {
-                Name = createAndEditTeamDTO.Name
-            };
-        }
-
         public static CreateAndEditTeamVM ToCreateAndEditTeamVM(this Team team)
         {
             return new CreateAndEditTeamVM
