@@ -247,7 +247,7 @@ namespace Project_Manager.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.Team", b =>
+            modelBuilder.Entity("Project_Manager.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -261,25 +261,25 @@ namespace Project_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.TeamUser", b =>
+            modelBuilder.Entity("Project_Manager.Models.ProjectUser", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("TeamId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "TeamId");
+                    b.HasKey("UserId", "ProjectId");
 
-                    b.HasIndex("TeamId");
+                    b.HasIndex("ProjectId");
 
-                    b.ToTable("TeamUser");
+                    b.ToTable("ProjectUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -333,33 +333,33 @@ namespace Project_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.TeamUser", b =>
+            modelBuilder.Entity("Project_Manager.Models.ProjectUser", b =>
                 {
-                    b.HasOne("Project_Manager.Models.Team", "Team")
-                        .WithMany("TeamUser")
-                        .HasForeignKey("TeamId")
+                    b.HasOne("Project_Manager.Models.Project", "Project")
+                        .WithMany("ProjectUser")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project_Manager.Models.AppUser", "AppUser")
-                        .WithMany("TeamUser")
+                        .WithMany("ProjectUser")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
 
-                    b.Navigation("Team");
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.AppUser", b =>
                 {
-                    b.Navigation("TeamUser");
+                    b.Navigation("ProjectUser");
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.Team", b =>
+            modelBuilder.Entity("Project_Manager.Models.Project", b =>
                 {
-                    b.Navigation("TeamUser");
+                    b.Navigation("ProjectUser");
                 });
 #pragma warning restore 612, 618
         }

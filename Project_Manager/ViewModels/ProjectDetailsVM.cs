@@ -2,9 +2,9 @@
 
 namespace Project_Manager.ViewModels
 {
-    public class TeamDetailsVM
+    public class ProjectDetailsVM
     {
-        public Team Team { get; set; }
+        public Project Project { get; set; }
         public UserRoles UserRoles { get; set; }
         //TODO список задач команды
     }

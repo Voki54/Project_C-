@@ -1,6 +1,6 @@
-﻿namespace Project_Manager.DTO.Team
+﻿namespace Project_Manager.DTO.Project
 {
-    public class TeamDTO
+    public class ProjectDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

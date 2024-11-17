@@ -1,12 +1,12 @@
-﻿@using Project_Manager.DTO.Team
-@model IEnumerable<TeamDTO>
+﻿@using Project_Manager.DTO.Project
+@model IEnumerable<ProjectDTO>
 
 @{
-    ViewData["Title"] = "Teams page";
+    ViewData["Title"] = "Projects page";
 }
 
 <p>
-    <a asp-action ="Create">Create Team</a>
+    <a asp-action ="Create">Create Project</a>
 </p>
 <hr />
 <table class="table">
@@ -20,22 +20,22 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.Count<TeamDTO>() == 0)
+        @if (Model.Count<ProjectDTO>() == 0)
         {
             <tr>Вы не состоите ни в одной команде. Самое время это исправить!</tr>
         } 
         else {
-            foreach (var team in Model)
+            foreach (var project in Model)
             {
                 <tr>
                     <td>
-						<a asp-action="Details" asp-route-teamId="@team.Id">@Html.DisplayFor(modelItem => team.Name)</a>
+						<a asp-action="Details" asp-route-projectId="@project.Id">@Html.DisplayFor(modelItem => project.Name)</a>
                     </td>
 
                     @* <td> *@
-                        @* <a asp-action="Edit" asp-route-id="@team.Id">Edit</a> | *@
+                        @* <a asp-action="Edit" asp-route-id="@project.Id">Edit</a> | *@
                         
-                        @* <a asp-action="Delete" asp-route-id="@team.Id">Delete</a> *@
+                        @* <a asp-action="Delete" asp-route-id="@project.Id">Delete</a> *@
                     @* </td> *@
                 </tr>
             }

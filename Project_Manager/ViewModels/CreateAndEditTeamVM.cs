@@ -2,10 +2,10 @@
 
 namespace Project_Manager.ViewModels
 {
-    public class CreateAndEditTeamVM
+    public class CreateAndEditProjectVM
     {
         [Required]
-        [MaxLength(15, ErrorMessage = "Team name cannot be over 15 over characters")]
+        [MaxLength(15, ErrorMessage = "Project name cannot be over 15 over characters")]
         public string Name { get; set; } = string.Empty;
     }
 }

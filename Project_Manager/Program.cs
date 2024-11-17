@@ -15,9 +15,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddScoped<ITeamRepository, TeamRepository>()
-                .AddScoped<ITeamUserRepository, TeamUserRepository>()
-                .AddScoped<TeamUserService>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
+                .AddScoped<IProjectUserRepository, ProjectUserRepository>()
+                .AddScoped<ProjectUserService>();
 
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();

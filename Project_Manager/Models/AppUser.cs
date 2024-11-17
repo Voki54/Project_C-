@@ -8,8 +8,8 @@ namespace Project_Manager.Models
 		//[Key]
 		//public string Id { get; set; }
 		//public Guid GuidKey { get; set; } = Guid.NewGuid();
-		public ICollection<TeamUser> TeamUser { get; set; } = new List<TeamUser>();
-        //public ICollection<Team> Teams { get; set; }
+		public ICollection<ProjectUser> ProjectUser { get; set; } = new List<ProjectUser>();
+        //public ICollection<Project> Projects { get; set; }
         //public ICollection<Notification> Notifications { get; set; }
     }
 }
