@@ -66,7 +66,7 @@ namespace Project_Manager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teams",
+                name: "Projects",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -75,7 +75,7 @@ namespace Project_Manager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,26 +185,26 @@ namespace Project_Manager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TeamUser",
+                name: "ProjectUser",
                 columns: table => new
                 {
-                    TeamId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamUser", x => new { x.UserId, x.TeamId });
+                    table.PrimaryKey("PK_ProjectUser", x => new { x.UserId, x.ProjectId });
                     table.ForeignKey(
-                        name: "FK_TeamUser_AspNetUsers_UserId",
+                        name: "FK_ProjectUser_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TeamUser_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
+                        name: "FK_ProjectUser_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -249,9 +249,9 @@ namespace Project_Manager.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamUser_TeamId",
-                table: "TeamUser",
-                column: "TeamId");
+                name: "IX_ProjectUser_ProjectId",
+                table: "ProjectUser",
+                column: "ProjectId");
         }
 
         /// <inheritdoc />
@@ -276,7 +276,7 @@ namespace Project_Manager.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "TeamUser");
+                name: "ProjectUser");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -285,7 +285,7 @@ namespace Project_Manager.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Teams");
+                name: "Projects");
         }
     }
 }

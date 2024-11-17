@@ -1,0 +1,29 @@
+﻿@model Project_Manager.ViewModels.ProjectDetailsVM;
+
+@{
+    ViewData["Title"] = "Detail Project page";
+}
+
+<div>
+    @* <h4>Project "@Model.Name"</h4> *@
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Project.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Project.Name)
+        </dd>
+   
+    </dl>
+</div>
+
+<div>
+    @if (Model.UserRoles == Models.UserRoles.Admin)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Project.Id">Edit | </a>
+        <a asp-action="Delete" asp-route-id="@Model.Project.Id">Delete | </a>
+    }
+    
+    <a asp-action="Index">Back to List</a>
+</div>

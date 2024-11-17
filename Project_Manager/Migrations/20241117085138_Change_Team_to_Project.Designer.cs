@@ -12,8 +12,8 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241031194825_Init")]
-    partial class Init
+    [Migration("20241117085138_Change_Team_to_Project")]
+    partial class Change_Team_to_Project
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
