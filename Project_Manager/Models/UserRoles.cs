@@ -1,4 +1,4 @@
-﻿namespace Project_Manager.Models.Enums
+﻿namespace Project_Manager.Models
 {
     public enum UserRoles
     {
