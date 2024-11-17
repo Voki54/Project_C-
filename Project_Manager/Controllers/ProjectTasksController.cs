@@ -177,14 +177,14 @@ namespace Project_Manager.Controllers
 
 
         // GET: ProjectTasks/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, int projectId)
         {
             var projectTask = await _context.Tasks.FindAsync(id);
             if (projectTask == null)
             {
                 return NotFound();
             }
-
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.Users = await _context.Users.ToListAsync();
             return View(projectTask);
@@ -230,7 +230,7 @@ namespace Project_Manager.Controllers
         // POST: ProjectTasks/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int projectId)
         {
             var projectTask = await _context.Tasks.FindAsync(id);
             if (projectTask != null)
@@ -238,11 +238,11 @@ namespace Project_Manager.Controllers
                 _context.Tasks.Remove(projectTask);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", new { projectId });
         }
 
         // Метод для просмотра задачи
-        public IActionResult ViewTask(int id)
+        public IActionResult ViewTask(int id, int projectId)
         {
             var task = _context.Tasks
                 .Include(t => t.Comments)
@@ -266,13 +266,13 @@ namespace Project_Manager.Controllers
                 Description = task.Description,
                 Comments = task.Comments,
             };
-
+            ViewBag.ProjectId = projectId;
             return View(taskDAO);
         }
 
         // Метод для добавления комментария
         [HttpPost]
-        public IActionResult AddComment(int taskId, string content)
+        public IActionResult AddComment(int taskId, string content, int projectId)
         {
             var task = _context.Tasks.Find(taskId);
             if (task == null)
@@ -290,7 +290,7 @@ namespace Project_Manager.Controllers
             _context.Comments.Add(comment);
             _context.SaveChanges();
 
-            return RedirectToAction("ViewTask", new { id = taskId });
+            return RedirectToAction("ViewTask", new { id = taskId, projectId });
         }
 
 
