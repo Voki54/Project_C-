@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Mappers;
@@ -9,6 +10,7 @@ using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly IProjectRepository _projectRepository;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
@@ -6,6 +7,7 @@ using System.Linq;
 
 namespace Project_Manager.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;

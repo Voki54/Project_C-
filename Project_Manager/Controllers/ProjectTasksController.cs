@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Project_Manager.Helpers;
 using Microsoft.Build.Framework;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project_Manager.Controllers
 {
+    [Authorize]
     public class ProjectTasksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -47,21 +49,39 @@ namespace Project_Manager.Controllers
                 var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
                 var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
-                tasks = _context.Tasks
-                    .Include(t => t.AppUser)
-                    .Include(t => t.Category)
-                    .OrderBy(orderBy)
-                    .Select(t => new ProjectTaskDTO
-                    {
-                        Id = t.Id,
-                        Title = t.Title,
-                        Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
-                        Category = t.Category,
-                        ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
-                        DueDateTime = t.DueDateTime,
-                        Description = t.Description
-                    })
-                    .ToList();
+                if(sortColumn == "Status")
+                    tasks = _context.Tasks
+                        .Include(t => t.AppUser)
+                        .Include(t => t.Category)
+                        .OrderBy(orderBy)
+                        .Select(t => new ProjectTaskDTO
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                            Category = t.Category,
+                            ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                            DueDateTime = t.DueDateTime,
+                            Description = t.Description
+                        })
+                        .ToList();
+                else
+                    tasks = _context.Tasks
+                        .Include(t => t.AppUser)
+                        .Include(t => t.Category)
+                        .Select(t => new ProjectTaskDTO
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                            Category = t.Category,
+                            ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                            DueDateTime = t.DueDateTime,
+                            Description = t.Description
+                        })
+                        .OrderBy(orderBy)
+                        .ToList();
+
 
                 // Обновляем состояние сортировки
                 SortState.isColumnInProjectTaskViewSorted[sortColumn] = isAscending;
