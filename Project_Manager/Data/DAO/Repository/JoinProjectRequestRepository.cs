@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
+using Project_Manager.Models.Enum;
 
 namespace Project_Manager.Data.DAO.Repository
 {
@@ -43,5 +44,27 @@ namespace Project_Manager.Data.DAO.Repository
 		{
 			return await _context.JoinProjectRequests.Where(j => j.ProjectId == projectId).ToListAsync();
 		}
-	}
+
+		public async Task<IEnumerable<string>> GetUsersIdWithUnprocessedRequestsAsync(int projectId)
+		{
+			return await _context.JoinProjectRequests
+				.Where(j => j.ProjectId == projectId && j.Status == JoinProjectRequestStatus.Pending)
+				.Select(joinProjectRequest => joinProjectRequest.UserId)
+				.ToListAsync();
+        }
+
+        public async Task<bool> UpdateAsync(JoinProjectRequest joinProjectRequest)
+        {
+            var existingJoinProjectRequest = await _context.JoinProjectRequests.FindAsync(joinProjectRequest.ProjectId, joinProjectRequest.UserId);
+
+            if (existingJoinProjectRequest == null)
+            {
+                return false;
+            }
+
+            existingJoinProjectRequest.Status = joinProjectRequest.Status;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+    }
 }

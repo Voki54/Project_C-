@@ -3,7 +3,7 @@
 	public enum JoinProjectRequestStatus
 	{
 		Pending,
-		Approved,
-		Rejected
+        Accepted,
+        Rejected
 	}
 }

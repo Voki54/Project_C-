@@ -51,9 +51,11 @@ namespace Project_Manager.Data.DAO.Repository
             return projectUser.Role;
         }
 
-        public Task<List<AppUser>> GetUsersByProject(Project project)
+        public async Task<bool> IsUserInProjectAsync(string userId, int projectId)
         {
-            throw new NotImplementedException();
+            if (await _context.ProjectsUsers.FirstOrDefaultAsync(t => t.UserId == userId && t.ProjectId == projectId) == null)
+                return false;
+            return true;
         }
     }
 }

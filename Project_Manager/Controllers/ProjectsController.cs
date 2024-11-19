@@ -85,7 +85,7 @@ namespace Project_Manager.Controllers
                 ProjectId = projectId,
                 ProjectName = project.Name,
                 UserRoles = (UserRoles)userRole,
-                InvitationLink = Url.Action("Index", "JoinProject", new { projectId }, Request.Scheme)
+                InvitationLink = Url.Action("Join", "JoinProject", new { projectId }, Request.Scheme)
                 //TODO список задач команды
             };
 
