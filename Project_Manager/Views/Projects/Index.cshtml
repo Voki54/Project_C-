@@ -29,7 +29,7 @@
             {
                 <tr>
                     <td>
-						<a asp-action="Details" asp-route-projectId="@project.Id">@Html.DisplayFor(modelItem => project.Name)</a>
+                        <a href="@Url.Action("Index", "ProjectTasks", new { projectId = project.Id })">@Html.DisplayFor(modelItem => project.Name)</a>
                     </td>
 
                     @* <td> *@

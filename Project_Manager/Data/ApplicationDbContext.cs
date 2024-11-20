@@ -57,6 +57,14 @@ namespace Project_Manager.Data
             modelBuilder.Entity<JoinProjectRequest>()
                 .Property(j => j.Status);
 
+            modelBuilder.Entity<Category>()
+                .HasOne<Project>(ut => ut.Project)
+                .WithMany(t => t.Categories)
+                .HasForeignKey(ut => ut.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProjectUser>()
+                .Property(ut => ut.Role);
 
             modelBuilder.Entity<ProjectTask>()
                 .HasOne(task => task.Category)     

@@ -1,4 +1,5 @@
-﻿@model Project_Manager.DTO.ProjectTasks.ProjectTaskDTO
+﻿@using Project_Manager.Models
+@model Project_Manager.DTO.ProjectTasks.ProjectTaskDTO
 
 @{
     ViewData["Title"] = "Просмотр задачи";
@@ -22,14 +23,16 @@
             </li>
         }
     </ul>
-
-    <form asp-action="AddComment" method="post">
-        <input type="hidden" name="taskId" value="@Model.Id" />
-        <div class="form-group">
-            <label for="content">Добавить комментарий</label>
-            <textarea name="content" class="form-control" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Добавить</button>
-        <a asp-action="Index" class="btn btn-secondary">Назад</a>
-    </form>
+    @if(ViewBag.Role == UserRoles.Executor)
+    {
+        <form asp-action="AddComment" asp-route-projectId="@ViewBag.ProjectId" method="post">
+            <input type="hidden" name="taskId" value="@Model.Id" />
+            <div class="form-group">
+                <label for="content">Добавить комментарий</label>
+                <textarea name="content" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+            <a href="@Url.Action("Index", new{ projectId = ViewBag.ProjectId})" class="btn btn-secondary">Назад</a>
+        </form>
+    }
 </div>

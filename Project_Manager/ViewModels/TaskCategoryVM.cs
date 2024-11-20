@@ -10,5 +10,7 @@ namespace Project_Manager.ViewModels
         public Category SelectedCategory { get; set; }
         public string? SortedColumn { get; set; }
         public bool? IsAsc { get; set; }
+        public int ProjectId { get; set; }
+        public UserRoles? Role { get; set; }
     }
 }

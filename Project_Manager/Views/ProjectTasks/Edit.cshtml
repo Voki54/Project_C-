@@ -41,7 +41,7 @@
         </select>
         <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
-
+    <input type="hidden" name="projectId" value="@ViewBag.ProjectId" />
     <div class="form-group">
         <label asp-for="ExecutorId" class="control-label">Исполнитель</label>
         <select asp-for="ExecutorId" class="form-control">
@@ -60,7 +60,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>
-    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+    <a href="@Url.Action("Index", new{ projectId = ViewBag.ProjectId})" class="btn btn-secondary">Назад</a>
 </form>
 
 @section Scripts {

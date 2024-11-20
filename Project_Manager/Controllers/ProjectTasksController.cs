@@ -9,23 +9,34 @@ using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Project_Manager.Helpers;
 using Microsoft.Build.Framework;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
+    [Authorize]
     public class ProjectTasksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ProjectTasksController(ApplicationDbContext context)
+        public ProjectTasksController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        public IActionResult Index(int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
+        public IActionResult Index(int projectId, int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
-
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
             // Получаем список всех категорий
-            var categories = _context.Categories.ToList();
+            var categories = _context.Categories.Where(t => t.ProjectId == projectId).ToList();
             if (categories == null || !categories.Any())
             {
                 Console.WriteLine("Список категорий пуст.");
@@ -47,21 +58,41 @@ namespace Project_Manager.Controllers
                 var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
                 var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
-                tasks = _context.Tasks
-                    .Include(t => t.AppUser)
-                    .Include(t => t.Category)
-                    .OrderBy(orderBy)
-                    .Select(t => new ProjectTaskDTO
-                    {
-                        Id = t.Id,
-                        Title = t.Title,
-                        Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
-                        Category = t.Category,
-                        ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
-                        DueDateTime = t.DueDateTime,
-                        Description = t.Description
-                    })
-                    .ToList();
+                if(sortColumn == "Status")
+                    tasks = _context.Tasks
+                        .Include(t => t.AppUser)
+                        .Include(t => t.Category)
+                        .Where(t => t.Category.ProjectId == projectId)
+                        .OrderBy(orderBy)
+                        .Select(t => new ProjectTaskDTO
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                            Category = t.Category,
+                            ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                            DueDateTime = t.DueDateTime,
+                            Description = t.Description
+                        })
+                        .ToList();
+                else
+                    tasks = _context.Tasks
+                        .Include(t => t.AppUser)
+                        .Include(t => t.Category)
+                        .Where(t => t.Category.ProjectId == projectId)
+                        .Select(t => new ProjectTaskDTO
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                            Category = t.Category,
+                            ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                            DueDateTime = t.DueDateTime,
+                            Description = t.Description
+                        })
+                        .OrderBy(orderBy)
+                        .ToList();
+
 
                 // Обновляем состояние сортировки
                 SortState.isColumnInProjectTaskViewSorted[sortColumn] = isAscending;
@@ -71,6 +102,7 @@ namespace Project_Manager.Controllers
                 tasks = _context.Tasks
                     .Include(t => t.AppUser)
                     .Include(t => t.Category)
+                    .Where(t => t.Category.ProjectId == projectId)
                     .Select(t => new ProjectTaskDTO
                     {
                         Id = t.Id,
@@ -83,6 +115,7 @@ namespace Project_Manager.Controllers
                     })
                     .ToList();
             }
+
 
             Category selectedCategory = null;
 
@@ -119,14 +152,22 @@ namespace Project_Manager.Controllers
                 Tasks = tasks ?? new List<ProjectTaskDTO>(),
                 SortedColumn = sortColumn,
                 IsAsc = sortColumn != null ? !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false) : null,
+                ProjectId = projectId,
+                Role = projectUser.Role
             };
 
             return View(model);
         }
 
 
-        public IActionResult Create()
+        public IActionResult Create(int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = _context.Categories.ToList(); 
             ViewBag.Users = _context.Users.ToList();          
             return View();
@@ -134,15 +175,20 @@ namespace Project_Manager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProjectTask task)
+        public async Task<IActionResult> Create(ProjectTask task, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 await _context.Tasks.AddAsync(task); 
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index"); 
+                return RedirectToAction("Index", new { projectId }); 
             }
-
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = await _context.Categories.ToListAsync(); 
             ViewBag.Users = await _context.Users.ToListAsync();
             return View(task);
@@ -150,14 +196,19 @@ namespace Project_Manager.Controllers
 
 
         // GET: ProjectTasks/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             var projectTask = await _context.Tasks.FindAsync(id);
             if (projectTask == null)
             {
                 return NotFound();
             }
-
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.Users = await _context.Users.ToListAsync();
             return View(projectTask);
@@ -166,8 +217,13 @@ namespace Project_Manager.Controllers
         // POST: ProjectTasks/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ProjectTask projectTask)
+        public async Task<IActionResult> Edit(int id, ProjectTask projectTask, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (id != projectTask.Id)
             {
                 return NotFound();
@@ -191,9 +247,10 @@ namespace Project_Manager.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { projectId });
             }
 
+            ViewBag.ProjectId = projectId;
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.Users = await _context.Users.ToListAsync();
             return View(projectTask);
@@ -202,20 +259,30 @@ namespace Project_Manager.Controllers
         // POST: ProjectTasks/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             var projectTask = await _context.Tasks.FindAsync(id);
             if (projectTask != null)
             {
                 _context.Tasks.Remove(projectTask);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", new { projectId });
         }
 
         // Метод для просмотра задачи
-        public IActionResult ViewTask(int id)
+        public IActionResult ViewTask(int id, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
             var task = _context.Tasks
                 .Include(t => t.Comments)
                 .Include(t => t.AppUser)
@@ -238,14 +305,20 @@ namespace Project_Manager.Controllers
                 Description = task.Description,
                 Comments = task.Comments,
             };
-
+            ViewBag.ProjectId = projectId;
+            ViewBag.Role = projectUser.Role;
             return View(taskDAO);
         }
 
         // Метод для добавления комментария
         [HttpPost]
-        public IActionResult AddComment(int taskId, string content)
+        public IActionResult AddComment(int taskId, string content, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
             var task = _context.Tasks.Find(taskId);
             if (task == null)
             {
@@ -262,7 +335,7 @@ namespace Project_Manager.Controllers
             _context.Comments.Add(comment);
             _context.SaveChanges();
 
-            return RedirectToAction("ViewTask", new { id = taskId });
+            return RedirectToAction("ViewTask", new { id = taskId, projectId });
         }
 
 
