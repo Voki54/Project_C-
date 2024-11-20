@@ -7,8 +7,8 @@ namespace Project_Manager.Data.DAO.Interfaces
     {
         Task<IEnumerable<Project>> GetProjectsByUserIdAsync(string userId);
         Task<UserRoles?> GetUserRoleInProjectAsync(string userId, int projectId);
-        Task<List<AppUser>> GetUsersByProject(Project project);
+        Task<bool> IsUserInProjectAsync(string userId, int projectId);
         Task<ProjectUser> CreateAsync(ProjectUser projectUser);
-        Task<ProjectUser> DeleteAsync(Project project, AppUser appUser);
+        Task<bool> DeleteAsync(int projectId, string userId);
     }
 }

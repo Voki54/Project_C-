@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Models;
 
 namespace Project_Manager.Data
 {
-	public class ApplicationDbContext : IdentityDbContext<AppUser/*, IdentityRole<string>, string*//*, IdentityRole<Guid>, Guid*/>
+	public class ApplicationDbContext : IdentityDbContext<AppUser>
 	{
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
 			: base(options)
@@ -17,26 +16,43 @@ namespace Project_Manager.Data
         public DbSet<ProjectTask> Tasks { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ProjectUser> ProjectsUsers { get; set; }
+		public DbSet<JoinProjectRequest> JoinProjectRequests { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
 
-            /*modelBuilder.Entity<AppUser>()
-	            .HasAlternateKey(u => u.GuidKey);*/
 
-            modelBuilder.Entity<ProjectUser>()
-                .HasKey(ut => new { ut.UserId, ut.ProjectId });
+			modelBuilder.Entity<ProjectUser>()
+				.HasKey(pu => new { pu.ProjectId, pu.UserId });
+			
+			modelBuilder.Entity<ProjectUser>()
+				.HasOne<Project>(pu => pu.Project)
+				.WithMany(p => p.ProjectUser)
+				.HasForeignKey(pu => pu.ProjectId);
 
-            modelBuilder.Entity<ProjectUser>()
-                .HasOne<AppUser>(ut => ut.AppUser)
-                .WithMany(u => u.ProjectUser)
-                .HasForeignKey(ut => ut.UserId);
+			modelBuilder.Entity<ProjectUser>()
+				.HasOne<AppUser>(pu => pu.AppUser)
+				.WithMany(u => u.ProjectUser)
+				.HasForeignKey(ut => ut.UserId);
 
-            modelBuilder.Entity<ProjectUser>()
-                .HasOne<Project>(ut => ut.Project)
-                .WithMany(t => t.ProjectUser)
-                .HasForeignKey(ut => ut.ProjectId);
+			modelBuilder.Entity<ProjectUser>()
+				.Property(pu => pu.Role);
+
+
+			modelBuilder.Entity<JoinProjectRequest>()
+				.HasKey(pu => new { pu.ProjectId, pu.UserId });
+
+			modelBuilder.Entity<JoinProjectRequest>()
+				.HasOne<Project>(pu => pu.Project)
+				.WithMany(p => p.JoinProjectRequests)
+				.HasForeignKey(pu => pu.ProjectId);
+
+
+			modelBuilder.Entity<JoinProjectRequest>()
+				.HasOne<AppUser>(pu => pu.AppUser)
+				.WithMany(u => u.JoinProjectRequests)
+				.HasForeignKey(ut => ut.UserId);
 
             modelBuilder.Entity<ProjectUser>()
                 .Property(ut => ut.Role);
@@ -61,5 +77,5 @@ namespace Project_Manager.Data
 
         }
 
-    }
+	}
 }

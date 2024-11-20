@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project_Manager.Data;
 
@@ -11,9 +12,11 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241117153000_Add_JoinProjectRequests")]
+    partial class Add_JoinProjectRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,46 +223,22 @@ namespace Project_Manager.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.Category", b =>
+            modelBuilder.Entity("Project_Manager.Models.JoinProjectRequest", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Category");
-                });
-
-            modelBuilder.Entity("Project_Manager.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.HasKey("ProjectId", "UserId");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasIndex("UserId");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ProjectTaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectTaskId");
-
-                    b.ToTable("Comment");
+                    b.ToTable("JoinProjectRequest");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.Notification", b =>
@@ -301,41 +280,6 @@ namespace Project_Manager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("Project_Manager.Models.ProjectTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DueDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ExecutorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("ExecutorId");
-
-                    b.ToTable("ProjectTask");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.ProjectUser", b =>
@@ -407,32 +351,23 @@ namespace Project_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Project_Manager.Models.Comment", b =>
+            modelBuilder.Entity("Project_Manager.Models.JoinProjectRequest", b =>
                 {
-                    b.HasOne("Project_Manager.Models.ProjectTask", "ProjectTask")
-                        .WithMany("Comments")
-                        .HasForeignKey("ProjectTaskId")
+                    b.HasOne("Project_Manager.Models.Project", "Project")
+                        .WithMany("JoinProjectRequests")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProjectTask");
-                });
-
-            modelBuilder.Entity("Project_Manager.Models.ProjectTask", b =>
-                {
-                    b.HasOne("Project_Manager.Models.Category", "Category")
-                        .WithMany("ProjectTasks")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Project_Manager.Models.AppUser", "AppUser")
-                        .WithMany("ProjectTasks")
-                        .HasForeignKey("ExecutorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("JoinProjectRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AppUser");
 
-                    b.Navigation("Category");
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.ProjectUser", b =>
@@ -456,14 +391,9 @@ namespace Project_Manager.Migrations
 
             modelBuilder.Entity("Project_Manager.Models.AppUser", b =>
                 {
-                    b.Navigation("ProjectTasks");
+                    b.Navigation("JoinProjectRequests");
 
                     b.Navigation("ProjectUser");
-                });
-
-            modelBuilder.Entity("Project_Manager.Models.Category", b =>
-                {
-                    b.Navigation("ProjectTasks");
                 });
 
             modelBuilder.Entity("Project_Manager.Models.Project", b =>
@@ -471,11 +401,6 @@ namespace Project_Manager.Migrations
                     b.Navigation("JoinProjectRequests");
 
                     b.Navigation("ProjectUser");
-                });
-
-            modelBuilder.Entity("Project_Manager.Models.ProjectTask", b =>
-                {
-                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }
