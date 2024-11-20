@@ -1,4 +1,5 @@
 ﻿using Project_Manager.Models;
+using Project_Manager.Models.Enums;
 
 namespace Project_Manager.ViewModels
 {
