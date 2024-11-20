@@ -3,6 +3,13 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<div class="contHome">
+    <div class="homeCont">
+        <h1 class="homeh">Менеджер задач</h1>
+        <div class="mt-4">
+            <a asp-action="Register" asp-controller="Account" class="btn btn-add me-5">Зарегистрироваться</a>
+            <a asp-action="Login" asp-controller="Account" class="btn btn-add">Войти</a>
+        </div>
+    </div>
 </div>
+

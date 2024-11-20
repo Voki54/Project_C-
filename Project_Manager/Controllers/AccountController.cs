@@ -36,7 +36,7 @@ public class AccountController : Controller
 
             if (result.Succeeded)
             {
-                return RedirectToLocal(returnUrl);
+                return RedirectToAction("Index", "Projects");
             }
 
             ModelState.AddModelError("", "Invalid login attempt");
@@ -68,7 +68,7 @@ public class AccountController : Controller
             {
                 await _signInManager.SignInAsync(user, false);
 
-                return RedirectToLocal(returnUrl);
+                return RedirectToAction("Index", "Projects");
             }
             foreach (var error in result.Errors)
             {

@@ -640,11 +640,69 @@ input.btn-primary {
         box-shadow: 0 4px 8px rgba(0, 132, 255, 0.3);
     }
 
-.accountCont {
+.loginCont {
     width: 50%;
     max-width:350px;
 }
 
 .accountForm{
     font-size: 17px;
+}
+
+.registerCont {
+    width: 100%;
+    max-width: 400px;
+}
+
+.homeCont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa; 
+    padding: 20px; 
+    box-sizing: border-box;
+    background-color: rgb(0,0,0,0);
+}
+
+.homeh {
+    font-size: 100px;
+    font-weight:100;
+    color: rgb(253, 255, 254);
+    text-align: center;
+    margin-bottom: 3vh;
+}
+
+.contHome {
+    background-image: url('../img/collection of production data.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 96vh;
+    width: 100vw;
+    margin-left: -12px;
+}
+
+.navbar {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 4vh;
+    background-color: rgb(31, 54, 118);
+    font-size: 18px;
+}
+
+.navbar-item{
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-item .nav-linkin {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+}
+
+.dropdown-item {
+    color: black;
 }

@@ -6,13 +6,13 @@
     @if (signInManager.IsSignedIn(User))
     {
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-linkin dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 @User.Identity!.Name!
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
                     <a class="dropdown-item" asp-action="Logout" asp-controller="Account">
-                        Logout
+                        Выйти
                     </a>
                 </li>
             </ul>
@@ -21,10 +21,10 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+            <a class="nav-linkin" asp-area="" asp-controller="Account" asp-action="Register">Зарегистрироваться</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+            <a class="nav-linkin" asp-area="" asp-controller="Account" asp-action="Login">Войти</a>
         </li>
     }
 </ul>
