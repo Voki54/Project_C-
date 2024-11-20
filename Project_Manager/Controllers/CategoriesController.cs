@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Project_Manager.Data;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
@@ -11,15 +14,22 @@ namespace Project_Manager.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Categories/Create
         public IActionResult Create(int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             ViewBag.ProjectId = projectId;
             return View();
         }
@@ -29,6 +39,11 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 _context.Categories.Add(category);
@@ -42,6 +57,11 @@ namespace Project_Manager.Controllers
         public IActionResult Edit(int id)
         {
             var category = _context.Categories.Find(id);
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (category == null)
             {
                 return NotFound();
@@ -54,6 +74,11 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Category category)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (id != category.Id)
             {
                 return NotFound();
@@ -74,6 +99,11 @@ namespace Project_Manager.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var category = _context.Categories.Find(id);
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (category != null)
             {
                 _context.Categories.Remove(category);

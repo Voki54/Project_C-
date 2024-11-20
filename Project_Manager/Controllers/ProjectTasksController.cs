@@ -11,6 +11,8 @@ using Project_Manager.Helpers;
 using Microsoft.Build.Framework;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
@@ -18,15 +20,21 @@ namespace Project_Manager.Controllers
     public class ProjectTasksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ProjectTasksController(ApplicationDbContext context)
+        public ProjectTasksController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index(int projectId, int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
-
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
             // Получаем список всех категорий
             var categories = _context.Categories.Where(t => t.ProjectId == projectId).ToList();
             if (categories == null || !categories.Any())
@@ -144,7 +152,8 @@ namespace Project_Manager.Controllers
                 Tasks = tasks ?? new List<ProjectTaskDTO>(),
                 SortedColumn = sortColumn,
                 IsAsc = sortColumn != null ? !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false) : null,
-                ProjectId = projectId
+                ProjectId = projectId,
+                Role = projectUser.Role
             };
 
             return View(model);
@@ -153,6 +162,11 @@ namespace Project_Manager.Controllers
 
         public IActionResult Create(int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             ViewBag.ProjectId = projectId;
             ViewBag.Categories = _context.Categories.ToList(); 
             ViewBag.Users = _context.Users.ToList();          
@@ -163,6 +177,11 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProjectTask task, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 await _context.Tasks.AddAsync(task); 
@@ -179,6 +198,11 @@ namespace Project_Manager.Controllers
         // GET: ProjectTasks/Edit/5
         public async Task<IActionResult> Edit(int id, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             var projectTask = await _context.Tasks.FindAsync(id);
             if (projectTask == null)
             {
@@ -195,6 +219,11 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProjectTask projectTask, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             if (id != projectTask.Id)
             {
                 return NotFound();
@@ -232,6 +261,11 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            {
+                return NotFound();
+            }
             var projectTask = await _context.Tasks.FindAsync(id);
             if (projectTask != null)
             {
@@ -244,6 +278,11 @@ namespace Project_Manager.Controllers
         // Метод для просмотра задачи
         public IActionResult ViewTask(int id, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
             var task = _context.Tasks
                 .Include(t => t.Comments)
                 .Include(t => t.AppUser)
@@ -267,6 +306,7 @@ namespace Project_Manager.Controllers
                 Comments = task.Comments,
             };
             ViewBag.ProjectId = projectId;
+            ViewBag.Role = projectUser.Role;
             return View(taskDAO);
         }
 
@@ -274,6 +314,11 @@ namespace Project_Manager.Controllers
         [HttpPost]
         public IActionResult AddComment(int taskId, string content, int projectId)
         {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
             var task = _context.Tasks.Find(taskId);
             if (task == null)
             {

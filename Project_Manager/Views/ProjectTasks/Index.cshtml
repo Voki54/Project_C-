@@ -1,4 +1,5 @@
-﻿@model Project_Manager.ViewModels.TaskCategoryVM
+﻿@using Project_Manager.Models
+@model Project_Manager.ViewModels.TaskCategoryVM
 
 <div class="row">
     <!-- Левый столбец с категориями -->
@@ -14,19 +15,25 @@
                     <a href="@Url.Action("Index", new { categoryId = category.Id, projectId = Model.ProjectId })" class="text-decoration-none">
                         @category.Name
                     </a>
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <!-- Кнопка Редактировать -->
-                        <a href="@Url.Action("Edit", "Categories", new { id = category.Id })" class="btn btn-edit1">Редактировать</a>
+                    @if(Model.Role == UserRoles.Manager)
+                    {
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <!-- Кнопка Редактировать -->
+                            <a href="@Url.Action("Edit", "Categories", new { id = category.Id })" class="btn btn-edit1">Редактировать</a>
 
-                        <!-- Кнопка Удалить -->
-                        <form asp-action="DeleteConfirmed" asp-controller="Categories" asp-route-id="@category.Id" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту категорию?');">
-                            <button type="submit" class="btn btn-delete1">Удалить</button>
-                        </form>
-                    </div>
+                            <!-- Кнопка Удалить -->
+                            <form asp-action="DeleteConfirmed" asp-controller="Categories" asp-route-id="@category.Id" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту категорию?');">
+                                <button type="submit" class="btn btn-delete1">Удалить</button>
+                            </form>
+                        </div>
+                    }
                 </li>
             }
         </ul>
-        <a href="@Url.Action("Create", "Categories", new{ projectId = Model.ProjectId})" class="btn btn-add btn-add-category">Добавить категорию</a>
+        @if (Model.Role == UserRoles.Manager)
+        {
+            <a href="@Url.Action("Create", "Categories", new{ projectId = Model.ProjectId})" class="btn btn-add btn-add-category">Добавить категорию</a>
+        }
     </div>
 
 
@@ -85,7 +92,10 @@
                         </ul>
                     </div>
                 </div>
-                <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
+                @if (Model.Role == UserRoles.Manager)
+                {
+                    <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
+                }
             </div>
         </div>
 
@@ -143,10 +153,13 @@
                             <td class="description">@task.Description</td>
                             <td>
                                 <a href="@Url.Action("ViewTask", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-view">Просмотр</a>
-                                <a href="@Url.Action("Edit", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-edit">Редактировать</a>
-                                <form asp-action="DeleteConfirmed" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
-                                    <button type="submit" class="btn btn-delete">Удалить</button>
-                                </form>
+                                @if (Model.Role == UserRoles.Manager)
+                                {
+                                    <a href="@Url.Action("Edit", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-edit">Редактировать</a>
+                                    <form asp-action="DeleteConfirmed" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
+                                        <button type="submit" class="btn btn-delete">Удалить</button>
+                                    </form>
+                                }
                             </td>
                         </tr>
                     }
