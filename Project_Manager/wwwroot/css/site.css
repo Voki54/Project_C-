@@ -615,3 +615,36 @@ h2 {
     margin-top: 0px;
     box-shadow: 0 4px 4px rgba(0, 132, 255, 0.2); /* Легкая тень */
 }
+
+input.btn-primary {
+    background: linear-gradient(135deg, #1a73e8, #0056b3);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 132, 255, 0.3);
+    margin-top: 5px;
+}
+
+    input.btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #1a73e8);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 132, 255, 0.5);
+    }
+
+    input.btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(0, 132, 255, 0.3);
+    }
+
+.accountCont {
+    width: 50%;
+    max-width:350px;
+}
+
+.accountForm{
+    font-size: 17px;
+}
