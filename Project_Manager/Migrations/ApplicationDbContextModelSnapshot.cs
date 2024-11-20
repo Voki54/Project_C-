@@ -262,6 +262,24 @@ namespace Project_Manager.Migrations
                     b.ToTable("Comment");
                 });
 
+            modelBuilder.Entity("Project_Manager.Models.JoinProjectRequest", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("JoinProjectRequest");
+                });
+
             modelBuilder.Entity("Project_Manager.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -418,6 +436,25 @@ namespace Project_Manager.Migrations
                     b.Navigation("ProjectTask");
                 });
 
+            modelBuilder.Entity("Project_Manager.Models.JoinProjectRequest", b =>
+                {
+                    b.HasOne("Project_Manager.Models.Project", "Project")
+                        .WithMany("JoinProjectRequests")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project_Manager.Models.AppUser", "AppUser")
+                        .WithMany("JoinProjectRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("Project_Manager.Models.ProjectTask", b =>
                 {
                     b.HasOne("Project_Manager.Models.Category", "Category")
@@ -456,6 +493,8 @@ namespace Project_Manager.Migrations
 
             modelBuilder.Entity("Project_Manager.Models.AppUser", b =>
                 {
+                    b.Navigation("JoinProjectRequests");
+
                     b.Navigation("ProjectTasks");
 
                     b.Navigation("ProjectUser");

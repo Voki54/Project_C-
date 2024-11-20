@@ -46,12 +46,12 @@ namespace Project_Manager.Data
 
 			modelBuilder.Entity<JoinProjectRequest>()
 				.HasOne<Project>(p => p.Project)
-				.WithMany(j => j.JoinProjectRequest)
+				.WithMany(j => j.JoinProjectRequests)
 				.HasForeignKey(jp => jp.ProjectId);
 
 			modelBuilder.Entity<JoinProjectRequest>()
 				.HasOne<AppUser>(u => u.AppUser)
-				.WithMany(j => j.JoinProjectRequest)
+				.WithMany(j => j.JoinProjectRequests)
 				.HasForeignKey(ju => ju.UserId);
 
             modelBuilder.Entity<JoinProjectRequest>()
