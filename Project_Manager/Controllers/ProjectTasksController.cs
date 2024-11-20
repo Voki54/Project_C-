@@ -31,7 +31,7 @@ namespace Project_Manager.Controllers
         public IActionResult Index(int projectId, int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -163,7 +163,7 @@ namespace Project_Manager.Controllers
         public IActionResult Create(int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -178,7 +178,7 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> Create(ProjectTask task, int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -199,7 +199,7 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> Edit(int id, int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -220,7 +220,7 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> Edit(int id, ProjectTask projectTask, int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -262,7 +262,7 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id, int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -279,7 +279,7 @@ namespace Project_Manager.Controllers
         public IActionResult ViewTask(int id, int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -338,6 +338,36 @@ namespace Project_Manager.Controllers
             return RedirectToAction("ViewTask", new { id = taskId, projectId });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(int id, int projectId, ProjectTaskStatus? taskStatus)
+        {
+            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (projectUser == null || projectUser.Role != UserRoles.Executor)
+            {
+                return NotFound();
+            }
+            var projectTask = await _context.Tasks.FindAsync(id);
+
+            if (projectTask == null)
+            {
+                return NotFound(); 
+            }
+
+            projectTask.Status = taskStatus;
+
+            try
+            {
+                _context.Update(projectTask);
+                await _context.SaveChangesAsync(); 
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, "Ошибка при обновлении задачи.");
+            }
+
+            return RedirectToAction("Index", new { projectId });
+        }
 
         private bool ProjectTaskExists(int id)
         {

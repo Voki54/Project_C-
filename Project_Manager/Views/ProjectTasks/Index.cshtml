@@ -15,7 +15,7 @@
                     <a href="@Url.Action("Index", new { categoryId = category.Id, projectId = Model.ProjectId })" class="text-decoration-none">
                         @category.Name
                     </a>
-                    @if(Model.Role == UserRoles.Manager)
+                    @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                     {
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <!-- Кнопка Редактировать -->
@@ -30,7 +30,7 @@
                 </li>
             }
         </ul>
-        @if (Model.Role == UserRoles.Manager)
+        @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
         {
             <a href="@Url.Action("Create", "Categories", new{ projectId = Model.ProjectId})" class="btn btn-add btn-add-category">Добавить категорию</a>
         }
@@ -92,7 +92,7 @@
                         </ul>
                     </div>
                 </div>
-                @if (Model.Role == UserRoles.Manager)
+                @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                 {
                     <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
                 }
@@ -119,11 +119,14 @@
                                 <div>Категория @(Model.SortedColumn == "Category" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
                             </a>
                         </th>
-                        <th>
-                            <a href="@Url.Action("Index", new { sortColumn = "ExecutorName" })">
-                                <div>Исполнитель @(Model.SortedColumn == "ExecutorName" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
-                            </a>
-                        </th>
+                        @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
+                        {
+                            <th>
+                                <a href="@Url.Action("Index", new { sortColumn = "ExecutorName" })">
+                                    <div>Исполнитель @(Model.SortedColumn == "ExecutorName" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+                                </a>
+                            </th>
+                        }
                         <th>
                             <a href="@Url.Action("Index", new { sortColumn = "DueDateTime" })">
                                 <div>Дедлайн @(Model.SortedColumn == "DueDateTime" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
@@ -148,17 +151,41 @@
                                 </span>
                             </td>
                             <td>@task.Category.Name</td>
-                            <td>@(task.ExecutorName != null ? task.ExecutorName : "Не назначен")</td>
+                            @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
+                            {
+                                <td>@(task.ExecutorName != null ? task.ExecutorName : "Не назначен")</td>                                
+                            }
                             <td>@task.DueDateTime</td>
                             <td class="description">@task.Description</td>
                             <td>
                                 <a href="@Url.Action("ViewTask", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-view">Просмотр</a>
-                                @if (Model.Role == UserRoles.Manager)
+                                @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                                 {
                                     <a href="@Url.Action("Edit", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-edit">Редактировать</a>
                                     <form asp-action="DeleteConfirmed" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
                                         <button type="submit" class="btn btn-delete">Удалить</button>
                                     </form>
+                                }
+                                @if (Model.Role == UserRoles.Executor)
+                                {
+                                    if (task.Status.ToLower() != ProjectTaskStatus.Completed.ToString().ToLower())
+                                    {
+                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" asp-route-taskStatus="@ProjectTaskStatus.Completed" style="display:inline;" method="post">
+                                            <button type="submit" class="btn btn-done">Выполнено</button>
+                                        </form>
+                                    }
+                                    if (task.Status.ToLower() != ProjectTaskStatus.In_process.ToString().ToLower())
+                                    {
+                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" asp-route-taskStatus="@ProjectTaskStatus.In_process" style="display:inline;" method="post">
+                                            <button type="submit" class="btn btn-process">В процессе</button>
+                                        </form>
+                                    }
+                                    if (task.Status.ToLower() != ProjectTaskStatus.Required.ToString().ToLower())
+                                    {
+                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" asp-route-taskStatus="@ProjectTaskStatus.Required" style="display:inline;" method="post">
+                                            <button type="submit" class="btn btn-require">Требует выполнения</button>
+                                        </form>
+                                    }
                                 }
                             </td>
                         </tr>

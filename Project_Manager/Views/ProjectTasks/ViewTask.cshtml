@@ -31,8 +31,8 @@
                 <label for="content">Добавить комментарий</label>
                 <textarea name="content" class="form-control" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Добавить</button>
-            <a href="@Url.Action("Index", new{ projectId = ViewBag.ProjectId})" class="btn btn-secondary">Назад</a>
+            <button type="submit" class="btn btn-primary">Добавить комментарий</button>
         </form>
     }
+    <a href="@Url.Action("Index", new{ projectId = ViewBag.ProjectId})" class="btn btn-secondary btn-back">Назад</a>
 </div>

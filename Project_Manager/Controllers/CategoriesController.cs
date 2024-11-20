@@ -26,7 +26,7 @@ namespace Project_Manager.Controllers
         public IActionResult Create(int projectId)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -40,7 +40,7 @@ namespace Project_Manager.Controllers
         public IActionResult Create(Category category)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -58,7 +58,7 @@ namespace Project_Manager.Controllers
         {
             var category = _context.Categories.Find(id);
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -75,7 +75,7 @@ namespace Project_Manager.Controllers
         public IActionResult Edit(int id, Category category)
         {
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
@@ -100,7 +100,7 @@ namespace Project_Manager.Controllers
         {
             var category = _context.Categories.Find(id);
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager)
+            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
                 return NotFound();
             }
