@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.DTO.JoinProject;
 using Project_Manager.Models;
-using Project_Manager.Models.Enum;
+using Project_Manager.Models.Enums;
 using Project_Manager.ViewModels;
 using System.Security.Claims;
 

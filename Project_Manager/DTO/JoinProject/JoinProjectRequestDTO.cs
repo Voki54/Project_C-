@@ -1,4 +1,4 @@
-﻿using Project_Manager.Models.Enum;
+﻿using Project_Manager.Models.Enums;
 
 namespace Project_Manager.DTO.JoinProject
 {

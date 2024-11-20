@@ -10,7 +10,7 @@ namespace Project_Manager.Models
 		public int Id { get; set; }
 		public string Name { get; set; } = string.Empty;
         public ICollection<ProjectUser> ProjectUser { get; set; } = new List<ProjectUser>();
-		public ICollection<JoinProjectRequest> JoinProjectRequests { get; set; } = new List<JoinProjectRequest>();
+		public ICollection<JoinProjectRequest> JoinProjectRequest { get; set; } = new List<JoinProjectRequest>();
 		
 		//public ICollection<string> TasksId { get; set; }
 	}

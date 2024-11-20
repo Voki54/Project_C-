@@ -8,7 +8,7 @@ namespace Project_Manager.Models
 
         public ICollection<ProjectUser> ProjectUser { get; set; } = new List<ProjectUser>();
         public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
-		public ICollection<JoinProjectRequest> JoinProjectRequests { get; set; } = new List<JoinProjectRequest>();
+		public ICollection<JoinProjectRequest> JoinProjectRequest { get; set; } = new List<JoinProjectRequest>();
 
 		//public ICollection<Notification> Notifications { get; set; }
 	}

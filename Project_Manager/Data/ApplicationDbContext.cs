@@ -40,22 +40,23 @@ namespace Project_Manager.Data
 				.Property(pu => pu.Role);
 
 
-			modelBuilder.Entity<JoinProjectRequest>()
-				.HasKey(pu => new { pu.ProjectId, pu.UserId });
 
 			modelBuilder.Entity<JoinProjectRequest>()
-				.HasOne<Project>(pu => pu.Project)
-				.WithMany(p => p.JoinProjectRequests)
-				.HasForeignKey(pu => pu.ProjectId);
-
+				.HasKey(j => new { j.ProjectId, j.UserId });
 
 			modelBuilder.Entity<JoinProjectRequest>()
-				.HasOne<AppUser>(pu => pu.AppUser)
-				.WithMany(u => u.JoinProjectRequests)
-				.HasForeignKey(ut => ut.UserId);
+				.HasOne<Project>(p => p.Project)
+				.WithMany(j => j.JoinProjectRequest)
+				.HasForeignKey(jp => jp.ProjectId);
 
-            modelBuilder.Entity<ProjectUser>()
-                .Property(ut => ut.Role);
+			modelBuilder.Entity<JoinProjectRequest>()
+				.HasOne<AppUser>(u => u.AppUser)
+				.WithMany(j => j.JoinProjectRequest)
+				.HasForeignKey(ju => ju.UserId);
+
+            modelBuilder.Entity<JoinProjectRequest>()
+                .Property(j => j.Status);
+
 
             modelBuilder.Entity<ProjectTask>()
                 .HasOne(task => task.Category)     

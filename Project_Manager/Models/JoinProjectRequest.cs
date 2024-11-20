@@ -1,9 +1,9 @@
-﻿using Project_Manager.Models.Enum;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Project_Manager.Models.Enums;
 
 namespace Project_Manager.Models
 {
-	[Table("JoinProjectRequest")]
+    [Table("JoinProjectRequest")]
 	public class JoinProjectRequest
 	{
 		public Project Project { get; set; }

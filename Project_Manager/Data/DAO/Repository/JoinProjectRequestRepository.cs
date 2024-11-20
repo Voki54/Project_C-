@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
-using Project_Manager.Models.Enum;
+using Project_Manager.Models.Enums;
 
 namespace Project_Manager.Data.DAO.Repository
 {
-	public class JoinProjectRequestRepository : IJoinProjectRequestRepository
+    public class JoinProjectRequestRepository : IJoinProjectRequestRepository
 	{
 		private readonly ApplicationDbContext _context;
 

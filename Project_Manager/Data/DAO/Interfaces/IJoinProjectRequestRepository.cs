@@ -1,4 +1,4 @@
-﻿using Project_Manager.Models.Enum;
+﻿using Project_Manager.Models.Enums;
 using Project_Manager.Models;
 
 namespace Project_Manager.Data.DAO.Interfaces
