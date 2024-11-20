@@ -1,5 +1,6 @@
 ﻿using Project_Manager.DTO.ProjectTasks;
 using Project_Manager.Models;
+using Project_Manager.Models.Enums;
 
 namespace Project_Manager.ViewModels
 {

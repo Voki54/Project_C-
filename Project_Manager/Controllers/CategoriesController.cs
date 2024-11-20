@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Project_Manager.Data;
 using Project_Manager.Models;
+using Project_Manager.Models.Enums;
 using Project_Manager.ViewModels;
-using System.Linq;
 using System.Security.Claims;
 
 namespace Project_Manager.Controllers

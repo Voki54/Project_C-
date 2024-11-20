@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project_Manager.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Add_JoinProject : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -205,6 +205,31 @@ namespace Project_Manager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JoinProjectRequest",
+                columns: table => new
+                {
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JoinProjectRequest", x => new { x.ProjectId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_JoinProjectRequest_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_JoinProjectRequest_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProjectUser",
                 columns: table => new
                 {
@@ -214,7 +239,7 @@ namespace Project_Manager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectUser", x => new { x.UserId, x.ProjectId });
+                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectId, x.UserId });
                     table.ForeignKey(
                         name: "FK_ProjectUser_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -330,6 +355,11 @@ namespace Project_Manager.Migrations
                 column: "ProjectTaskId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_JoinProjectRequest_UserId",
+                table: "JoinProjectRequest",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectTask_CategoryId",
                 table: "ProjectTask",
                 column: "CategoryId");
@@ -340,9 +370,9 @@ namespace Project_Manager.Migrations
                 column: "ExecutorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectUser_ProjectId",
+                name: "IX_ProjectUser_UserId",
                 table: "ProjectUser",
-                column: "ProjectId");
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -365,6 +395,9 @@ namespace Project_Manager.Migrations
 
             migrationBuilder.DropTable(
                 name: "Comment");
+
+            migrationBuilder.DropTable(
+                name: "JoinProjectRequest");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

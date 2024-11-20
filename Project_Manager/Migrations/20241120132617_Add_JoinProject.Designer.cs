@@ -12,8 +12,8 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241117191118_Init")]
-    partial class Init
+    [Migration("20241120132617_Add_JoinProject")]
+    partial class Add_JoinProject
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -270,6 +270,24 @@ namespace Project_Manager.Migrations
                     b.ToTable("Comment");
                 });
 
+            modelBuilder.Entity("Project_Manager.Models.JoinProjectRequest", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("JoinProjectRequest");
+                });
+
             modelBuilder.Entity("Project_Manager.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -348,18 +366,18 @@ namespace Project_Manager.Migrations
 
             modelBuilder.Entity("Project_Manager.Models.ProjectUser", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "ProjectId");
+                    b.HasKey("ProjectId", "UserId");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("ProjectUser");
                 });
@@ -437,6 +455,25 @@ namespace Project_Manager.Migrations
                     b.Navigation("ProjectTask");
                 });
 
+            modelBuilder.Entity("Project_Manager.Models.JoinProjectRequest", b =>
+                {
+                    b.HasOne("Project_Manager.Models.Project", "Project")
+                        .WithMany("JoinProjectRequests")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Project_Manager.Models.AppUser", "AppUser")
+                        .WithMany("JoinProjectRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("Project_Manager.Models.ProjectTask", b =>
                 {
                     b.HasOne("Project_Manager.Models.Category", "Category")
@@ -475,6 +512,8 @@ namespace Project_Manager.Migrations
 
             modelBuilder.Entity("Project_Manager.Models.AppUser", b =>
                 {
+                    b.Navigation("JoinProjectRequests");
+
                     b.Navigation("ProjectTasks");
 
                     b.Navigation("ProjectUser");
@@ -488,6 +527,8 @@ namespace Project_Manager.Migrations
             modelBuilder.Entity("Project_Manager.Models.Project", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("JoinProjectRequests");
 
                     b.Navigation("ProjectUser");
                 });

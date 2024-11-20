@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
+using Project_Manager.Models.Enums;
 
 namespace Project_Manager.Data.DAO.Repository
 {
@@ -20,15 +21,18 @@ namespace Project_Manager.Data.DAO.Repository
             return projectUser;
         }
 
-        public Task<ProjectUser> DeleteAsync(Project project, AppUser appUser)
+        public async Task<bool> DeleteAsync(int projectId, string userId)
         {
-            throw new NotImplementedException();
-        }
+			var projectUser = await _context.ProjectsUsers.
+                FirstOrDefaultAsync(pu => pu.ProjectId == projectId && pu.UserId == userId);
 
-        public Task<List<Project>> GetProjectsByUser(AppUser user)
-        {
-            throw new NotImplementedException();
-        }
+			if (projectUser == null)
+				return false;
+
+			_context.ProjectsUsers.Remove(projectUser);
+			await _context.SaveChangesAsync();
+			return true;
+		}
 
         public async Task<IEnumerable<Project>> GetProjectsByUserIdAsync(string userId)
         {
@@ -47,9 +51,11 @@ namespace Project_Manager.Data.DAO.Repository
             return projectUser.Role;
         }
 
-        public Task<List<AppUser>> GetUsersByProject(Project project)
+        public async Task<bool> IsUserInProjectAsync(string userId, int projectId)
         {
-            throw new NotImplementedException();
+            if (await _context.ProjectsUsers.FirstOrDefaultAsync(t => t.UserId == userId && t.ProjectId == projectId) == null)
+                return false;
+            return true;
         }
     }
 }

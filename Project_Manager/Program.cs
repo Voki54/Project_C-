@@ -17,6 +17,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
                 .AddScoped<IProjectUserRepository, ProjectUserRepository>()
+                .AddScoped<IJoinProjectRequestRepository, JoinProjectRequestRepository>()
                 .AddScoped<ProjectUserService>();
 
 //TODO отредактировать по завершении отладки пользователей!
