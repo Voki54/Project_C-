@@ -52,30 +52,53 @@ namespace Project_Manager.Controllers
 
             List<ProjectTaskDTO> tasks;
 
-            if (sortColumn != null)
+            if(projectUser.Role != UserRoles.Executor)
             {
-                // Определяем порядок сортировки
-                var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
-                var orderBy = isAscending ? sortColumn : sortColumn + " desc";
+                if (sortColumn != null)
+                {
+                    var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
+                    var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
-                if(sortColumn == "Status")
-                    tasks = _context.Tasks
-                        .Include(t => t.AppUser)
-                        .Include(t => t.Category)
-                        .Where(t => t.Category.ProjectId == projectId)
-                        .OrderBy(orderBy)
-                        .Select(t => new ProjectTaskDTO
-                        {
-                            Id = t.Id,
-                            Title = t.Title,
-                            Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
-                            Category = t.Category,
-                            ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
-                            DueDateTime = t.DueDateTime,
-                            Description = t.Description
-                        })
-                        .ToList();
+                    if (sortColumn == "Status")
+                        tasks = _context.Tasks
+                            .Include(t => t.AppUser)
+                            .Include(t => t.Category)
+                            .Where(t => t.Category.ProjectId == projectId)
+                            .OrderBy(orderBy)
+                            .Select(t => new ProjectTaskDTO
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                                Category = t.Category,
+                                ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                                DueDateTime = t.DueDateTime,
+                                Description = t.Description
+                            })
+                            .ToList();
+                    else
+                        tasks = _context.Tasks
+                            .Include(t => t.AppUser)
+                            .Include(t => t.Category)
+                            .Where(t => t.Category.ProjectId == projectId)
+                            .Select(t => new ProjectTaskDTO
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                                Category = t.Category,
+                                ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                                DueDateTime = t.DueDateTime,
+                                Description = t.Description
+                            })
+                            .OrderBy(orderBy)
+                            .ToList();
+
+
+                    SortState.isColumnInProjectTaskViewSorted[sortColumn] = isAscending;
+                }
                 else
+                {
                     tasks = _context.Tasks
                         .Include(t => t.AppUser)
                         .Include(t => t.Category)
@@ -90,32 +113,77 @@ namespace Project_Manager.Controllers
                             DueDateTime = t.DueDateTime,
                             Description = t.Description
                         })
-                        .OrderBy(orderBy)
                         .ToList();
-
-
-                // Обновляем состояние сортировки
-                SortState.isColumnInProjectTaskViewSorted[sortColumn] = isAscending;
+                }
             }
             else
             {
-                tasks = _context.Tasks
-                    .Include(t => t.AppUser)
-                    .Include(t => t.Category)
-                    .Where(t => t.Category.ProjectId == projectId)
-                    .Select(t => new ProjectTaskDTO
-                    {
-                        Id = t.Id,
-                        Title = t.Title,
-                        Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
-                        Category = t.Category,
-                        ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
-                        DueDateTime = t.DueDateTime,
-                        Description = t.Description
-                    })
-                    .ToList();
-            }
+                if (sortColumn != null)
+                {
+                    var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
+                    var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
+                    if (sortColumn == "Status")
+                        tasks = _context.Tasks
+                            .Include(t => t.AppUser)
+                            .Include(t => t.Category)
+                            .Where(t => t.Category.ProjectId == projectId)
+                            .Where(t => t.ExecutorId == projectUser.UserId)
+                            .OrderBy(orderBy)
+                            .Select(t => new ProjectTaskDTO
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                                Category = t.Category,
+                                ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                                DueDateTime = t.DueDateTime,
+                                Description = t.Description
+                            })
+                            .ToList();
+                    else
+                        tasks = _context.Tasks
+                            .Include(t => t.AppUser)
+                            .Include(t => t.Category)
+                            .Where(t => t.Category.ProjectId == projectId)
+                            .Where(t => t.ExecutorId == projectUser.UserId)
+                            .Select(t => new ProjectTaskDTO
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                                Category = t.Category,
+                                ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                                DueDateTime = t.DueDateTime,
+                                Description = t.Description
+                            })
+                            .OrderBy(orderBy)
+                            .ToList();
+
+
+                    SortState.isColumnInProjectTaskViewSorted[sortColumn] = isAscending;
+                }
+                else
+                {
+                    tasks = _context.Tasks
+                        .Include(t => t.AppUser)
+                        .Include(t => t.Category)
+                        .Where(t => t.Category.ProjectId == projectId)
+                        .Where(t => t.ExecutorId == projectUser.UserId)
+                        .Select(t => new ProjectTaskDTO
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Status = t.Status.HasValue ? t.Status.ToString() : "Не указан",
+                            Category = t.Category,
+                            ExecutorName = t.AppUser != null ? t.AppUser.UserName : "Не назначен",
+                            DueDateTime = t.DueDateTime,
+                            Description = t.Description
+                        })
+                        .ToList();
+                }
+            }
+            
 
             Category selectedCategory = null;
 
@@ -167,9 +235,17 @@ namespace Project_Manager.Controllers
             {
                 return NotFound();
             }
+
+            var projectUsers = _context.ProjectsUsers
+                                    .Where(pu => pu.ProjectId == projectId)
+                                    .Select(pu => pu.AppUser)
+                                    .ToList();
+            var categories = _context.Categories.Where(t => t.ProjectId == projectId).ToList();
+
+
             ViewBag.ProjectId = projectId;
-            ViewBag.Categories = _context.Categories.ToList(); 
-            ViewBag.Users = _context.Users.ToList();          
+            ViewBag.Categories = categories; 
+            ViewBag.Users = projectUsers;          
             return View();
         }
 
@@ -188,9 +264,15 @@ namespace Project_Manager.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", new { projectId }); 
             }
+            var projectUsers = await _context.ProjectsUsers
+                                    .Where(pu => pu.ProjectId == projectId)
+                                    .Select(pu => pu.AppUser)
+                                    .ToListAsync();
+            var categories = await _context.Categories.Where(t => t.ProjectId == projectId).ToListAsync();
+
             ViewBag.ProjectId = projectId;
-            ViewBag.Categories = await _context.Categories.ToListAsync(); 
-            ViewBag.Users = await _context.Users.ToListAsync();
+            ViewBag.Categories = categories;
+            ViewBag.Users = projectUsers;
             return View(task);
         }
 
@@ -208,9 +290,15 @@ namespace Project_Manager.Controllers
             {
                 return NotFound();
             }
+            var projectUsers = await _context.ProjectsUsers
+                                    .Where(pu => pu.ProjectId == projectId)
+                                    .Select(pu => pu.AppUser)
+                                    .ToListAsync();
+            var categories = await _context.Categories.Where(t => t.ProjectId == projectId).ToListAsync();
+
             ViewBag.ProjectId = projectId;
-            ViewBag.Categories = await _context.Categories.ToListAsync();
-            ViewBag.Users = await _context.Users.ToListAsync();
+            ViewBag.Categories = categories;
+            ViewBag.Users = projectUsers;
             return View(projectTask);
         }
 
@@ -250,9 +338,15 @@ namespace Project_Manager.Controllers
                 return RedirectToAction("Index", new { projectId });
             }
 
+            var projectUsers = await _context.ProjectsUsers
+                                    .Where(pu => pu.ProjectId == projectId)
+                                    .Select(pu => pu.AppUser)
+                                    .ToListAsync();
+            var categories = await _context.Categories.Where(t => t.ProjectId == projectId).ToListAsync();
+
             ViewBag.ProjectId = projectId;
-            ViewBag.Categories = await _context.Categories.ToListAsync();
-            ViewBag.Users = await _context.Users.ToListAsync();
+            ViewBag.Categories = categories;
+            ViewBag.Users = projectUsers;
             return View(projectTask);
         }
 
