@@ -9,13 +9,18 @@ namespace Project_Manager.Models
     {
         [Key]
         public int Id { get; set; }
-        public string? Title { get; set; }
+        [Required(ErrorMessage = "Название задачи обязательно")]
+        public string Title { get; set; }
         public string? Description { get; set; }
+        [Required(ErrorMessage = "Статус задачи обязателен")]
         public ProjectTaskStatus? Status { get; set; }
-        public int? CategoryId { get; set; }
+        [Required(ErrorMessage = "Выбор категории обязателен")]
+        public int CategoryId { get; set; }
         public Category? Category { get; set; }
-        public string? ExecutorId { get; set; }
+        [Required(ErrorMessage = "Выбор исполнителя обязателен")]
+        public string ExecutorId { get; set; }
         public AppUser? AppUser { get; set; }
+        [Required(ErrorMessage = "Выбор дедлайна обязателен")]
         public DateTime DueDateTime { get; set; }
         public ICollection<Comment>? Comments { get; set; } = new List<Comment>();
     }

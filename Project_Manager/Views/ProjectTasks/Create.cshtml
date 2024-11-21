@@ -21,12 +21,7 @@
 
     <div class="form-group">
         <label asp-for="Status" class="control-label">Статус</label>
-        <select asp-for="Status" class="form-control">
-            @foreach (var status in Enum.GetValues(typeof(ProjectTaskStatus)))
-            {
-                <option value="@status">@status</option>
-            }
-        </select>
+        <input asp-for="Status" class="form-control" value="@ProjectTaskStatus.Required" readonly />
         <span asp-validation-for="Status" class="text-danger"></span>
     </div>
 

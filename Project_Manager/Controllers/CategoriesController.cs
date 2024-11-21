@@ -66,6 +66,7 @@ namespace Project_Manager.Controllers
             {
                 return NotFound();
             }
+            ViewBag.ProjectId = category.ProjectId;
             return View(category);
         }
 

@@ -12,8 +12,8 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241120135545_NewMigr")]
-    partial class NewMigr
+    [Migration("20241121054525_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -337,7 +337,7 @@ namespace Project_Manager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -347,12 +347,14 @@ namespace Project_Manager.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ExecutorId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("Status")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -479,12 +481,14 @@ namespace Project_Manager.Migrations
                     b.HasOne("Project_Manager.Models.Category", "Category")
                         .WithMany("ProjectTasks")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Project_Manager.Models.AppUser", "AppUser")
                         .WithMany("ProjectTasks")
                         .HasForeignKey("ExecutorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AppUser");
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project_Manager.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_JoinProject : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -260,11 +260,11 @@ namespace Project_Manager.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    CategoryId = table.Column<int>(type: "int", nullable: true),
-                    ExecutorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    ExecutorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DueDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
