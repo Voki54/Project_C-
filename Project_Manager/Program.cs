@@ -6,6 +6,8 @@ using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Data.DAO.Repository;
 using Project_Manager.Models;
 using Project_Manager.Services;
+using log4net;
+using log4net.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole/*<string>*//*<Guid>*/>(
 	.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddRazorPages();
+
+var logRepository = LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly());
+XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
 var app = builder.Build();
 

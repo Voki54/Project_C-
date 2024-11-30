@@ -13,12 +13,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using log4net;
+using System.Reflection;
 
 namespace Project_Manager.Controllers
 {
     [Authorize]
     public class ProjectTasksController : Controller
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ProjectTasksController));
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
 
@@ -30,32 +33,26 @@ namespace Project_Manager.Controllers
 
         public IActionResult Index(int projectId, int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
+            _logger.Info($"Вызов метода Index: время - {DateTime.Now}, проект ID - {projectId}");
+
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Executor && projectUser.Role != UserRoles.Admin)
             {
+                _logger.Warn("Пользователь не имеет доступа к проекту.");
                 return NotFound();
             }
+
+            _logger.Info($"Получаем список всех категорий проекта: время - {DateTime.Now}, проект ID - {projectId}");
             // Получаем список всех категорий
             var categories = _context.Categories.Where(t => t.ProjectId == projectId).ToList();
-            if (categories == null || !categories.Any())
-            {
-                Console.WriteLine("Список категорий пуст.");
-            }
-            else
-            {
-                Console.WriteLine("Список категорий:");
-                foreach (var category in categories)
-                {
-                    Console.WriteLine($"- {category.Name} (ID: {category.Id})");
-                }
-            }
 
             List<ProjectTaskDTO> tasks;
-
-            if(projectUser.Role != UserRoles.Executor)
+            _logger.Info($"Получаем список задач: время - {DateTime.Now}, проект ID - {projectId}");
+            if (projectUser.Role != UserRoles.Executor)
             {
                 if (sortColumn != null)
                 {
+                    _logger.Info($"Выполняем сортировку по столбцу: время - {DateTime.Now}, столбец - {sortColumn}");
                     var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
                     var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
@@ -120,6 +117,7 @@ namespace Project_Manager.Controllers
             {
                 if (sortColumn != null)
                 {
+                    _logger.Info($"Выполняем сортировку по столбцу: время - {DateTime.Now}, столбец - {sortColumn}");
                     var isAscending = !SortState.isColumnInProjectTaskViewSorted.GetValueOrDefault(sortColumn, false);
                     var orderBy = isAscending ? sortColumn : sortColumn + " desc";
 
@@ -193,6 +191,7 @@ namespace Project_Manager.Controllers
 
                 if (selectedCategory != null)
                 {
+                    _logger.Info($"Фильтрация задач по категории: время - {DateTime.Now}, категория - {selectedCategory.Name}");
                     tasks = tasks.Where(t => t.Category.Id == selectedCategory.Id).ToList();
                 }
                 else
@@ -202,14 +201,17 @@ namespace Project_Manager.Controllers
             }
             if (filterStatus != null)
             {
+                _logger.Info($"Фильтрация задач по статусу: время - {DateTime.Now}, статус - {filterStatus}");
                 tasks = tasks.Where(t => t.Status == filterStatus).ToList();
             }
             if (filterExecutor != null)
             {
+                _logger.Info($"Фильтрация задач по исполнителю: время - {DateTime.Now}, исполнитель - {filterExecutor}");
                 tasks = tasks.Where(t => t.ExecutorName == filterExecutor).ToList();
             }
             if (filterDate != null)
             {
+                _logger.Info($"Фильтрация задач по дедлайну: время - {DateTime.Now}, дедлайн - {filterDate}");
                 tasks = tasks.Where(t => t.DueDateTime <= filterDate).ToList();
             }
 
@@ -230,9 +232,11 @@ namespace Project_Manager.Controllers
 
         public IActionResult Create(int projectId)
         {
+            _logger.Info($"Вызов метода Create: время - {DateTime.Now}, проект ID - {projectId}");
             var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
             {
+                _logger.Warn("Пользователь не имеет доступа к проекту.");
                 return NotFound();
             }
 
@@ -245,7 +249,8 @@ namespace Project_Manager.Controllers
 
             ViewBag.ProjectId = projectId;
             ViewBag.Categories = categories; 
-            ViewBag.Users = projectUsers;          
+            ViewBag.Users = projectUsers;
+            _logger.Info($"Выбор пользователей и категорий проекта: время - {DateTime.Now}, проект ID - {projectId}");
             return View();
         }
 
