@@ -1,4 +1,5 @@
 ﻿using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.DTO.AppUser;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 
@@ -29,6 +30,11 @@ namespace Project_Manager.Services
                 }
                 );
             return true;
+        }
+
+        public async Task<IEnumerable<AppUserDTO>> GetUserFromProjectAsync(int projectId)
+        {
+            return await _projectUserRepository.GetUsersByProjectIdAsync(projectId);
         }
     }
 

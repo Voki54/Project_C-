@@ -96,6 +96,19 @@
                 {
                     <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
                 }
+                @if (Model.Role == UserRoles.Admin)
+                {
+                    <div class="dropdown">
+                        <button class="dropbtn">Меню</button>
+                        <div class="dropdown-content">
+                            <a asp-controller="Projects" asp-action="Edit" asp-route-id="@Model.ProjectId">Edit</a>
+                            <a asp-controller="Projects" asp-action="Details" asp-route-projectId="@Model.ProjectId">Details</a>
+                            <a asp-controller="Participants" asp-action="Index" asp-route-projectId="@Model.ProjectId">Участники</a>
+                            <a href="#">Ссылка 2</a>
+                            <a asp-controller="JoinProject" asp-action="Respond" asp-route-projectId="@Model.ProjectId">Заявки</a>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
 

@@ -1,0 +1,69 @@
+﻿@using Project_Manager.ViewModels.Dictionaries
+@model Project_Manager.ViewModels.ParticipantsVM
+
+@{
+    ViewData["Title"] = "Участники";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            @* <th>
+            @Html.DisplayNameFor(model => model.Name)
+            </th> *@
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Participants.Count() == 0)
+        {
+            <tr>В вашем проекте пока нет участников. Вы можете пригласить их, отправив им ссылку-приглашение.</tr>
+        }
+        else
+        {
+            foreach (var participant in Model.Participants)
+            {
+                <tr>
+                    <td>@participant.Name</td>
+                    <td>@participant.Email</td>
+                    <td>
+                        <form asp-action="ChangeRole" method="post">
+                            <div class="form-group">
+                                <select class="role-select" name="userRole" data-default-role="@participant.Role">
+                                    @foreach (var role in UserRolesDescription.userRoles)
+                                    {
+                                        <option value="@role.Key">@role.Value</option>
+                                    }
+                                </select>
+@*                                 <select class="exampleSelect" data-default-role="Option2">
+                                    <option value="Option1">Option 1</option>
+                                    <option value="Option2">Option 2</option>
+                                    <option value="Option3">Option 3</option>
+                                </select> *@
+@*                                 <script>
+                                    document.getElementById("exampleSelect").value = "Option2"; // Установит "Option 2" как выбранное
+                                </script> *@
+
+                            </div>
+                            <!-- Передаем ID проекта и пользователя через скрытые поля -->
+                            <input type="hidden" name="userId" value="@participant.Id" />
+                            <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                            <button type="submit" class="btn btn-success">+</button>
+                        </form>
+                    </td>
+
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    const selects = document.querySelectorAll('.role-select');
+
+    selects.forEach(select => {
+        const defaultRole = select.getAttribute('data-default-role'); // Получаем значение по умолчанию
+        select.value = defaultRole; // Устанавливаем значение
+    });
+</script>

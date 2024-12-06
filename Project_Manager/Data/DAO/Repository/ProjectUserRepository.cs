@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.DTO.AppUser;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 
@@ -23,16 +24,16 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task<bool> DeleteAsync(int projectId, string userId)
         {
-			var projectUser = await _context.ProjectsUsers.
+            var projectUser = await _context.ProjectsUsers.
                 FirstOrDefaultAsync(pu => pu.ProjectId == projectId && pu.UserId == userId);
 
-			if (projectUser == null)
-				return false;
+            if (projectUser == null)
+                return false;
 
-			_context.ProjectsUsers.Remove(projectUser);
-			await _context.SaveChangesAsync();
-			return true;
-		}
+            _context.ProjectsUsers.Remove(projectUser);
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<IEnumerable<Project>> GetProjectsByUserIdAsync(string userId)
         {
@@ -40,7 +41,7 @@ namespace Project_Manager.Data.DAO.Repository
                 .Select(projectUser => new Project
                 {
                     Id = projectUser.ProjectId,
-                    Name = projectUser.Project.Name,
+                    Name = projectUser.Project.Name
                 }).ToListAsync();
         }
 
@@ -49,6 +50,18 @@ namespace Project_Manager.Data.DAO.Repository
             var projectUser = await _context.ProjectsUsers.FirstOrDefaultAsync(t => t.UserId == userId && t.ProjectId == projectId);
             if (projectUser == null) return null;
             return projectUser.Role;
+        }
+
+        public async Task<IEnumerable<AppUserDTO>> GetUsersByProjectIdAsync(int projectId)
+        {
+            return await _context.ProjectsUsers.Where(p => p.ProjectId == projectId)
+                .Select(projectUser => new AppUserDTO
+                {
+                    Id = projectUser.UserId,
+                    Name = projectUser.AppUser.UserName,
+                    Email = projectUser.AppUser.Email,
+                    Role = projectUser.Role
+                }).ToListAsync();
         }
 
         public async Task<bool> IsUserInProjectAsync(string userId, int projectId)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.DTO.JoinProject;
 using Project_Manager.Models;

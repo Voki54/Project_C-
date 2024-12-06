@@ -12,7 +12,5 @@ namespace Project_Manager.Models
         public ICollection<ProjectUser> ProjectUser { get; set; } = new List<ProjectUser>();
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<JoinProjectRequest> JoinProjectRequests { get; set; } = new List<JoinProjectRequest>();
-		
-		//public ICollection<string> TasksId { get; set; }
 	}
 }

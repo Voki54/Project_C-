@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Mappers;
@@ -17,21 +16,25 @@ namespace Project_Manager.Controllers
         private readonly IProjectRepository _projectRepository;
         private readonly IProjectUserRepository _projectUserRepository;
         private readonly ProjectUserService _projectUserService;
-        //private readonly UserManager<AppUser> _userManager;
 
         public ProjectsController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            ProjectUserService projectUserService/*, UserManager<AppUser> userManager*/)
+            ProjectUserService projectUserService)
         {
             _projectRepository = projectRepository;
             _projectUserRepository = projectUserRepository;
             _projectUserService = projectUserService;
-            //_userManager = userManager;
         }
 
         private string? GetUserId()
         {
             return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
+
+/*        private string? GetInvitationLink(int projectId)
+        {
+            return Url.Action("Join", "JoinProject", new { projectId }, Request.Scheme);
+        }*/
+
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -64,7 +67,7 @@ namespace Project_Manager.Controllers
             var createdProject = await _projectRepository.CreateAsync(createProjectVM.ToProject());
             await _projectUserService.AddUserToProjectAsync(createdProject.Id, userId, UserRoles.Admin);
 
-            return RedirectToAction("Details", "Projects", new { projectId = createdProject.Id });
+            return RedirectToAction("Index", "ProjectTasks", new { projectId = createdProject.Id });
         }
 
         [HttpGet]

@@ -1,14 +1,10 @@
 ﻿@using Project_Manager.DTO.JoinProject
 @using Project_Manager.Models.Enums
+@using Project_Manager.ViewModels.Dictionaries
 @model IEnumerable<RespondDTO>
 
 @{
     ViewData["Title"] = "Projects page";
-    Dictionary<int, string> userRoles = new Dictionary<int, string>
-    {
-        { (int)UserRoles.Manager, "Менеджер" },
-        { (int)UserRoles.Executor, "Исполнитель" }
-    };
 }
 
 <p>
@@ -26,7 +22,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.Count<RespondDTO>() == 0)
+        @if (Model.Count() == 0)
         {
             <tr>На данный момент нет заявок на вступление в проект</tr>
         }
@@ -41,7 +37,7 @@
                         <form asp-action="Accept" method="post">
                             <div class="form-group">
                                 <select class="form-control" name="userRole">
-                                    @foreach (var role in userRoles)
+                                    @foreach (var role in UserRolesDescription.userRoles)
                                     {
                                         <option value="@role.Key">@role.Value</option>
                                     }

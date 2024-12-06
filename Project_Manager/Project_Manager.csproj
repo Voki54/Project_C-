@@ -18,4 +18,8 @@
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\Participants\" />
+  </ItemGroup>
+
 </Project>
