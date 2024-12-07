@@ -70,6 +70,7 @@ namespace Project_Manager.Controllers
             return RedirectToAction("Index", "ProjectTasks", new { projectId = createdProject.Id });
         }
 
+        //not using
         [HttpGet]
         public async Task<IActionResult> Details(int projectId)
         {

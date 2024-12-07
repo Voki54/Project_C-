@@ -25,7 +25,7 @@ namespace Project_Manager.Data.DAO.Repository
         public async Task<bool> DeleteAsync(int projectId, string userId)
         {
             var projectUser = await _context.ProjectsUsers.
-                FirstOrDefaultAsync(pu => pu.ProjectId == projectId && pu.UserId == userId);
+                FindAsync(projectId, userId);
 
             if (projectUser == null)
                 return false;
@@ -66,8 +66,22 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task<bool> IsUserInProjectAsync(string userId, int projectId)
         {
-            if (await _context.ProjectsUsers.FirstOrDefaultAsync(t => t.UserId == userId && t.ProjectId == projectId) == null)
+            if (await _context.ProjectsUsers.FirstOrDefaultAsync(p => p.UserId == userId && p.ProjectId == projectId) == null)
                 return false;
+            return true;
+        }
+
+        public async Task<bool> UpdateAsync(ProjectUser projectUser)
+        {
+            var existingProjectUser = await _context.ProjectsUsers.FindAsync(projectUser.ProjectId, projectUser.UserId);
+
+            if (existingProjectUser == null)
+            {
+                return false;
+            }
+
+            existingProjectUser.Role = projectUser.Role;
+            await _context.SaveChangesAsync();
             return true;
         }
     }

@@ -11,6 +11,8 @@ namespace Project_Manager.Data.DAO.Interfaces
         Task<UserRoles?> GetUserRoleInProjectAsync(string userId, int projectId);
         Task<bool> IsUserInProjectAsync(string userId, int projectId);
         Task<ProjectUser> CreateAsync(ProjectUser projectUser);
+        Task<bool> UpdateAsync(ProjectUser projectUser);
         Task<bool> DeleteAsync(int projectId, string userId);
+
     }
 }

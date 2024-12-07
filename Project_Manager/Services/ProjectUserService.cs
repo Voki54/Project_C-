@@ -19,6 +19,7 @@ namespace Project_Manager.Services
             return await _projectUserRepository.GetProjectsByUserIdAsync(userId);
         }
 
+        // плохо всегда вовращать TRUE
         public async Task<bool> AddUserToProjectAsync(int projectId, string userId, UserRoles userRole)
         {
             await _projectUserRepository.CreateAsync(
@@ -30,6 +31,23 @@ namespace Project_Manager.Services
                 }
                 );
             return true;
+        }
+
+        public async Task<bool> UpdateUserRoleAsync(int projectId, string userId, UserRoles userRole)
+        {
+            return await _projectUserRepository.UpdateAsync(
+                new ProjectUser
+                {           
+                    ProjectId = projectId,
+                    UserId = userId,
+                    Role = userRole
+                }
+            );
+        }
+
+        public async Task<bool> ExcludeParticipantAsync(int projectId, string userId)
+        {
+            return await _projectUserRepository.DeleteAsync(projectId, userId);
         }
 
         public async Task<IEnumerable<AppUserDTO>> GetUserFromProjectAsync(int projectId)
