@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="DTO\Participants\" />
-    <Folder Include="ObjectStates\Notification\States\" />
   </ItemGroup>
 
 </Project>

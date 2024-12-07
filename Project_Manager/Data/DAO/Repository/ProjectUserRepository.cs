@@ -52,6 +52,13 @@ namespace Project_Manager.Data.DAO.Repository
             return projectUser.Role;
         }
 
+        public async Task<string?> GetAdminIdInProjectAsync(int projectId)
+        {
+            var projectUser = await _context.ProjectsUsers.FirstOrDefaultAsync(p => p.ProjectId == projectId && p.Role == UserRoles.Admin);
+            if (projectUser == null) return null;
+            return projectUser.UserId;
+        }
+
         public async Task<IEnumerable<AppUserDTO>> GetUsersByProjectIdAsync(int projectId)
         {
             return await _context.ProjectsUsers.Where(p => p.ProjectId == projectId)

@@ -2,10 +2,11 @@
 using Project_Manager.DTO.AppUser;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
+using Project_Manager.Services.Interfaces;
 
 namespace Project_Manager.Services
 {
-    public class ProjectUserService
+    public class ProjectUserService : IProjectUserService
     {
         private readonly IProjectUserRepository _projectUserRepository;
 
@@ -53,6 +54,12 @@ namespace Project_Manager.Services
         public async Task<IEnumerable<AppUserDTO>> GetUserFromProjectAsync(int projectId)
         {
             return await _projectUserRepository.GetUsersByProjectIdAsync(projectId);
+        }
+
+        public async Task<string?> GetAdminId(int projectId)
+        {
+            //string? adminId = await _projectUserRepository.GetAdminIdInProjectAsync(projectId);
+            return await _projectUserRepository.GetAdminIdInProjectAsync(projectId);
         }
     }
 

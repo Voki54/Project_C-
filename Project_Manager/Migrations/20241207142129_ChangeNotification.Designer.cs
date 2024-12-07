@@ -12,8 +12,8 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241121124950_Init")]
-    partial class Init
+    [Migration("20241207142129_ChangeNotification")]
+    partial class ChangeNotification
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -300,14 +300,19 @@ namespace Project_Manager.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("eventNotification")
+                    b.Property<string>("RecipientId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateOnly>("sendDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("SendDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
 
                     b.ToTable("Notifications");
                 });
@@ -476,6 +481,17 @@ namespace Project_Manager.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("Project_Manager.Models.Notification", b =>
+                {
+                    b.HasOne("Project_Manager.Models.AppUser", "AppUser")
+                        .WithMany("Notifications")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Project_Manager.Models.ProjectTask", b =>
                 {
                     b.HasOne("Project_Manager.Models.Category", "Category")
@@ -517,6 +533,8 @@ namespace Project_Manager.Migrations
             modelBuilder.Entity("Project_Manager.Models.AppUser", b =>
                 {
                     b.Navigation("JoinProjectRequests");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("ProjectTasks");
 

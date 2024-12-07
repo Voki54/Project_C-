@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Mono.TextTemplating;
+using Project_Manager.Events.Notification;
+using Project_Manager.Models.Enums;
+using Project_Manager.ObjectStates;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Project_Manager.Models
@@ -10,9 +14,22 @@ namespace Project_Manager.Models
 		public int Id { get; set; }
 		public string Message { get; set; }
 		public string RecipientId { get; set; }
-		public DateTime SendDate { get; set; }
-		//TODO решить с типом события!
-		//public string eventNotification {  get; set; }
+        public NotificationState State { get; set; } = NotificationState.Created;
+        public DateTime SendDate { get; set; } = DateTime.UtcNow;
+        public AppUser AppUser { get; set; }
 
-	}
+        //private readonly NotificationStatesManager _stateManager;
+
+/*        public Notification(NotificationStatesManager statesManager)
+        {
+            _stateManager = statesManager;
+        }
+
+        //Изменение состояния уведомления
+        public async Task HandleEventAsync(*//*NotificationEvent*//* IEvent @event) // ProjectApplicationSubmittedEvent
+        {
+            State = await _stateManager.ChangeNotificationState(this);
+            //await Task.CompletedTask;
+        }*/
+    }
 }

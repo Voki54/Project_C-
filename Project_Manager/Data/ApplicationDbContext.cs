@@ -40,8 +40,7 @@ namespace Project_Manager.Data
 				.Property(pu => pu.Role);
 
 
-
-			modelBuilder.Entity<JoinProjectRequest>()
+            modelBuilder.Entity<JoinProjectRequest>()
 				.HasKey(j => new { j.ProjectId, j.UserId });
 
 			modelBuilder.Entity<JoinProjectRequest>()
@@ -57,14 +56,20 @@ namespace Project_Manager.Data
             modelBuilder.Entity<JoinProjectRequest>()
                 .Property(j => j.Status);
 
-			modelBuilder.Entity<Category>()
+
+			modelBuilder.Entity<Notification>()
+                .HasOne<AppUser>(n => n.AppUser)
+                .WithMany(a => a.Notifications)
+                .HasForeignKey(n => n.RecipientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<Category>()
 				.HasOne<Project>(ut => ut.Project)
 				.WithMany(t => t.Categories)
 				.HasForeignKey(ut => ut.ProjectId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<ProjectUser>()
-                .Property(ut => ut.Role);
 
             modelBuilder.Entity<ProjectTask>()
                 .HasOne(task => task.Category)     
@@ -83,8 +88,6 @@ namespace Project_Manager.Data
                 .WithOne(comment => comment.ProjectTask) 
                 .HasForeignKey(comment => comment.ProjectTaskId) 
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
-
 	}
 }

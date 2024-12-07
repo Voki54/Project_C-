@@ -1,6 +1,6 @@
 ﻿namespace Project_Manager.Events.Notification
 {
-    public class ProjectApplicationSubmittedEvent : IEvent
+    public class ProjectApplicationSubmittedEvent
     {
         public string ApplicantName { get; }
         public string ProjectName { get; }

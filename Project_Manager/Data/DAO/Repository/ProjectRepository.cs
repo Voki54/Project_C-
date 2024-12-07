@@ -21,7 +21,7 @@ namespace Project_Manager.Data.DAO.Repository
 
 		public async Task<Project?> GetProjectByIdAsync(int id)
 		{
-			return await _context.Projects.FirstOrDefaultAsync(c => c.Id == id);
+			return await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
 		}
 
 		public async Task<Project> CreateAsync(Project project)

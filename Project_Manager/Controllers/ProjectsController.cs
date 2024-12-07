@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.Helpers;
 using Project_Manager.Mappers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 using Project_Manager.Services;
+using Project_Manager.Services.Interfaces;
 using Project_Manager.ViewModels;
-using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
@@ -15,20 +16,21 @@ namespace Project_Manager.Controllers
     {
         private readonly IProjectRepository _projectRepository;
         private readonly IProjectUserRepository _projectUserRepository;
-        private readonly ProjectUserService _projectUserService;
+        private readonly IProjectUserService _projectUserService;
 
         public ProjectsController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            ProjectUserService projectUserService)
+            IProjectUserService projectUserService)
         {
             _projectRepository = projectRepository;
             _projectUserRepository = projectUserRepository;
             _projectUserService = projectUserService;
         }
 
-        private string? GetUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
-        }
+        //либо вынести в отдельный класс, либо не использовать
+        //private string? User.GetUserId()
+        //{
+        //    return User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //}
 
 /*        private string? GetInvitationLink(int projectId)
         {
@@ -39,7 +41,7 @@ namespace Project_Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
                 return Unauthorized("User is not authenticated.");
 
@@ -60,7 +62,7 @@ namespace Project_Manager.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
                 return Unauthorized("User is not authenticated.");
 
@@ -79,7 +81,7 @@ namespace Project_Manager.Controllers
             var project = await _projectRepository.GetProjectByIdAsync(projectId);
             if (project == null) return NotFound("Project not found.");
 
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
                 return Unauthorized("User is not authenticated.");
 

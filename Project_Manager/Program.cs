@@ -9,6 +9,8 @@ using Project_Manager.Events.Notification.EventHandlers;
 using Project_Manager.Models;
 using Project_Manager.Services;
 using Project_Manager.Services.Interfaces;
+using Project_Manager.StatesManagers;
+using Project_Manager.StatesManagers.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,12 +21,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
-                .AddScoped<IProjectUserRepository, ProjectUserRepository>()
-                .AddScoped<IJoinProjectRequestRepository, JoinProjectRequestRepository>()
-                .AddScoped<ProjectUserService>()
+				.AddScoped<IProjectUserRepository, ProjectUserRepository>()
+				.AddScoped<IJoinProjectRequestRepository, JoinProjectRequestRepository>()
+				.AddScoped<INotificationRepository, NotificationRepository>()
+                .AddScoped<IProjectUserService, ProjectUserService>()
 				.AddScoped<INotificationService, NotificationService>()
+                .AddScoped<INotificationStatesManager, NotificationStatesManager>()
 				.AddScoped<EventPublisher>()
-                .AddScoped<NotificationEventHandler>();
+				.AddScoped<NotificationEventHandler>();
+
+//builder.Services.AddSingleton<NotificationStatesManager>();
+
+
+/*builder.Services.AddTransient<NotificationStatesManager>()
+				.AddTransient<IServiceB, ServiceB>()
+				.AddTransient<IServiceC, ServiceC>();*/
 
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();

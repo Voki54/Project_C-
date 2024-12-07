@@ -13,6 +13,6 @@ namespace Project_Manager.Data.DAO.Interfaces
         Task<ProjectUser> CreateAsync(ProjectUser projectUser);
         Task<bool> UpdateAsync(ProjectUser projectUser);
         Task<bool> DeleteAsync(int projectId, string userId);
-
+        Task<string?> GetAdminIdInProjectAsync(int projectId);
     }
 }

@@ -41,7 +41,7 @@ namespace Project_Manager.Controllers
         // Обработчик события
         private async Task HandleEventAsync(IEvent @event)
         {
-            if (@event is ProjectApplicationSubmittedEvent projectEvent)
+            if (@event is IEvent projectEvent)
             {
                 await _notificationHandler.HandleAsync(projectEvent);
             }
@@ -87,7 +87,7 @@ namespace Project_Manager.Controllers
                 Status = JoinProjectRequestStatus.Pending
             });
 
-            var @event = new ProjectApplicationSubmittedEvent(userId, projectId.ToString());
+            var @event = new NotificationSendingEvent(userId, projectId);
             await _eventPublisher.PublishAsync(@event);
 
             return RedirectToAction("Join", "JoinProject", new { projectId });
