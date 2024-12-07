@@ -4,8 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Data.DAO.Repository;
+using Project_Manager.Events.Notification;
+using Project_Manager.Events.Notification.EventHandlers;
 using Project_Manager.Models;
 using Project_Manager.Services;
+using Project_Manager.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +21,10 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
                 .AddScoped<IProjectUserRepository, ProjectUserRepository>()
                 .AddScoped<IJoinProjectRequestRepository, JoinProjectRequestRepository>()
-                .AddScoped<ProjectUserService>();
+                .AddScoped<ProjectUserService>()
+				.AddScoped<INotificationService, NotificationService>()
+				.AddScoped<EventPublisher>()
+                .AddScoped<NotificationEventHandler>();
 
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();

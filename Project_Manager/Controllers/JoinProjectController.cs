@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.DTO.JoinProject;
+using Project_Manager.Events.Notification.EventHandlers;
+using Project_Manager.Events.Notification;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 using Project_Manager.ViewModels;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Project_Manager.Controllers
 {
@@ -16,13 +19,32 @@ namespace Project_Manager.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IJoinProjectRequestRepository _joinProjectRequestRepository;
 
+        private readonly EventPublisher _eventPublisher;
+        private readonly NotificationEventHandler _notificationHandler;
+
         public JoinProjectController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            UserManager<AppUser> userManager, IJoinProjectRequestRepository joinProjectRequestRepository)
+            UserManager<AppUser> userManager, IJoinProjectRequestRepository joinProjectRequestRepository,
+            EventPublisher eventPublisher, NotificationEventHandler notificationHandler)
         {
             _projectRepository = projectRepository;
             _projectUserRepository = projectUserRepository;
             _userManager = userManager;
             _joinProjectRequestRepository = joinProjectRequestRepository;
+
+            _eventPublisher = eventPublisher;
+            _notificationHandler = notificationHandler;
+
+            // Подписка на событие
+            _eventPublisher.Subscribe(async e => await HandleEventAsync(e));
+        }
+
+        // Обработчик события
+        private async Task HandleEventAsync(IEvent @event)
+        {
+            if (@event is ProjectApplicationSubmittedEvent projectEvent)
+            {
+                await _notificationHandler.HandleAsync(projectEvent);
+            }
         }
 
         [HttpGet]
@@ -64,6 +86,9 @@ namespace Project_Manager.Controllers
                 UserId = userId,
                 Status = JoinProjectRequestStatus.Pending
             });
+
+            var @event = new ProjectApplicationSubmittedEvent(userId, projectId.ToString());
+            await _eventPublisher.PublishAsync(@event);
 
             return RedirectToAction("Join", "JoinProject", new { projectId });
         }

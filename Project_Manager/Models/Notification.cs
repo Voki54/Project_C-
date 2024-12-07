@@ -9,10 +9,10 @@ namespace Project_Manager.Models
 		[Key]
 		public int Id { get; set; }
 		public string Message { get; set; }
-		//public ICollection<string> recipientsId { get; set; }
-		public DateOnly sendDate { get; set; }
+		public string RecipientId { get; set; }
+		public DateTime SendDate { get; set; }
 		//TODO решить с типом события!
-		public string eventNotification {  get; set; }
+		//public string eventNotification {  get; set; }
 
 	}
 }
