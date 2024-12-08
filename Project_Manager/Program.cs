@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
@@ -24,25 +23,22 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
 				.AddScoped<IProjectUserRepository, ProjectUserRepository>()
 				.AddScoped<IJoinProjectRequestRepository, JoinProjectRequestRepository>()
 				.AddScoped<INotificationRepository, NotificationRepository>()
+                .AddScoped<IProjectService, ProjectService>()
                 .AddScoped<IProjectUserService, ProjectUserService>()
 				.AddScoped<INotificationService, NotificationService>()
+                .AddScoped<IJoinProjectService, JoinProjectService>()
+                .AddScoped<IParticipantService, ParticipantService>()
+                .AddScoped<IAccountService, AccountService>()
                 .AddScoped<INotificationStatesManager, NotificationStatesManager>()
 				.AddScoped<EventPublisher>()
 				.AddScoped<NotificationEventHandler>();
 
-//builder.Services.AddSingleton<NotificationStatesManager>();
-
-
-/*builder.Services.AddTransient<NotificationStatesManager>()
-				.AddTransient<IServiceB, ServiceB>()
-				.AddTransient<IServiceC, ServiceC>();*/
-
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();
-builder.Services.AddIdentity<AppUser, IdentityRole/*<string>*//*<Guid>*/>(
+builder.Services.AddIdentity<AppUser, IdentityRole>(
 	options => 
 	{
-		options.Password.RequiredUniqueChars = 0;
+		options.Password.RequiredUniqueChars = 2;
 		options.Password.RequireNonAlphanumeric = false;
 		options.Password.RequiredLength = 3;
 		options.Password.RequireLowercase = false;

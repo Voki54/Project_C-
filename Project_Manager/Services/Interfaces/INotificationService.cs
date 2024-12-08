@@ -12,7 +12,5 @@ namespace Project_Manager.Services.Interfaces
         Task<IEnumerable<NotificationDTO>> GetAvailableUserNotificationsAsync(string userId);
 
         Task<bool> UpdateStateAsync(Notification notification);
-       
-        //Task SendNotificationAsync(Notification notification);
     }
 }

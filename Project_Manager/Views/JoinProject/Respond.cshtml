@@ -34,7 +34,7 @@
                     <td>@respondDTOs.UserName</td>
                     <td>@respondDTOs.UserEmail</td>
                     <td>
-                        <form asp-action="Accept" method="post">
+                        <form asp-action="AcceptApplication" method="post">
                             <div class="form-group">
                                 <select class="form-control" name="userRole">
                                     @foreach (var role in UserRolesDescription.userRoles)
@@ -49,12 +49,14 @@
                             <button type="submit" class="btn btn-success">Принять</button>
                         </form>
                     </td>
-@*                     <td>
-                        <a asp-action="Accept" asp-route-userId="@respondDTOs.UserId" asp-route-projectId="@respondDTOs.ProjectId">
-                            Принять
-                        </a>
-                     </td> *@
-                    <td><a asp-action="Reject" asp-route-userId="@respondDTOs.UserId">Отклонить</a></td>
+                    <td>
+                        <form asp-action="RejectApplication" method="post">
+                            <!-- Передаем ID проекта и пользователя через скрытые поля -->
+                            <input type="hidden" name="userId" value="@respondDTOs.UserId" />
+                            <input type="hidden" name="projectId" value="@respondDTOs.ProjectId" />
+                            <button type="submit" class="btn btn-danger">Отклонить</button>
+                        </form>
+                    </td>
                 </tr>
             }
         }

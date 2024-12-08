@@ -1,30 +1,25 @@
-﻿using Project_Manager.Models;
-//using Microsoft.AspNetCore.Authorization;
+﻿using Project_Manager.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Project_Manager.Controllers;
-
-//[Authorize]
-public class HomeController : Controller
+namespace Project_Manager.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        if (User.Identity.IsAuthenticated)
+        public IActionResult Index()
         {
-            return RedirectToAction("Index","Projects"); 
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Projects");
+            }
+            return View();
         }
-        return View();
-    }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorVM { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
 }
+

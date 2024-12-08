@@ -20,18 +20,16 @@ namespace Project_Manager.Services
             return await _projectUserRepository.GetProjectsByUserIdAsync(userId);
         }
 
-        // плохо всегда вовращать TRUE
-        public async Task<bool> AddUserToProjectAsync(int projectId, string userId, UserRoles userRole)
+        public async Task AddUserToProjectAsync(int projectId, string userId, UserRoles userRole)
         {
             await _projectUserRepository.CreateAsync(
                 new ProjectUser
-                {
-                    ProjectId = projectId,
-                    UserId = userId,
-                    Role = userRole
-                }
+                    {
+                        ProjectId = projectId,
+                        UserId = userId,
+                        Role = userRole
+                    }
                 );
-            return true;
         }
 
         public async Task<bool> UpdateUserRoleAsync(int projectId, string userId, UserRoles userRole)
@@ -58,8 +56,12 @@ namespace Project_Manager.Services
 
         public async Task<string?> GetAdminId(int projectId)
         {
-            //string? adminId = await _projectUserRepository.GetAdminIdInProjectAsync(projectId);
             return await _projectUserRepository.GetAdminIdInProjectAsync(projectId);
+        }
+
+        public async Task<bool> IsUserInProjectAsync(string userId, int projectId)
+        {
+            return await _projectUserRepository.IsUserInProjectAsync(userId, projectId);
         }
     }
 

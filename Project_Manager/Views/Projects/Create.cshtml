@@ -1,7 +1,7 @@
 ﻿@model Project_Manager.ViewModels.CreateAndEditProjectVM
 
 @{
-    ViewData["Title"] = "Create Project page";
+    ViewData["Title"] = "Создание проекта";
 }
 
 <h4>Project</h4>
@@ -27,6 +27,16 @@
 <div>
     <a asp-controller="Projects" asp-action ="Index">Back to List</a>
 </div>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

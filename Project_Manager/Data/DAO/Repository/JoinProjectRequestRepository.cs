@@ -23,8 +23,7 @@ namespace Project_Manager.Data.DAO.Repository
 
 		public async Task<bool> DeleteAsync(int projectId, string userId)
 		{
-			var joinProjectRequest = await _context.JoinProjectRequests.
-				FirstOrDefaultAsync(j => j.ProjectId == projectId && j.UserId == userId);
+			var joinProjectRequest = await _context.JoinProjectRequests.FindAsync(projectId, userId);
 
 			if (joinProjectRequest == null)
 				return false;
@@ -36,20 +35,19 @@ namespace Project_Manager.Data.DAO.Repository
 
 		public async Task<JoinProjectRequest?> GetJoinProjectRequestAsync(int projectId, string userId)
 		{
-			return await _context.JoinProjectRequests
-				.FirstOrDefaultAsync(j => j.ProjectId == projectId && j.UserId == userId);
-		}
+			return await _context.JoinProjectRequests.FindAsync(projectId, userId);
+        }
 
 		public async Task<IEnumerable<JoinProjectRequest>> GetRequestsByProjectIdAsync(int projectId)
 		{
 			return await _context.JoinProjectRequests.Where(j => j.ProjectId == projectId).ToListAsync();
 		}
 
-		public async Task<IEnumerable<string>> GetUsersIdWithUnprocessedRequestsAsync(int projectId)
+        public async Task<IEnumerable<AppUser>> GetUsersWithUnprocessedRequestsAsync(int projectId)
 		{
 			return await _context.JoinProjectRequests
 				.Where(j => j.ProjectId == projectId && j.Status == JoinProjectRequestStatus.Pending)
-				.Select(joinProjectRequest => joinProjectRequest.UserId)
+				.Select(joinProjectRequest => joinProjectRequest.AppUser)
 				.ToListAsync();
         }
 
@@ -58,9 +56,7 @@ namespace Project_Manager.Data.DAO.Repository
             var existingJoinProjectRequest = await _context.JoinProjectRequests.FindAsync(joinProjectRequest.ProjectId, joinProjectRequest.UserId);
 
             if (existingJoinProjectRequest == null)
-            {
                 return false;
-            }
 
             existingJoinProjectRequest.Status = joinProjectRequest.Status;
             await _context.SaveChangesAsync();

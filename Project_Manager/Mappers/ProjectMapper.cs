@@ -25,10 +25,7 @@ namespace Project_Manager.Mappers
 
         public static CreateAndEditProjectVM ToCreateAndEditProjectVM(this Project project)
         {
-            return new CreateAndEditProjectVM
-            {
-                Name = project.Name
-            };
+            return new CreateAndEditProjectVM(project.Name);
         }
     }
 }

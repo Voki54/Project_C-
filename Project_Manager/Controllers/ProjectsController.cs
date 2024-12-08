@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Helpers;
-using Project_Manager.Mappers;
-using Project_Manager.Models;
 using Project_Manager.Models.Enums;
-using Project_Manager.Services;
 using Project_Manager.Services.Interfaces;
 using Project_Manager.ViewModels;
 
@@ -17,37 +14,21 @@ namespace Project_Manager.Controllers
         private readonly IProjectRepository _projectRepository;
         private readonly IProjectUserRepository _projectUserRepository;
         private readonly IProjectUserService _projectUserService;
+        private readonly IProjectService _projectService;
 
         public ProjectsController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            IProjectUserService projectUserService)
+            IProjectUserService projectUserService, IProjectService projectService)
         {
             _projectRepository = projectRepository;
             _projectUserRepository = projectUserRepository;
             _projectUserService = projectUserService;
+            _projectService = projectService;
         }
-
-        //либо вынести в отдельный класс, либо не использовать
-        //private string? User.GetUserId()
-        //{
-        //    return User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //}
-
-/*        private string? GetInvitationLink(int projectId)
-        {
-            return Url.Action("Join", "JoinProject", new { projectId }, Request.Scheme);
-        }*/
-
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userId = User.GetUserId();
-            if (userId == null)
-                return Unauthorized("User is not authenticated.");
-
-            var projects = await _projectUserService.GetUserProjectsAsync(userId);
-            var projectsDTO = projects.Select(t => t.ToProjectDTO()).ToList();
-            return View(projectsDTO);
+            return View(await _projectService.GetUserProjectsAsync(User.GetUserId()));
         }
 
         [HttpGet]
@@ -60,19 +41,20 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> Create(CreateAndEditProjectVM createProjectVM)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return View(createProjectVM);
 
-            var userId = User.GetUserId();
-            if (userId == null)
-                return Unauthorized("User is not authenticated.");
+            var createdProject = await _projectService.CreateProjectAsync(User.GetUserId(), createProjectVM);
 
-            var createdProject = await _projectRepository.CreateAsync(createProjectVM.ToProject());
-            await _projectUserService.AddUserToProjectAsync(createdProject.Id, userId, UserRoles.Admin);
+            if (createdProject == null)
+            {
+                TempData["ErrorMessage"] = "Не удалось определить пользователя. Пожалуйста, войдите в систему.";
+                return RedirectToAction("Index", "Error");
+            }
 
             return RedirectToAction("Index", "ProjectTasks", new { projectId = createdProject.Id });
         }
 
-        //not using
+        // TODO not using УДАЛИТЬ!
         [HttpGet]
         public async Task<IActionResult> Details(int projectId)
         {
@@ -103,49 +85,49 @@ namespace Project_Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var project = await _projectRepository.GetProjectByIdAsync(id);
+            var projectName = await _projectService.GetProjectName(id);
 
-            if (project == null)
-                return NotFound("Project not found");
+            if (projectName == null)
+            {
+                TempData["ErrorMessage"] = "Не удалось найти проект.";
+                return RedirectToAction("Index", "Error");
+            }
 
-            return View(project.ToCreateAndEditProjectVM());
+            return View(new CreateAndEditProjectVM(projectName));
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, CreateAndEditProjectVM editProjectVM)
         {
             if (!ModelState.IsValid)
+                return View(editProjectVM);
+
+            if (!await _projectService.UpdateProjectAsync(id, editProjectVM))
             {
-                //ModelState.AddModelError("", "Failed to edit car");
-                return View("Edit", editProjectVM);
+                TempData["ErrorMessage"] = "Ошибка при обновлении проекта.";
+                return RedirectToAction("Index", "Error");
             }
 
-            await _projectRepository.UpdateAsync(
-                new Project
-                {
-                    Id = id,
-                    Name = editProjectVM.Name
-                }
-                );
-
-            return RedirectToAction("Details", "Projects", new { projectId = id });
+            return RedirectToAction("Index", "ProjectTasks", new { projectId = id });
         }
 
+        //TODO сделать pop-up
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int projectId)
         {
-            var project = await _projectRepository.GetProjectByIdAsync(id);
-            if (project == null)
+            if (await _projectService.ExistProjectAsync(projectId))
             {
-                return View("Error");
+                return View(/*project.ToProjectDTO()*/);
             }
-            return View(project.ToProjectDTO());
+            return View("Error");
+            
         }
 
+        //TODO сделать pop-up
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int projectId)
         {
-            bool deleteResponse = await _projectRepository.DeleteAsync(id);
+            bool deleteResponse = await _projectRepository.DeleteAsync(projectId);
             if (!deleteResponse)
             {
                 return View("Error");

@@ -7,5 +7,12 @@ namespace Project_Manager.ViewModels
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }
         public JoinProjectRequestStatus? RequestStatus { get; set; }
+
+        public JoinProjectVM(int projectId, string projectName, JoinProjectRequestStatus? requestStatus)
+        {
+            ProjectId = projectId;
+            ProjectName = projectName;
+            RequestStatus = requestStatus;
+        }
     }
 }

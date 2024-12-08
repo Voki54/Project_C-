@@ -8,9 +8,10 @@ namespace Project_Manager.Services.Interfaces
     {
         Task<IEnumerable<Project>> GetUserProjectsAsync(string userId);
 
-        Task<bool> AddUserToProjectAsync(int projectId, string userId, UserRoles userRole);
+        Task AddUserToProjectAsync(int projectId, string userId, UserRoles userRole);
 
         Task<bool> UpdateUserRoleAsync(int projectId, string userId, UserRoles userRole);
+        Task<bool> IsUserInProjectAsync(string userId, int projectId);
 
         Task<bool> ExcludeParticipantAsync(int projectId, string userId);
 

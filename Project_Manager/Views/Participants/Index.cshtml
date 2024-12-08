@@ -1,6 +1,4 @@
-﻿
-
-@using Project_Manager.ViewModels.Dictionaries
+﻿@using Project_Manager.ViewModels.Dictionaries
 @model Project_Manager.ViewModels.ParticipantsVM
 
 @{
@@ -47,28 +45,92 @@
                         </form>
                     </td>
                     <td>
-                        <button class="btn btn-danger btn-exclude-participant"
+@*                         <button class="btn btn-danger btn-exclude-participant"
                                 data-user-id="@participant.Id"
                                 data-project-id="@Model.ProjectId"
                                 data-user-name="@participant.Name">
-                            Exclude
-                        </button>
+                            Исключить
+                        </button> *@
                         @* <a asp-action="ExcludeParticipant" asp-route-userId="@participant.Id" asp-route-projectId="@Model.ProjectId">Exclude</a> *@
-                        </td>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-exclude-participant"
+                                type="button"
+                                data-user-id="@participant.Id"
+                                data-project-id="@Model.ProjectId"
+                                data-user-name="@participant.Name"
+                                onclick="openExclusionModal(this)">
+                            Исключить
+                        </button>
+@*                         <button class="btn btn-danger btn-exclude-participant" type="button" onclick="window['confirm-exclusion'].showModal()" aria-controls="confirm-exclusion">
+                            Исключить
+                        </button> *@
+                        <button class="button button-orange" type="button" onclick="window['closeMe'].showModal()" aria-controls="closeMe">
+                            Открыть модальное окно
+                        </button>
+                    </td>
                 </tr>
             }
         }
     </tbody>
 </table>
 
-<div class="modal" id="confirmModal" tabindex="-1" role="dialog">
+
+
+<dialog open="open" id="closeMe" class="dialog" aria-labelledby="dialog-name">
+    <h2 class="dialog__title" id="dialog-name">Закрой меня! 🙏</h2>
+    <p>Результат этих кнопок одинаковый.</p>
+    <button class="dialog__button button-orange" type="button" onclick="window['closeMe'].close()">
+        Закрыть с помощью JavaScript
+    </button>
+</dialog>
+
+<dialog class="dialog" id="confirm-exclusion" aria-labelledby="dialog-name">
+    <h4 class="dialog__title" id="dialog-name">
+        Вы уверены, что хотите исключить пользователя <span id="user-name"></span> из проекта?<br />
+        Отменить действие будет невозможно.
+    </h4>
+    <form asp-action="ExcludeParticipant" method="post" id="exclusion-form">
+        <input type="hidden" name="userId" id="hidden-user-id" />
+        <input type="hidden" name="projectId" id="hidden-project-id" />
+        <button type="submit" class="btn btn-danger">
+            Исключить
+        </button>
+        <button type="button" onclick="window['confirm-exclusion'].close()">
+            Отмена
+        </button>
+    </form>
+</dialog>
+
+<script>
+    const selects = document.querySelectorAll('.role-select');
+
+    selects.forEach(select => {
+        const defaultRole = select.getAttribute('data-default-role'); // Получаем значение по умолчанию
+        select.value = defaultRole; // Устанавливаем значение
+    });
+
+    // Открытие модального окна
+    function openExclusionModal(button) {
+        const userId = button.getAttribute('data-user-id');
+        const projectId = button.getAttribute('data-project-id');
+        const userName = button.getAttribute('data-user-name');
+
+        // Установка данных в модальное окно
+        document.getElementById('user-name').textContent = userName;
+        document.getElementById('hidden-user-id').value = userId;
+        document.getElementById('hidden-project-id').value = projectId;
+
+        // Показать модальное окно
+        document.getElementById('confirm-exclusion').showModal();
+    }
+</script>
+
+@* <div class="modal" id="confirmModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Confirm Exclusion</h5>
-@*                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button> *@
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to exclude <span id="userToRemove"></span> from the project?</p>
@@ -85,12 +147,7 @@
 
 
 <script>
-    const selects = document.querySelectorAll('.role-select');
 
-    selects.forEach(select => {
-        const defaultRole = select.getAttribute('data-default-role'); // Получаем значение по умолчанию
-        select.value = defaultRole; // Устанавливаем значение
-    });
 
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -149,4 +206,4 @@
         });
     });
 
-</script>
+</script> *@

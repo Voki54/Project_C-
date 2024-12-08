@@ -23,7 +23,7 @@
     @if (Model.UserRoles == UserRoles.Admin)
     {
         <a asp-action="Edit" asp-route-id="@Model.ProjectId">Edit | </a>
-        <a asp-action="Delete" asp-route-id="@Model.ProjectId">Delete | </a>
+        <a asp-action="Delete" asp-route-projectId="@Model.ProjectId">Delete | </a>
     }
     
     <a asp-action="Index">Back to List</a>

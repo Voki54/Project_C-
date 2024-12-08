@@ -1,7 +1,4 @@
-﻿using Mono.TextTemplating;
-using Project_Manager.Events.Notification;
-using Project_Manager.Models.Enums;
-using Project_Manager.ObjectStates;
+﻿using Project_Manager.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

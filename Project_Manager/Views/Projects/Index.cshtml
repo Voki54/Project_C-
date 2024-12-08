@@ -5,39 +5,40 @@
     ViewData["Title"] = "Проекты";
 }
 
-<p>
-    <a asp-action ="Create">Create Project</a>
-</p>
-<hr />
-<table class="table">
-    <thead>
-        <tr>
-            @* <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th> *@
+@section Styles {
+    <link rel="stylesheet" href="~/css/projectIbdex.css" asp-append-version="true" />
+}
 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Count() == 0)
-        {
-            <tr>Вы не участвуете ни в одном проекте. Самое время это исправить!</tr>
-        } 
-        else {
-            foreach (var project in Model)
-            {
-                <tr>
-                    <td>
-                        <a href="@Url.Action("Index", "ProjectTasks", new { projectId = project.Id })">@Html.DisplayFor(modelItem => project.Name)</a>
-                    </td>
+<div class="nav-btn">
+    <a asp-action="Create" class="btn btn-add">Создать проект</a>
+    <a asp-action="" class="btn btn-add">Присоединиться к проекту</a>
+</div>
 
+@if (Model.Count() == 0)
+{
+    <p>Вы не участвуете ни в одном проекте. Самое время это исправить!</p>
+}
+else
+{
+    <div class="project-list">
+        <table class="table project-table">
+            <thead>
+                <tr><th>Проекты</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model)
+                {
+                <tr class="task-tr link-tr">
                     <td>
-                        <a asp-action="Edit" asp-route-id="@project.Id">Edit</a> |  
-                        <a asp-action="Delete" asp-route-id="@project.Id">Delete</a>
+                        <a asp-controller="ProjectTasks" asp-action="Index" asp-route-projectId="@project.Id">@project.Name</a>
                     </td>
                 </tr>
-            }
-        }        
-    </tbody>
-</table>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+
+

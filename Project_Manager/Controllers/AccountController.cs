@@ -1,72 +1,58 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Models;
+using Project_Manager.Services.Interfaces;
 using Project_Manager.ViewModels;
 
 namespace Project_Manager.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly UserManager<AppUser> _userManager;
-    private readonly SignInManager<AppUser> _signInManager;
+    private readonly IAccountService _accountService;
 
-    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AccountController(IAccountService accountService)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _accountService = accountService;
     }
 
-    public IActionResult Login(string? returnUrl = null)
+    public IActionResult Login()
     {
-        ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(LoginVM model, string? returnUrl = null)
+    public async Task<IActionResult> Login(LoginVM model)
     {
-        ViewData["ReturnUrl"] = returnUrl;
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Username!, model.Password!, model.RememberMe, false);
-
-            if (result.Succeeded)
+            if (await _accountService.SignInAsync(model))
             {
                 return RedirectToAction("Index", "Projects");
             }
 
-            ModelState.AddModelError("", "Invalid login attempt");
+            ModelState.AddModelError("", "Неверное имя или пароль");
         }
         return View(model);
     }
 
-    public IActionResult Register(string? returnUrl = null)
+    public IActionResult Register()
     {
-        ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register(RegisterVM model, string? returnUrl = null)
+    public async Task<IActionResult> Register(RegisterVM model)
     {
-        ViewData["ReturnUrl"] = returnUrl;
         if (ModelState.IsValid)
         {
-            AppUser user = new()
+            var registerErrors = await _accountService.RegisterAsync(model);
+
+            if (registerErrors == null)
             {
-                UserName = model.Name,
-                Email = model.Email
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password!);
-
-            if (result.Succeeded)
-            {
-                await _signInManager.SignInAsync(user, false);
-
                 return RedirectToAction("Index", "Projects");
             }
-            foreach (var error in result.Errors)
+
+            foreach (var error in registerErrors)
             {
                 ModelState.AddModelError("", error.Description);
             }
@@ -76,14 +62,7 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync();
+        await _accountService.LogoutAsync();
         return RedirectToAction("Index","Home");
-    }
-
-    private IActionResult RedirectToLocal(string? returnUrl)
-    {
-        return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-            ? Redirect(returnUrl)
-            : RedirectToAction("Index", "Home");
     }
 }
