@@ -21,9 +21,9 @@ namespace Project_Manager.Data.DAO.Repository
             return notification;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int notificationId)
         {
-            var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.Id == id);
+            var notification = await _context.Notifications.FindAsync(notificationId);
 
             if (notification == null)
                 return false;
@@ -43,9 +43,7 @@ namespace Project_Manager.Data.DAO.Repository
             var existingNotification = await _context.Notifications.FindAsync(notification.Id);
 
             if (existingNotification == null)
-            {
                 return false;
-            }
 
             existingNotification.State = notification.State;
             await _context.SaveChangesAsync();

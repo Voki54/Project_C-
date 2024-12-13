@@ -24,7 +24,7 @@ namespace Project_Manager.Services
 
         public async Task<IEnumerable<ProjectDTO>> GetUserProjectsAsync(string? userId)
         {
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
                 return new List<ProjectDTO>();
 
             var projects = await _projectUserService.GetUserProjectsAsync(userId);
@@ -33,23 +33,13 @@ namespace Project_Manager.Services
 
         public async Task<ProjectDTO?> CreateProjectAsync(string? userId, CreateAndEditProjectVM createProjectVM)
         {
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
                 return null;
 
             var createdProject = await _projectRepository.CreateAsync(createProjectVM.ToProject());
             await _projectUserService.AddUserToProjectAsync(createdProject.Id, userId, UserRoles.Admin);
             return createdProject.ToProjectDTO();
         }
-
-/*        public async Task<CreateAndEditProjectVM?> GetCreateAndEditProjectVMByIdAsync(int projectId)
-        {
-            var project = await _projectRepository.GetProjectByIdAsync(projectId);
-
-            if (project == null)
-                return null;
-
-            return project.ToCreateAndEditProjectVM();
-        }*/
 
         public async Task<string?> GetProjectName(int projectId)
         {
@@ -61,25 +51,20 @@ namespace Project_Manager.Services
             return await _projectRepository.ExistProjectAsync(projectId);
         }
 
-        public async Task<bool> UpdateProjectAsync(int projectId, CreateAndEditProjectVM editProjectVM)
+        public async Task<bool> UpdateProjectAsync(CreateAndEditProjectVM editProjectVM)
         {
-            var project = await _projectRepository.GetProjectByIdAsync(projectId);
-            
-            if (project == null)
-                return false;
-
-            bool updateResult = await _projectRepository.UpdateAsync(
+            return await _projectRepository.UpdateAsync(
                 new Project
                 {
-                    Id = projectId,
+                    Id = editProjectVM.Id,
                     Name = editProjectVM.Name
                 }
             );
+        }
 
-            if (!updateResult)
-                return false;
-
-            return true;
+        public async Task<bool> DeleteProjectAsync(int projectId)
+        {
+            return await _projectRepository.DeleteAsync(projectId);
         }
     }
 }

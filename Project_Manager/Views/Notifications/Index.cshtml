@@ -6,41 +6,76 @@
 }
 
 <p>
-    <a asp-action="">Удалить все</a>
+    <a asp-action="">Удалить прочитанные</a>
+    <a asp-action="">Пометить все прочитанными</a>
 </p>
-<hr />
-<table class="table">
-    <thead>
-        <tr>
-            @* <th>
-            @Html.DisplayNameFor(model => model.Name)
-            </th> *@
 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Count() == 0)
-        {
-            <tr>У вас нет уведомлений</tr>
-        }
-        else
-        {
-            foreach (var notification in Model)
+<button onclick="goBack()">Назад</button>
+
+<hr />
+@if (Model.Count() == 0)
+{
+    <tr>У вас нет уведомлений</tr>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            @foreach (var notification in Model)
             {
-                <tr>
-                    <td>
-                        @notification.Message
-                        @* <a href="@Url.Action("Index", "ProjectTasks", new { projectId = project.Id })">@Html.DisplayFor(modelItem => project.Name)</a> *@
-                    </td>
-                    <td>
-                        @notification.SendDate
-                    </td>
-                    <td>
-                        <a asp-action="Delete" asp-route-id="@* @project.Id *@">Delete</a>
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @notification.Message
+                </td>
+                <td>
+                    @notification.SendDate
+                </td>
+                <td>
+                    <a asp-action="MarkAsRead" asp-route-id="@* @project.Id *@">Пометить как прочитанное</a>
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-exclude-participant"
+                            type="button"
+                            data-notification-id="@notification.Id"
+                            onclick="openExclusionModal(this)">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<dialog class="dialog" id="confirm-exclusion" aria-labelledby="dialog-name">
+    <h4 class="dialog__title" id="dialog-name">
+        Вы уверены, что хотите удалить это уведомление?<br />
+        Отменить действие будет невозможно.
+    </h4>
+    <form asp-action="Delete" method="post" id="exclusion-form">
+        <input type="hidden" name="notificationId" id="hidden-notification-id" />
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <button type="button" onclick="window['confirm-exclusion'].close()">Отмена</button>
+    </form>
+</dialog>
+
+
+@section Scripts {
+    <script>
+        function goBack() {
+            const referrer = document.referrer;
+
+            if (referrer) {
+                window.location.href = referrer;
+            } else {
+                window.location.href = '/';
             }
         }
-    </tbody>
-</table>
+
+        // Действия при открытии модального окна
+        function openExclusionModal(button) {
+            document.getElementById('hidden-notification-id').value = button.getAttribute('data-notification-id');
+            document.getElementById('confirm-exclusion').showModal();
+        }
+    </script>
+}

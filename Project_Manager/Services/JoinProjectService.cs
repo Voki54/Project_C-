@@ -7,6 +7,7 @@ using Project_Manager.Services.Interfaces;
 using Project_Manager.Models.Enums;
 using Project_Manager.ViewModels;
 using Project_Manager.DTO.JoinProject;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Project_Manager.Services
 {
@@ -16,7 +17,6 @@ namespace Project_Manager.Services
         private readonly IProjectUserService _projectUserService;
         private readonly IJoinProjectRequestRepository _joinProjectRequestRepository;
         private readonly UserManager<AppUser> _userManager;
-
 
         private readonly EventPublisher _eventPublisher;
         private readonly NotificationEventHandler _notificationHandler;
@@ -60,13 +60,38 @@ namespace Project_Manager.Services
             return (new JoinProjectVM(projectId, projectName, requestStatus));
         }
 
-        public async Task SubmitJoinRequestAsync(int projectId, string userId)
+        public async Task<bool> SubmitJoinRequestAsync(int projectId, string userId)
         {
+            if (!await _projectService.ExistProjectAsync(projectId))
+                return false;
+
             await _joinProjectRequestRepository.CreateAsync(
                 new JoinProjectRequest(projectId, userId, JoinProjectRequestStatus.Pending));
 
-            var @event = new NotificationSendingEvent(userId, projectId);
-            await _eventPublisher.PublishAsync(@event);
+            await _eventPublisher.PublishAsync(new NotificationSendingEvent(userId, projectId));
+
+            return true;
+        }
+
+        public async Task<int?> SubmitJoinRequestAsync(string projectLink, string userId)
+        {
+            var projectId = ExtractProjectIdFromLink(projectLink);
+
+            if (projectId != null && await SubmitJoinRequestAsync(projectId!.Value, userId)) 
+                return projectId;
+
+            return null;
+        }
+
+        private int? ExtractProjectIdFromLink(string projectLink)
+        {
+            var link = new Uri(projectLink);
+            var queryParams = QueryHelpers.ParseQuery(link.Query);
+
+            if (queryParams.TryGetValue("projectId", out var projectIdValue) && int.TryParse(projectIdValue, out int projectId))
+                return projectId;
+            
+            return null;
         }
 
         public async Task<IEnumerable<RespondDTO>> GetJoiningRequestsAsync(int projectId)
@@ -75,9 +100,7 @@ namespace Project_Manager.Services
             List<RespondDTO> respondDTOs = new List<RespondDTO>();
 
             foreach (AppUser user in users)
-            {
                 respondDTOs.Add(new RespondDTO(user.Id, user.Email, user.UserName, projectId));
-            }
 
             return respondDTOs;
         }
@@ -89,9 +112,7 @@ namespace Project_Manager.Services
                 return false;
 
             if (!await _projectUserService.IsUserInProjectAsync(userId, projectId))
-            {
                 await _projectUserService.AddUserToProjectAsync(projectId, userId, userRole);
-            }
 
             await _joinProjectRequestRepository.UpdateAsync(
                 new JoinProjectRequest(projectId, userId, JoinProjectRequestStatus.Accepted));

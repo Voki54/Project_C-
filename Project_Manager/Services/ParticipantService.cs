@@ -39,16 +39,30 @@ namespace Project_Manager.Services
             return participants;
         }
 
-        public async Task<ParticipantControllerError?> ChangeParticipantRoleAsync(string userId, int projectId, UserRoles userRole)
+        public async Task<ParticipantControllerError.Errors?> ChangeParticipantRoleAsync(string userId, int projectId, UserRoles userRole)
         {
             if (!await _userManager.Users.AnyAsync(u => u.Id == userId))
-                return ParticipantControllerError.UserNotFound;
+                return ParticipantControllerError.Errors.UserNotFound;
 
             if (!await _projectUserRepository.IsUserInProjectAsync(userId, projectId))
-                return ParticipantControllerError.UserNotProject;
+                return ParticipantControllerError.Errors.UserNotProject;
 
             if (!await _projectUserService.UpdateUserRoleAsync(projectId, userId, userRole))
-                return ParticipantControllerError.UpdateError;
+                return ParticipantControllerError.Errors.UpdateError;
+
+            return null;
+        }
+
+        public async Task<ParticipantControllerError.Errors?> ExcludeParticipantAsync(string userId, int projectId)
+        {
+            if (!await _userManager.Users.AnyAsync(u => u.Id == userId))
+                return ParticipantControllerError.Errors.UserNotFound;
+
+            if (!await _projectUserRepository.IsUserInProjectAsync(userId, projectId))
+                return ParticipantControllerError.Errors.UserNotProject;
+
+            if (!await _projectUserService.ExcludeParticipantAsync(projectId, userId))
+                return ParticipantControllerError.Errors.ExcludeError;
 
             return null;
         }

@@ -11,7 +11,7 @@ namespace Project_Manager.Mappers
             {
                 Id = notification.Id,
                 Message = notification.Message,
-                RecipientId = notification.RecipientId,
+                //RecipientId = notification.RecipientId,
                 SendDate = notification.SendDate
             };
         }

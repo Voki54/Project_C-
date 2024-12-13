@@ -7,6 +7,7 @@ namespace Project_Manager.Services.Interfaces
     public interface IParticipantService
     {
         Task<IEnumerable<AppUserDTO>> GetProjectParticipantsAsync(int projectId);
-        Task<ParticipantControllerError?> ChangeParticipantRoleAsync(string userId, int projectId, UserRoles userRole);
+        Task<ParticipantControllerError.Errors?> ChangeParticipantRoleAsync(string userId, int projectId, UserRoles userRole);
+        Task<ParticipantControllerError.Errors?> ExcludeParticipantAsync(string userId, int projectId);
     }
 }

@@ -10,8 +10,8 @@
 }
 
 <div class="nav-btn">
-    <a asp-action="Create" class="btn btn-add">Создать проект</a>
-    <a asp-action="" class="btn btn-add">Присоединиться к проекту</a>
+    <a asp-action="Create" class="btn btn-add btn-to-project">Создать проект</a>
+    <a asp-controller="JoinProject" asp-action="Join" class="btn btn-add btn-to-project">Присоединиться к проекту</a>
 </div>
 
 @if (Model.Count() == 0)

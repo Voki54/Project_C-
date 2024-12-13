@@ -4,8 +4,8 @@
     ViewData["Title"] = "Изменить проект";
 }
 
-<h4>Project</h4>
-<hr />
+
+<a asp-controller="ProjectTasks" asp-action="Index" asp-route-projectId="@Model.Id">Отмена</a>
 <div class="row">
     <div class="col-md-4">
         <form method="post" asp-antiforgery="true" asp-action="Edit">
@@ -13,78 +13,33 @@
 
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Id" type="hidden" value="@Model.Id" />
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-
-@*             <div class="form-group">
-                <label for="invitationLink">Пригласительная ссылка:</label>
-                <div class="input-group">
-                    <input type="text" id="invitationLink" class="form-control" value="@Model.InvitationLink" readonly>
-                    <button class="btn btn-outline-secondary" type="button" id="copyButton">Копировать</button>
-                </div>
-            </div> *@
-
-            @* TODO Редактировать участников *@
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Изменить" class="btn btn-primary" />
+                <button class="btn btn-danger btn-exclude-participant" type="button" onclick="window['confirm-exclusion'].showModal()">
+                    Удалить проект
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<dialog class="dialog" id="confirm-exclusion" aria-labelledby="dialog-name">
+    <h4 class="dialog__title" id="dialog-name">
+        Вы уверены, что хотите удалить проект @Model.Name?<br />
+        Отменить действие будет невозможно.
+    </h4>
+    <form asp-action="Delete" method="post" id="exclusion-form">
+        <input type="hidden" name="projectId" value="@Model.Id"/>
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <button type="button" onclick="window['confirm-exclusion'].close()">Отмена</button>
+    </form>
+</dialog>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
-<style>
-    /* Стили для всплывающего окна */
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #28a745;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 14px;
-        display: none;
-        opacity: 0; /* Прозрачно */
-        transition: opacity 0.5s ease-in-out; /* Анимация изменения прозрачности */
-        z-index: 1000;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .toast.show {
-        display: block;
-        opacity: 1;
-    }
-</style>
-
-<script>
-    document.getElementById("copyButton").addEventListener("click", function () {
-        var linkField = document.getElementById("invitationLink");
-        linkField.select();
-
-        // Копируем текст в буфер обмена
-        navigator.clipboard.writeText(linkField.value).then(function () {
-            showToast(); // Показываем всплывающее сообщение
-        }).catch(function () {
-            alert("Не удалось скопировать ссылку.");
-        });
-    });
-
-    function showToast() {
-        var toast = document.getElementById("toast");
-        toast.classList.add("show");
-
-        // Убираем уведомление через 3 секунды
-        setTimeout(function () {
-            toast.classList.remove("show");
-        }, 3000);
-    }
-</script>

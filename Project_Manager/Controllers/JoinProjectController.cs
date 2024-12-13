@@ -3,6 +3,7 @@ using Project_Manager.Helpers;
 using Project_Manager.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Project_Manager.Models.Enums;
+using Project_Manager.ViewModels;
 
 namespace Project_Manager.Controllers
 {
@@ -17,33 +18,53 @@ namespace Project_Manager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Join(int projectId)
+        public async Task<IActionResult> Join(int? projectId)
         {
             var userId = User.GetUserId();
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("Login", "Account");
 
-            var joinProjectVM = await _joinProjectService.JoinProjectAsync(projectId, userId);
-            if (joinProjectVM == null)
-            {
-                TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
-                return RedirectToAction("Index", "Error");
-            }
+            JoinProjectVM? joinProjectVM = null;
 
+            if (projectId == null)
+                return View(joinProjectVM);
 
-            return View(joinProjectVM);
+            joinProjectVM = await _joinProjectService.JoinProjectAsync(projectId!.Value, userId);
+            if (joinProjectVM != null)
+                return View(joinProjectVM);
+
+            TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
+            return RedirectToAction("Index", "Error");
         }
 
-        [HttpPost]
+        [HttpPost("JoinProject/SubmitJoinWithoutUri")]
         public async Task<IActionResult> SubmitJoinRequest(int projectId)
         {
             var userId = User.GetUserId();
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("Login", "Account");
 
-            await _joinProjectService.SubmitJoinRequestAsync(projectId, userId);
+            if (await _joinProjectService.SubmitJoinRequestAsync(projectId, userId))
+                return RedirectToAction("Join", "JoinProject", new { projectId });
 
-            return RedirectToAction("Join", "JoinProject", new { projectId });
+            TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
+            return RedirectToAction("Index", "Error");
+        }
+
+        [HttpPost("JoinProject/SubmitJoinWithUri")]
+        public async Task<IActionResult> SubmitJoinRequest(string projectLink)
+        {
+            var userId = User.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return RedirectToAction("Login", "Account");
+
+            var projectId = await _joinProjectService.SubmitJoinRequestAsync(projectLink, userId);
+
+            if (projectId != null)
+                return RedirectToAction("Join", "JoinProject", new { projectId });
+
+            TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
+            return RedirectToAction("Index", "Error");
         }
 
         [HttpGet]

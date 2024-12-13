@@ -7,9 +7,9 @@ namespace Project_Manager.Services.Interfaces
     {
         Task<IEnumerable<ProjectDTO>> GetUserProjectsAsync(string? userId);
         Task<ProjectDTO?> CreateProjectAsync(string? userId, CreateAndEditProjectVM createProjectVM);
-        //Task<CreateAndEditProjectVM?> GetCreateAndEditProjectVMByIdAsync(int projectId);
         Task<string?> GetProjectName(int projectId);
         Task<bool> ExistProjectAsync(int projectId);
-        Task<bool> UpdateProjectAsync(int projectId, CreateAndEditProjectVM editProjectVM);
+        Task<bool> UpdateProjectAsync(CreateAndEditProjectVM editProjectVM);
+        Task<bool> DeleteProjectAsync(int projectId);
     }
 }

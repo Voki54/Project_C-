@@ -8,6 +8,8 @@ namespace Project_Manager.ViewModels
         public string ProjectName { get; set; }
         public JoinProjectRequestStatus? RequestStatus { get; set; }
 
+        public JoinProjectVM() { }
+
         public JoinProjectVM(int projectId, string projectName, JoinProjectRequestStatus? requestStatus)
         {
             ProjectId = projectId;
