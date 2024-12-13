@@ -63,6 +63,9 @@ namespace Project_Manager.Services
 
             if (!await _projectUserService.ExcludeParticipantAsync(projectId, userId))
                 return ParticipantControllerError.Errors.ExcludeError;
+            
+            //удалить заявку пользователя которого исключаешь
+            await _joinProjectService.RejectApplicationAsync(userId, projectId);
 
             return null;
         }

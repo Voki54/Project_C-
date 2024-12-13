@@ -23,7 +23,7 @@ else
         <tbody>
             @foreach (var notification in Model)
             {
-            <tr>
+            <tr id="notification-@notification.Id">
                 <td>
                     @notification.Message
                 </td>
@@ -52,30 +52,13 @@ else
         Вы уверены, что хотите удалить это уведомление?<br />
         Отменить действие будет невозможно.
     </h4>
-    <form asp-action="Delete" method="post" id="exclusion-form">
-        <input type="hidden" name="notificationId" id="hidden-notification-id" />
-        <button type="submit" class="btn btn-danger">Удалить</button>
+	<form id="exclusion-form">
+        <button type="submit" class="btn btn-danger" id="delete-btn" onclick="deleteNotification(this)">Удалить</button>
         <button type="button" onclick="window['confirm-exclusion'].close()">Отмена</button>
     </form>
 </dialog>
 
 
 @section Scripts {
-    <script>
-        function goBack() {
-            const referrer = document.referrer;
-
-            if (referrer) {
-                window.location.href = referrer;
-            } else {
-                window.location.href = '/';
-            }
-        }
-
-        // Действия при открытии модального окна
-        function openExclusionModal(button) {
-            document.getElementById('hidden-notification-id').value = button.getAttribute('data-notification-id');
-            document.getElementById('confirm-exclusion').showModal();
-        }
-    </script>
+    <script src="~/js/notification-index.js"></script>
 }

@@ -43,7 +43,7 @@ namespace Project_Manager.Services
             var allUserNotifications = await _notificationRepository.GetNotificationsByUserIdAsync(userId);
             allUserNotifications = allUserNotifications.Where
                 (
-                    notification => notification.State == NotificationState.Sent &&
+                    notification => notification.State == NotificationState.Sent ||
                                     notification.State == NotificationState.Read
                 );
 
