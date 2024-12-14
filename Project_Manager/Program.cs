@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data;
@@ -6,15 +5,11 @@ using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Data.DAO.Repository;
 using Project_Manager.Models;
 using Project_Manager.Services;
-using log4net;
-using log4net.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
@@ -37,16 +32,11 @@ builder.Services.AddIdentity<AppUser, IdentityRole/*<string>*//*<Guid>*/>(
 
 builder.Services.AddRazorPages();
 
-var logRepository = LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly());
-XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -55,7 +45,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // Добавление аутентификации
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllerRoute(

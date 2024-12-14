@@ -8,8 +8,8 @@ namespace Project_Manager.Helpers
         {
             { nameof(ProjectTaskDTO.Title), false },
             { nameof(ProjectTaskDTO.Status), false },
-            { nameof(ProjectTaskDTO.Category), false },
-            { nameof(ProjectTaskDTO.ExecutorName), false },
+            { "Category.Name", false },
+            { "AppUser.UserName", false },
             { nameof(ProjectTaskDTO.DueDateTime), false },
             { nameof(ProjectTaskDTO.Description), false }
         };

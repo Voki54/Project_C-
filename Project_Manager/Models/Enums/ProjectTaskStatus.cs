@@ -2,8 +2,8 @@
 {
     public enum ProjectTaskStatus
     {
-        Completed,
-        In_process,
-        Required
+        Выполнено,
+        В_процессе,
+        Требует_выполнения
     }
 }

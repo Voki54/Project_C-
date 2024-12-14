@@ -8,10 +8,10 @@ namespace Project_Manager.ViewModels
     {
         public List<ProjectTaskDTO> Tasks { get; set; }        
         public List<Category> Categories { get; set; }     
-        public Category SelectedCategory { get; set; }
+        public int? SelectedCategory { get; set; }
         public string? SortedColumn { get; set; }
         public bool? IsAsc { get; set; }
         public int ProjectId { get; set; }
-        public UserRoles? Role { get; set; }
+        public UserRoles Role { get; set; }
     }
 }

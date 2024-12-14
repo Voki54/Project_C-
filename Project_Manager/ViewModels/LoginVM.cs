@@ -4,10 +4,10 @@ namespace Project_Manager.ViewModels;
 
 public class LoginVM
 {
-    [Required(ErrorMessage = "Username is required.")]
+    [Required(ErrorMessage = "Имя пользователя обязательно.")]
     public string? Username { get; set; }
 
-    [Required(ErrorMessage = "Password is required.")]
+    [Required(ErrorMessage = "Пароль обязателен.")]
     [DataType(DataType.Password)]
     public string? Password { get; set; }
 

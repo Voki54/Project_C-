@@ -4,27 +4,36 @@
 <div class="row">
     <!-- Левый столбец с категориями -->
     <div class="category-list">
+
         <h5>Категории</h5>
+
         <ul class="list-group">
+
             <li class="list-group-item @(Model.SelectedCategory == null ? "active" : "")">
                 <a href="@Url.Action("Index", new{ projectId = Model.ProjectId})" class="text-decoration-none">Все категории</a>
             </li>
+
             @foreach (var category in Model.Categories)
             {
-                <li class="list-group-item @(category.Id == Model.SelectedCategory?.Id ? "active" : "")">
+                <li class="list-group-item @(category.Id == Model.SelectedCategory ? "active" : "")">
+                    
                     <a href="@Url.Action("Index", new { categoryId = category.Id, projectId = Model.ProjectId })" class="text-decoration-none">
                         @category.Name
                     </a>
+
                     @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                     {
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            <!-- Кнопка Редактировать -->
-                            <a href="@Url.Action("Edit", "Categories", new { id = category.Id })" class="btn btn-edit1">Редактировать</a>
 
-                            <!-- Кнопка Удалить -->
-                            <form asp-action="DeleteConfirmed" asp-controller="Categories" asp-route-id="@category.Id" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту категорию?');">
+                            <a href="@Url.Action("Edit", "Categories", new { id = category.Id })" class="btn btn-edit1">Редактировать</a>
+                            
+                            <form asp-action="DeleteConfirmed" asp-controller="Categories" asp-route-id="@category.Id" method="post" style="display:inline;" 
+                            onsubmit="return confirm('Вы уверены, что хотите удалить эту категорию?');">
+
                                 <button type="submit" class="btn btn-delete1">Удалить</button>
+
                             </form>
+
                         </div>
                     }
                 </li>
@@ -41,30 +50,33 @@
     <div class="task-list">
         <div class="cont">
             <h5>Задачи</h5>
+
             <div class="d-flex align-items-center">
                 <div class="filter-container">
                     <button type="button" class="btn btn-add filter-button">Фильтровать</button>
                     <!-- Всплывающее окно -->
                     <div class="filter-popup">
                         <ul class="filter-list">
+
                             <li class="filter-item">
                                 <p>Фильтр по статусу</p>
-                                <!-- Всплывающее окно для конкретного фильтра -->
+                                <!-- Всплывающее окно для фильтра по статусу -->
                                 <div class="filter-submenu">
                                     <form method="post" action="@Url.Action("Index", new{ projectId = Model.ProjectId})">
                                         <label for="status">Статус:</label>
                                         <select id="status" name="filterStatus" class="form-control">
-                                            <option value="Completed">Completed</option>
-                                            <option value="In_process">In_process</option>
-                                            <option value="Required">Required</option>
+                                            <option value="0">Выполнено</option>
+                                            <option value="1">В процессе</option>
+                                            <option value="2">Требует выполнения</option>
                                         </select>
                                         <button type="submit" class="btn btn-filter btn-status">Применить</button>
                                     </form>
                                 </div>
                             </li>
+
                             <li class="filter-item">
                                 <p>Фильтр по исполнителю</p>
-                                <!-- Всплывающее окно для конкретного фильтра -->
+                                <!-- Всплывающее окно для фильтра по исполнителю -->
                                 <div class="filter-submenu">
                                     <form method="post" action="@Url.Action("Index", new{ projectId = Model.ProjectId})">
                                         <label for="filterExecutor">Исполнитель:</label>
@@ -73,10 +85,11 @@
                                     </form>
                                 </div>
                             </li>
+
                             <li class="filter-item">
                                 <p>Фильтр по дедлайну</p>
-                                <!-- Всплывающее окно для конкретного фильтра -->
-                                <div class="filter-submenu">
+                                <!-- Всплывающее окно для фильтра по дедлайну -->
+                                <div class="filter-submenu filter-submenu-deadline">
                                     <form method="post" action="@Url.Action("Index", new{ projectId = Model.ProjectId})">
                                         <label for="deadline">Дедлайн до:</label>
                                         <div class="filter-time">
@@ -86,16 +99,20 @@
                                     </form>
                                 </div>
                             </li>
+
                             <li class="filter-item">
                                 <a href="@Url.Action("Index", new{ projectId = Model.ProjectId})">Отменить фильтр</a>
                             </li>
+
                         </ul>
                     </div>
                 </div>
+
                 @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                 {
                     <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
                 }
+
             </div>
         </div>
 
@@ -104,39 +121,66 @@
             <table class="table task-table">
                 <thead>
                     <tr>
+
                         <th>
                             <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "Title" })">
+
                                 <div>Название @(Model.SortedColumn == "Title" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
                             </a>
                         </th>
+
                         <th>
+
                             <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "Status" })">
+
                                 <div>Статус @(Model.SortedColumn == "Status" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
                             </a>
                         </th>
+
                         <th>
-                            <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "Category" })">
-                                <div>Категория @(Model.SortedColumn == "Category" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
+                            <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "Category.Name" })">
+
+                                <div>Категория @(Model.SortedColumn == "Category.Name" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
                             </a>
+
                         </th>
+
                         @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                         {
                             <th>
-                                <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "ExecutorName" })">
-                                    <div>Исполнитель @(Model.SortedColumn == "ExecutorName" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
+                                <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "AppUser.UserName" })">
+
+                                    <div>Исполнитель @(Model.SortedColumn == "AppUser.UserName" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
                                 </a>
+
                             </th>
                         }
                         <th>
+
                             <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "DueDateTime" })">
+
                                 <div>Дедлайн @(Model.SortedColumn == "DueDateTime" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
                             </a>
+
                         </th>
+
                         <th>
+
                             <a href="@Url.Action("Index", new { projectId = Model.ProjectId, sortColumn = "Description" })">
+
                                 <div>Описание @(Model.SortedColumn == "Description" ? (Model.IsAsc == true ? "↑" : "↓") : "")</div>
+
                             </a>
+
                         </th>
+
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -144,46 +188,90 @@
                     @foreach (var task in Model.Tasks)
                     {
                         <tr class="task-tr">
+
                             <td>@task.Title</td>
+
                             <td>
-                                <span class="status-label @task.Status.ToString().ToLower()">
-                                    @task.Status.ToString().ToLower()
-                                </span>
+                                @if (task.Status.ToLower() == ProjectTaskStatus.Выполнено.ToString().ToLower())
+                                {
+                                    
+                                    <span class="status-label completed">
+                                        Выполнено
+                                    </span>
+                                
+                                } else if (task.Status.ToLower() == ProjectTaskStatus.В_процессе.ToString().ToLower())
+                                {
+                                    
+                                    <span class="status-label in_process">
+                                        В процессе
+                                    </span>
+
+                                } else if (task.Status.ToLower() == ProjectTaskStatus.Требует_выполнения.ToString().ToLower())
+                                {
+
+                                    <span class="status-label required">
+                                        Требует выполнения
+                                    </span>
+
+                                }
                             </td>
+
                             <td>@task.Category.Name</td>
+
                             @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                             {
                                 <td>@(task.ExecutorName != null ? task.ExecutorName : "Не назначен")</td>                                
                             }
+
                             <td>@task.DueDateTime</td>
+
                             <td class="description">@task.Description</td>
+
                             <td>
                                 <a href="@Url.Action("ViewTask", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-view">Просмотр</a>
+
                                 @if (Model.Role == UserRoles.Manager || Model.Role == UserRoles.Admin)
                                 {
                                     <a href="@Url.Action("Edit", new { id = task.Id, projectId = Model.ProjectId })" class="btn btn-edit">Редактировать</a>
-                                    <form asp-action="DeleteConfirmed" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" method="post" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
+
+                                    <form asp-action="DeleteConfirmed" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" method="post" style="display:inline;" 
+                                    onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
+
                                         <button type="submit" class="btn btn-delete">Удалить</button>
+
                                     </form>
                                 }
+
                                 @if (Model.Role == UserRoles.Executor)
                                 {
-                                    if (task.Status.ToLower() != ProjectTaskStatus.Completed.ToString().ToLower())
+
+                                    if (task.Status.ToLower() != ProjectTaskStatus.Выполнено.ToString().ToLower())
                                     {
-                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" asp-route-taskStatus="@ProjectTaskStatus.Completed" style="display:inline;" method="post">
+                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" 
+                                        asp-route-taskStatus="@ProjectTaskStatus.Выполнено" style="display:inline;" method="post">
+
                                             <button type="submit" class="btn btn-done">Выполнено</button>
+
                                         </form>
                                     }
-                                    if (task.Status.ToLower() != ProjectTaskStatus.In_process.ToString().ToLower())
+
+                                    if (task.Status.ToLower() != ProjectTaskStatus.В_процессе.ToString().ToLower())
                                     {
-                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" asp-route-taskStatus="@ProjectTaskStatus.In_process" style="display:inline;" method="post">
+                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" 
+                                        asp-route-taskStatus="@ProjectTaskStatus.В_процессе" style="display:inline;" method="post">
+
                                             <button type="submit" class="btn btn-process">В процессе</button>
+
                                         </form>
                                     }
-                                    if (task.Status.ToLower() != ProjectTaskStatus.Required.ToString().ToLower())
+
+                                    if (task.Status.ToLower() != ProjectTaskStatus.Требует_выполнения.ToString().ToLower())
                                     {
-                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" asp-route-taskStatus="@ProjectTaskStatus.Required" style="display:inline;" method="post">
+                                        <form asp-action="ChangeStatus" asp-route-id="@task.Id" asp-route-projectId="@Model.ProjectId" 
+                                        asp-route-taskStatus="@ProjectTaskStatus.Требует_выполнения" style="display:inline;" method="post">
+
                                             <button type="submit" class="btn btn-require">Требует выполнения</button>
+
                                         </form>
                                     }
                                 }
