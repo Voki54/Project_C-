@@ -9,18 +9,3 @@
         Deleted
     }
 }
-/*    public static class NotificationStateExtensions
-    {
-        *//*        public static bool IsFinalState(this NotificationState state)
-                {
-                    return state == NotificationState.Delivered || state == NotificationState.Failed;
-                }*//*
-
-        public static bool ChangeState(this NotificationState state)
-        {
-
-
-            return state == NotificationState.Delivered || state == NotificationState.Failed;
-        }
-    }
-}*/

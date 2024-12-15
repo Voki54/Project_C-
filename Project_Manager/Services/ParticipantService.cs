@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
-using Project_Manager.Data.DAO.Repository;
 using Project_Manager.DTO.AppUser;
 using Project_Manager.Helpers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 using Project_Manager.Services.Interfaces;
-using Project_Manager.ViewModels;
 
 namespace Project_Manager.Services
 {
@@ -64,7 +61,6 @@ namespace Project_Manager.Services
             if (!await _projectUserService.ExcludeParticipantAsync(projectId, userId))
                 return ParticipantControllerError.Errors.ExcludeError;
             
-            //удалить заявку пользователя которого исключаешь
             await _joinProjectService.RejectApplicationAsync(userId, projectId);
 
             return null;

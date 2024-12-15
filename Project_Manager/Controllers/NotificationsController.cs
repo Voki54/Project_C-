@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Services.Interfaces;
 using Project_Manager.Helpers;
-using Azure.Core;
-using Project_Manager.Models;
 
 
 namespace Project_Manager.Controllers
@@ -22,19 +20,39 @@ namespace Project_Manager.Controllers
             return View(await _notificationService.GetAvailableUserNotificationsAsync(User.GetUserId()));
         }
 
-        /*        [HttpPost]
-                public async Task<IActionResult> MarkAsRead()
-                {
+        [HttpPost]
+        public async Task<IActionResult> MarkAllAsRead()
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+                return Unauthorized(new { message = "User is not authorized" });
 
-                }*/
+            if (await _notificationService.MarkAllUserNotificationsAsReadAsync(userId))
+                return Ok(new { success = true, notifications = await _notificationService.GetAvailableUserNotificationsAsync(userId) });
+
+            return Ok(new { success = false });
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] DeleteNotificationRequest request)
+        public async Task<IActionResult> DeleteReadNotifications()
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+                return Unauthorized(new { message = "User is not authorized" });
+
+            if (await _notificationService.DeleteReadNotificationsAsync(userId))
+                return Ok(new { success = true, notifications = await _notificationService.GetAvailableUserNotificationsAsync(userId) });
+
+            return Ok(new { success = false });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete([FromBody] DeleteNotificationRequest request) //
         {
             if (await _notificationService.DeleteAsync(request.Id))
-                return Ok();
+                return Ok(new { success = true, message = "Notification was found." });
 
-            return NotFound(new { Message = "Notification not found" });
+            return NotFound(new { success = false, message = "Notification not found." });
         }
 
         public class DeleteNotificationRequest

@@ -15,6 +15,7 @@
 
 .btn-to-project {
     margin: 0;
+    border-radius: 5px;
 }
 
 .project-list {
@@ -36,4 +37,63 @@
     text-decoration: none;
     color: #333;
     padding: 10px;
+}
+
+.go-back {
+    position: fixed;
+    top: 42px;
+    padding: 10px;
+    font-size: 19px;
+    border-radius: 5px
+}
+
+.exit {
+    margin: 5px 0 0 10px;
+    border: 0;
+    border-radius: 7px;
+    padding: 10px 15px;
+}
+
+#delete-project, #delete-notification-btn, #delete-read-notification-btn {
+    background-color: #bb2d3b;
+}
+
+dialog {
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding: 0;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 500px;
+    text-align: center;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-change-role {
+    width: 100%;
+}
+
+.td-btn {
+    text-align: center;
 }

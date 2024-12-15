@@ -23,7 +23,7 @@ namespace Project_Manager.Models
         }
 
         //Изменение состояния уведомления
-        public async Task HandleEventAsync(*//*NotificationEvent*//* IEvent @event) // ProjectApplicationSubmittedEvent
+        public async Task HandleEventAsync(*//*NotificationEvent*//* IEvent notificationEvent) // ProjectApplicationSubmittedEvent
         {
             State = await _stateManager.ChangeNotificationState(this);
             //await Task.CompletedTask;

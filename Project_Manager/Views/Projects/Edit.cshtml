@@ -4,39 +4,39 @@
     ViewData["Title"] = "Изменить проект";
 }
 
+<h2>Изменить проекта</h2>
 
-<a asp-controller="ProjectTasks" asp-action="Index" asp-route-projectId="@Model.Id">Отмена</a>
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-antiforgery="true" asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Id" type="hidden" value="@Model.Id" />
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Изменить" class="btn btn-primary" />
-                <button class="btn btn-danger btn-exclude-participant" type="button" onclick="window['confirm-exclusion'].showModal()">
-                    Удалить проект
-                </button>
-            </div>
-        </form>
+<form class="formCreate" asp-antiforgery="true" asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Id" type="hidden" value="@Model.Id" />
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-</div>
+
+    <input type="submit" value="Изменить" class="btn btn-primary" />
+    <button id="delete-project" class="btn btn-danger btn-secondary exit" type="button" onclick="window['confirm-exclusion'].showModal()">
+        Удалить проект
+    </button>
+    <a class="btn btn-secondary exit" asp-controller="ProjectTasks" asp-action="Index" asp-route-projectId="@Model.Id">Отмена</a>
+</form>
+
 
 <dialog class="dialog" id="confirm-exclusion" aria-labelledby="dialog-name">
-    <h4 class="dialog__title" id="dialog-name">
-        Вы уверены, что хотите удалить проект @Model.Name?<br />
-        Отменить действие будет невозможно.
-    </h4>
-    <form asp-action="Delete" method="post" id="exclusion-form">
-        <input type="hidden" name="projectId" value="@Model.Id"/>
-        <button type="submit" class="btn btn-danger">Удалить</button>
-        <button type="button" onclick="window['confirm-exclusion'].close()">Отмена</button>
-    </form>
+    <div class="dialog-content">
+		<h4 class="dialog__title" id="dialog-name">
+			Вы уверены, что хотите удалить проект @Model.Name?<br />
+			Отменить действие будет невозможно.
+		</h4>
+		<form asp-action="Delete" method="post" id="exclusion-form">
+			<input type="hidden" name="projectId" value="@Model.Id" />
+            <button type="submit" class="btn  btn-secondary exit btn-danger">Удалить</button>
+            <button type="button" class="btn btn-secondary exit" onclick="window['confirm-exclusion'].close()">Отмена</button>
+		</form>
+    </div>
 </dialog>
 
 

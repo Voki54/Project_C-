@@ -6,7 +6,7 @@ namespace Project_Manager.DTO.Notification
     {
         public int Id { get; set; }
         public string Message { get; set; }
-        //public string RecipientId { get; set; }
+        public NotificationState State { get; set; }
         public DateTime SendDate { get; set; }
     }
 }

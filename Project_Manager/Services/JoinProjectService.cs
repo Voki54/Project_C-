@@ -33,14 +33,12 @@ namespace Project_Manager.Services
             _eventPublisher = eventPublisher;
             _notificationHandler = notificationHandler;
 
-            // Подписка на событие
             _eventPublisher.Subscribe(async e => await HandleEventAsync(e));
         }
 
-        // Обработчик события
-        private async Task HandleEventAsync(IEvent @event)
+        private async Task HandleEventAsync(IEvent notificationEvent)
         {
-            if (@event is IEvent projectEvent)
+            if (notificationEvent is IEvent projectEvent)
                 await _notificationHandler.HandleAsync(projectEvent);
         }
 
@@ -68,7 +66,7 @@ namespace Project_Manager.Services
             await _joinProjectRequestRepository.CreateAsync(
                 new JoinProjectRequest(projectId, userId, JoinProjectRequestStatus.Pending));
 
-            await _eventPublisher.PublishAsync(new NotificationSendingEvent(userId, projectId));
+            await _eventPublisher.PublishAsync(NotificationSendingEvent.CreateWithSender(userId, projectId, NotificationType.JoinProject));
 
             return true;
         }
@@ -77,7 +75,13 @@ namespace Project_Manager.Services
         {
             var projectId = ExtractProjectIdFromLink(projectLink);
 
-            if (projectId != null && await SubmitJoinRequestAsync(projectId!.Value, userId)) 
+            if (projectId == null)
+                return null;
+
+            if (await _joinProjectRequestRepository.GetJoinProjectRequestAsync(projectId!.Value, userId) != null)
+                return projectId;
+
+            if (await SubmitJoinRequestAsync(projectId!.Value, userId)) 
                 return projectId;
 
             return null;
@@ -107,8 +111,7 @@ namespace Project_Manager.Services
 
         public async Task<bool> AcceptApplicationAsync(string userId, int projectId, UserRoles userRole)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if (await _userManager.FindByIdAsync(userId) == null)
                 return false;
 
             if (!await _projectUserService.IsUserInProjectAsync(userId, projectId))
@@ -116,13 +119,15 @@ namespace Project_Manager.Services
 
             await _joinProjectRequestRepository.UpdateAsync(
                 new JoinProjectRequest(projectId, userId, JoinProjectRequestStatus.Accepted));
+
+            await _eventPublisher.PublishAsync(NotificationSendingEvent.CreateWithRecipient(userId, projectId, NotificationType.AcceptJoin));
+
             return true;
         }
 
         public async Task<bool> RejectApplicationAsync(string userId, int projectId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if (await _userManager.FindByIdAsync(userId) == null)
                 return false;
 
             await _joinProjectRequestRepository.DeleteAsync(projectId, userId);

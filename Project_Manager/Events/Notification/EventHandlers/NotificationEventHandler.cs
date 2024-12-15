@@ -1,7 +1,7 @@
-﻿using Project_Manager.Models;
-using Project_Manager.Models.Enums;
+﻿using Microsoft.AspNetCore.Identity;
+using Project_Manager.Models;
+using Project_Manager.Services;
 using Project_Manager.Services.Interfaces;
-using Project_Manager.StatesManagers;
 using Project_Manager.StatesManagers.Interfaces;
 
 namespace Project_Manager.Events.Notification.EventHandlers
@@ -11,36 +11,99 @@ namespace Project_Manager.Events.Notification.EventHandlers
         private readonly INotificationStatesManager _notificationStateManager;
         private readonly INotificationService _notificationService;
         private readonly IProjectUserService _projectUserService;
+        private readonly IProjectService _projectService;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly ILogger<NotificationService> _logger;
 
         public NotificationEventHandler(INotificationStatesManager notificationStateManager, 
-            INotificationService notificationService, IProjectUserService projectUserService)
+            INotificationService notificationService, IProjectUserService projectUserService,
+            UserManager<AppUser> userManager, IProjectService projectService,
+            ILogger<NotificationService> logger)
         {
             _notificationStateManager = notificationStateManager;
             _notificationService = notificationService;
             _projectUserService = projectUserService;
+            _userManager = userManager;
+            _projectService = projectService;
+            _logger = logger;
         }
 
-        // Асинхронный метод для обработки события
-        public async Task HandleAsync(IEvent @event)
+        public async Task HandleAsync(IEvent notificationEvent)
         {
-            var adminId = await _projectUserService.GetAdminId(@event.ProjectId);
-            //тут должен быть лог
-            if (adminId == null) return;
-            var notification = new Models.Notification
+            if (!await _projectService.ExistProjectAsync(notificationEvent.ProjectId))
             {
-                Message = $"New application received: {@event.SenderId} applied for project {@event.ProjectId}.",
-                RecipientId = adminId.ToString(),
-                SendDate = @event.Timestamp
-            };
+                _logger.LogInformation("Invalid project ID.");
+                return;
+            }
 
-            if (await _notificationService.CreateAsync(notification))
+            Models.Notification? notification = null;
+
+            switch (notificationEvent.Type)
+            {
+                case NotificationType.JoinProject:
+                    notification = await HandleJoinProjectEvent(notificationEvent);
+                    break;
+                case NotificationType.AcceptJoin:
+                    notification = await HandleAcceptJoinEvent(notificationEvent);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unknown notification event type.");
+            }
+
+            if (notification != null && await _notificationService.CreateAsync(notification))
                 await _notificationStateManager.ChangeNotificationState(notification);
+        }
 
+        private async Task<Models.Notification?> HandleJoinProjectEvent(IEvent notificationEvent)
+        {
+            if (notificationEvent.SenderId == null)
+                return null;
 
-            //await notification.HandleEventAsync(@event);
+            var user = await _userManager.FindByIdAsync(notificationEvent.SenderId);
 
-            // Асинхронная отправка уведомления (например, email)
-            //await _notificationService.SendNotificationAsync(notification);
+            if (user == null)
+            {
+                _logger.LogInformation("Invalid sender ID.");
+                return null;
+            }
+
+            var adminId = await _projectUserService.GetAdminId(notificationEvent.ProjectId);
+
+            if (adminId == null)
+            {
+                _logger.LogInformation("Invalid admin ID.");
+                return null;
+            }
+
+            string projectName = await _projectService.GetProjectName(notificationEvent.ProjectId);
+
+            return new Models.Notification
+            {
+                Message = $"Пользователь {user.UserName} хочет присоединиться к проекту \"{projectName}\".",
+                RecipientId = adminId,
+                SendDate = notificationEvent.Timestamp
+            };
+        }
+
+        private async Task<Models.Notification?> HandleAcceptJoinEvent(IEvent notificationEvent)
+        {
+            if (notificationEvent.RecipientId == null)
+                return null;
+
+            if (await _userManager.FindByIdAsync(notificationEvent.RecipientId) == null)
+            {
+                _logger.LogInformation("Invalid recipient ID.");
+                return null;
+            }
+
+            string projectName = await _projectService.GetProjectName(notificationEvent.ProjectId);
+
+            return new Models.Notification
+            {
+                Message = $"Вы были добавлены в проект \"{projectName}\".",
+                RecipientId = notificationEvent.RecipientId,
+                SendDate = notificationEvent.Timestamp
+            };
         }
     }
 }

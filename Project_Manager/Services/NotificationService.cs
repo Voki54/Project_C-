@@ -1,21 +1,24 @@
-﻿using Project_Manager.Controllers;
-using Project_Manager.Data.DAO.Interfaces;
+﻿using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.DTO.Notification;
 using Project_Manager.Mappers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 using Project_Manager.Services.Interfaces;
+using Project_Manager.StatesManagers.Interfaces;
 
 namespace Project_Manager.Services
 {
     public class NotificationService : INotificationService
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly INotificationStatesManager _notificationStatesManager;
         private readonly ILogger<NotificationService> _logger;
 
-        public NotificationService(INotificationRepository notificationRepository, ILogger<NotificationService> logger)
+        public NotificationService(INotificationRepository notificationRepository, INotificationStatesManager notificationStatesManager,
+            ILogger<NotificationService> logger)
         {
             _notificationRepository = notificationRepository;
+            _notificationStatesManager = notificationStatesManager;
             _logger = logger;
         }
 
@@ -28,7 +31,11 @@ namespace Project_Manager.Services
 
         public async Task<bool> DeleteAsync(int notificationId)
         {
-            return await _notificationRepository.DeleteAsync(notificationId);
+            var notification = await _notificationRepository.GetNotificationByIdAsync(notificationId);
+
+            if (notification == null)
+                return false;
+            return await _notificationStatesManager.ChangeNotificationState(notification, NotificationState.Deleted);
         }
 
         public async Task<IEnumerable<NotificationDTO>> GetAvailableUserNotificationsAsync(string userId)
@@ -45,7 +52,7 @@ namespace Project_Manager.Services
                 (
                     notification => notification.State == NotificationState.Sent ||
                                     notification.State == NotificationState.Read
-                );
+                ).OrderByDescending(n => n.SendDate);
 
             foreach (var notification in allUserNotifications)
                 notificationDTOs.Add(notification.ToNotificationDTO());
@@ -55,7 +62,29 @@ namespace Project_Manager.Services
 
         public async Task<bool> UpdateStateAsync(Notification notification)
         {
-            return await _notificationRepository.UpdateStateAsync(notification);
+            return await _notificationStatesManager.ChangeNotificationState(notification);
+        }
+
+        public async Task<bool> MarkAllUserNotificationsAsReadAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogInformation("Invalid user ID.");
+                return false;
+            }
+
+           return await _notificationStatesManager.ChangeStatusMultipleNotifications(userId, NotificationState.Sent);
+        }
+
+        public async Task<bool> DeleteReadNotificationsAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogInformation("Invalid user ID.");
+                return false;
+            }
+
+            return await _notificationStatesManager.ChangeStatusMultipleNotifications(userId, NotificationState.Read);
         }
     }
 }

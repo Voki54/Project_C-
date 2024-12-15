@@ -1,4 +1,5 @@
-﻿using Project_Manager.DTO.Notification;
+﻿using Mono.TextTemplating;
+using Project_Manager.DTO.Notification;
 using Project_Manager.Models;
 
 namespace Project_Manager.Mappers
@@ -11,7 +12,7 @@ namespace Project_Manager.Mappers
             {
                 Id = notification.Id,
                 Message = notification.Message,
-                //RecipientId = notification.RecipientId,
+                State = notification.State,
                 SendDate = notification.SendDate
             };
         }

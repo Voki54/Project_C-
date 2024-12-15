@@ -5,64 +5,71 @@
     ViewData["Title"] = "Участники";
 }
 
-<a asp-controller="ProjectTasks" asp-action="Index" asp-route-projectId="@Model.ProjectId">←</a>
+<button class="btn btn-add btn-to-project go-back" onclick="goBack()">◁</button>
 
 @if (Model.Participants.Count() == 0)
 {
-    <tr>В вашем проекте пока нет участников. Вы можете пригласить их, отправив им ссылку-приглашение.</tr>
+    <h2>В вашем проекте пока нет участников. <br /> Вы можете пригласить их, отправив им ссылку-приглашение.</h2>
 }
 else
 {
-    <table class="table">
-        <tbody>
-            @foreach (var participant in Model.Participants)
-            {
-                <tr>
-                    <td>@participant.Name</td>
-                    <td>@participant.Email</td>
-                    <td>
-                        <form asp-action="ChangeRole" method="post">
-                            <div class="form-group">
-                                <select class="role-select" name="userRole" data-default-role="@participant.Role">
-                                    @foreach (var role in UserRolesDescription.userRoles)
-                                    {
-                                        <option value="@role.Key">@role.Value</option>
-                                    }
-                                </select>
-                            </div>
+    <div class="project-list">
+        <table class="table project-table">
+            <thead>
+                <tr><th colspan="4">Участники</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var participant in Model.Participants)
+                {
+                    <tr class="task-tr">
+                        <td>@participant.Name</td>
+                        <td>@participant.Email</td>
+                        <td>
+                            <form asp-action="ChangeRole" method="post">
+                                <div class="form-group">
+                                    <select class="form-control role-select" name="userRole" data-default-role="@participant.Role">
+                                        @foreach (var role in UserRolesDescription.userRoles)
+                                        {
+                                            <option value="@role.Key">@role.Value</option>
+                                        }
+                                    </select>
+                                </div>
 
-                            <input type="hidden" name="userId" value="@participant.Id" />
-                            <input type="hidden" name="projectId" value="@Model.ProjectId" />
-                            <button type="submit" class="btn btn-success">+</button>
-                        </form>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger btn-exclude-participant"
-                                type="button"
-                                data-user-id="@participant.Id"
-                                data-project-id="@Model.ProjectId"
-                                data-user-name="@participant.Name"
-                                onclick="openExclusionModal(this)">
-                            Исключить
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                                <input type="hidden" name="userId" value="@participant.Id" />
+                                <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                                <button type="submit" id="change-role" class="btn btn-success btn-change-role">Изменить</button>
+                            </form>
+                        </td>
+                        <td class="td-btn">
+                            <button class="btn btn-danger btn-exclude-participant"
+                                    type="button"
+                                    data-user-id="@participant.Id"
+                                    data-project-id="@Model.ProjectId"
+                                    data-user-name="@participant.Name"
+                                    onclick="openExclusionModal(this)">
+                                Исключить
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 <dialog class="dialog" id="confirm-exclusion" aria-labelledby="dialog-name">
-    <h4 class="dialog__title" id="dialog-name">
-        Вы уверены, что хотите исключить пользователя <span id="user-name"></span> из проекта?<br />
-        Отменить действие будет невозможно.
-    </h4>
-    <form asp-action="ExcludeParticipant" method="post" id="exclusion-form">
-        <input type="hidden" name="userId" id="hidden-user-id" />
-        <input type="hidden" name="projectId" id="hidden-project-id" />
-        <button type="submit" class="btn btn-danger">Исключить</button>
-        <button type="button" onclick="window['confirm-exclusion'].close()">Отмена</button>
-    </form>
+    <div class="dialog-content">
+        <h4 class="dialog__title" id="dialog-name">
+            Вы уверены, что хотите исключить пользователя <span id="user-name"></span> из проекта?<br />
+            Отменить действие будет невозможно.
+        </h4>
+        <form asp-action="ExcludeParticipant" method="post" id="exclusion-form">
+            <input type="hidden" name="userId" id="hidden-user-id" />
+            <input type="hidden" name="projectId" id="hidden-project-id" />
+            <button type="submit" class="btn btn-secondary exit btn-danger">Исключить</button>
+            <button type="button" class="btn btn-secondary exit" onclick="window['confirm-exclusion'].close()">Отмена</button>
+        </form>
+    </div>
 </dialog>
 
 @section Scripts {

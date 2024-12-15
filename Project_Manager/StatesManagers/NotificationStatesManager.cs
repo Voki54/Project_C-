@@ -1,83 +1,86 @@
-﻿using Project_Manager.Models;
+﻿using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.Models;
 using Project_Manager.Models.Enums;
-using Project_Manager.Services.Interfaces;
 using Project_Manager.StatesManagers.Interfaces;
 
 namespace Project_Manager.StatesManagers
 {
     public class NotificationStatesManager : INotificationStatesManager
     {
-        private readonly INotificationService _notificationService;
+        private readonly INotificationRepository _notificationRepository;
 
-        public NotificationStatesManager(INotificationService notificationService)
+        public NotificationStatesManager(INotificationRepository notificationRepository)
         {
-            _notificationService = notificationService;
+            _notificationRepository = notificationRepository;
         }
 
-        public async Task ChangeNotificationState(Notification notification)
+        public async Task<bool> ChangeNotificationState(Notification notification, NotificationState? nextState)
         {
             switch (notification.State)
             {
                 case NotificationState.Created:
-                    await HandleCreatedState(notification);
-                    break;
+                    return await HandleCreatedState(notification);
 
                 case NotificationState.Sent:
-                    await HandleSentState(notification);
-                    break;
+                    if (nextState == NotificationState.Deleted)
+                        return await HandleReadState(notification);
+                    return await HandleSentState(notification);
 
                 case NotificationState.Read:
-                    await HandleReadState(notification);
-                    break;
+                    return await HandleReadState(notification);
 
                 default:
                     throw new InvalidOperationException("Unknown notification state.");
             }
-
-            /*            (notification.State) switch
-                        {
-                            NotificationState.Created => await HandleCreatedState(notification),
-                            NotificationState.Sent => HandleSentState(notification),
-                            NotificationState.Read => HandleReadState(notification),
-                            _ => throw new InvalidOperationException("Unknown notification state.")*/
-            /*NotificationState.Created =>
-                return await HandleCreatedState(notification);
-
-            case NotificationState.Sent:
-                return HandleSentState(notification);
-
-*//*                case NotificationState.Waiting:
-                    return HandleWaitingState(notification);*//*
-
-                case NotificationState.Read:
-                    return HandleReadState(notification);
-
-                    // убрать вообще это состояние
-                //case NotificationState.Deleted:
-                //    throw new InvalidOperationException("No events allowed for Deleted state.");
-
-                default:
-                    throw new InvalidOperationException("Unknown state notitfication.");*/
         }
 
-        private async Task HandleCreatedState(Notification notification)
+        public async Task<bool> ChangeStatusMultipleNotifications(string recipientId, NotificationState currentState)
         {
-            if (notification.SendDate <= DateTime.UtcNow)
+            switch (currentState)
+            {
+                case NotificationState.Sent:
+                    return await HandleSentState(recipientId);
+
+                case NotificationState.Read:
+                    return await HandleReadState(recipientId);
+
+                default:
+                    throw new InvalidOperationException("Unknown notification state.");
+            }
+        }
+
+        private async Task<bool> HandleCreatedState(Notification notification)
+        {
+            if (notification.SendDate <= DateTime.Now)
                 notification.State = NotificationState.Sent;
             else
                 notification.State = NotificationState.Waiting;
-            await _notificationService.UpdateStateAsync(notification);
+            return await _notificationRepository.UpdateStateAsync(notification);
         }
 
-        private async Task HandleSentState(Notification notification)
+        private async Task<bool> HandleSentState(Notification notification)
         {
             notification.State = NotificationState.Read;
-            await _notificationService.UpdateStateAsync(notification);
+            return await _notificationRepository.UpdateStateAsync(notification);
         }
 
-        private async Task HandleReadState(Notification notification)
+        private async Task<bool> HandleSentState(string recipientId)
         {
-            await _notificationService.DeleteAsync(notification.Id);
+            if (await _notificationRepository.MarkAllUserNotificationsAsReadAsync(recipientId) > 0)
+                return true;
+            return false;
+        }
+
+        private async Task<bool> HandleReadState(Notification notification)
+        {
+           return await _notificationRepository.DeleteAsync(notification.Id);
+        }
+
+        private async Task<bool> HandleReadState(string recipientId)
+        {
+            if (await _notificationRepository.DeleteReadNotificationsAsync(recipientId) > 0)
+                return true;
+            return false;
         }
     }
 }

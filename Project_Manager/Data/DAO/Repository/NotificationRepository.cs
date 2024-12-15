@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
 
@@ -33,6 +32,11 @@ namespace Project_Manager.Data.DAO.Repository
             return true;
         }
 
+        public async Task<Notification?> GetNotificationByIdAsync(int notificationId)
+        {
+            return await _context.Notifications.FindAsync(notificationId);
+        }
+
         public async Task<IEnumerable<Notification>> GetNotificationsByUserIdAsync(string userId)
         {
             return await _context.Notifications.Where(n => n.RecipientId == userId).ToListAsync();
@@ -48,6 +52,20 @@ namespace Project_Manager.Data.DAO.Repository
             existingNotification.State = notification.State;
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<int> MarkAllUserNotificationsAsReadAsync(string userId)
+        {
+            return await _context.Notifications
+                .Where(n => n.RecipientId == userId && n.State == Models.Enums.NotificationState.Sent)
+                .ExecuteUpdateAsync(updates => updates.SetProperty(n => n.State, Models.Enums.NotificationState.Read));
+        }
+
+        public async Task<int> DeleteReadNotificationsAsync(string userId)
+        {
+            return await _context.Notifications
+                .Where(n => n.RecipientId == userId && n.State == Models.Enums.NotificationState.Read)
+                .ExecuteDeleteAsync();
         }
     }
 }

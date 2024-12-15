@@ -13,7 +13,6 @@ using Project_Manager.StatesManagers.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
@@ -33,17 +32,24 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
 				.AddScoped<EventPublisher>()
 				.AddScoped<NotificationEventHandler>();
 
-//TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<AppUser, IdentityRole>(
 	options => 
 	{
-		options.Password.RequiredUniqueChars = 2;
-		options.Password.RequireNonAlphanumeric = false;
-		options.Password.RequiredLength = 3;
-		options.Password.RequireLowercase = false;
-		options.Password.RequireUppercase = false;
-	})
+        options.Password.RequiredUniqueChars = 4;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireDigit = true;
+        options.User.RequireUniqueEmail = true;
+        options.User.AllowedUserNameCharacters =
+            "abcdefghijklmnopqrstuvwxyz" +
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "0123456789-_" + 
+            "абвгдеёжзийклмнопрстуфхцчшщыэюя" +
+            "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯ";
+    })
 	.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddRazorPages();
@@ -53,11 +59,9 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -66,13 +70,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // Добавление аутентификации
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-//app.MapControllers();
 
 app.Run();
