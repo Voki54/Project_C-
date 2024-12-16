@@ -15,7 +15,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
                 .AddScoped<IProjectUserRepository, ProjectUserRepository>()
                 .AddScoped<IJoinProjectRequestRepository, JoinProjectRequestRepository>()
-                .AddScoped<ProjectUserService>();
+                .AddScoped<IProjectTaskRepository, ProjectTaskRepository>()
+                .AddScoped<ICommentRepository, CommentRepository>()
+                .AddScoped<ICategoryRepository, CategoryRepository>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddScoped<ProjectUserService>()
+				.AddScoped<ProjectTasksService>()
+                .AddHttpContextAccessor();
 
 //TODO отредактировать по завершении отладки пользователей!
 builder.Services.AddControllersWithViews();
