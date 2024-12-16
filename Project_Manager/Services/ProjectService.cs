@@ -11,14 +11,11 @@ namespace Project_Manager.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IProjectUserRepository _projectUserRepository;
         private readonly IProjectUserService _projectUserService;
 
-        public ProjectService(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            IProjectUserService projectUserService)
+        public ProjectService(IProjectRepository projectRepository, IProjectUserService projectUserService)
         {
             _projectRepository = projectRepository;
-            _projectUserRepository = projectUserRepository;
             _projectUserService = projectUserService;
         }
 
@@ -43,7 +40,7 @@ namespace Project_Manager.Services
 
         public async Task<string?> GetProjectName(int projectId)
         {
-            return await _projectRepository.GetProjectName(projectId);
+            return await _projectRepository.GetProjectNameAsync(projectId);
         }
 
         public async Task<bool> ExistProjectAsync(int projectId)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.DTO.AppUser;
 using Project_Manager.Helpers;
 using Project_Manager.Models;
@@ -14,20 +13,18 @@ namespace Project_Manager.Services
         private readonly IProjectUserService _projectUserService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IJoinProjectService _joinProjectService;
-        private readonly IProjectUserRepository _projectUserRepository;
 
         public ParticipantService(IProjectUserService projectUserService, UserManager<AppUser> userManager,
-            IJoinProjectService joinProjectService, IProjectUserRepository projectUserRepository)
+            IJoinProjectService joinProjectService)
         {
             _projectUserService = projectUserService;
             _userManager = userManager;
             _joinProjectService = joinProjectService;
-            _projectUserRepository = projectUserRepository;
         }
 
         public async Task<IEnumerable<AppUserDTO>> GetProjectParticipantsAsync(int projectId)
         {
-            var participants = await _projectUserService.GetUserFromProjectAsync(projectId);
+            var participants = await _projectUserService.GetUsersFromProjectAsync(projectId);
             var admin = participants.FirstOrDefault(p => p.Role == UserRoles.Admin);
 
             if (admin != null)
@@ -41,7 +38,7 @@ namespace Project_Manager.Services
             if (!await _userManager.Users.AnyAsync(u => u.Id == userId))
                 return ParticipantControllerError.Errors.UserNotFound;
 
-            if (!await _projectUserRepository.IsUserInProjectAsync(userId, projectId))
+            if (!await _projectUserService.IsUserInProjectAsync(userId, projectId))
                 return ParticipantControllerError.Errors.UserNotProject;
 
             if (!await _projectUserService.UpdateUserRoleAsync(projectId, userId, userRole))
@@ -55,7 +52,7 @@ namespace Project_Manager.Services
             if (!await _userManager.Users.AnyAsync(u => u.Id == userId))
                 return ParticipantControllerError.Errors.UserNotFound;
 
-            if (!await _projectUserRepository.IsUserInProjectAsync(userId, projectId))
+            if (!await _projectUserService.IsUserInProjectAsync(userId, projectId))
                 return ParticipantControllerError.Errors.UserNotProject;
 
             if (!await _projectUserService.ExcludeParticipantAsync(projectId, userId))

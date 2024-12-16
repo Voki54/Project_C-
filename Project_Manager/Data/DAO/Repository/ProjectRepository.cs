@@ -18,7 +18,7 @@ namespace Project_Manager.Data.DAO.Repository
 			return await _context.Projects.FindAsync(id);
 		}
 
-        public async Task<string?> GetProjectName(int id)
+        public async Task<string?> GetProjectNameAsync(int id)
         {
 			var project = await _context.Projects.FindAsync(id);
 			if (project == null)

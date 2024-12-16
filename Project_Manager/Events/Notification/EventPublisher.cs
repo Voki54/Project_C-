@@ -2,14 +2,14 @@
 {
     public class EventPublisher
     {
-        private readonly List<Func<IEvent, Task>> _subscribers = new List<Func<IEvent, Task>>();
+        private readonly List<Func<INotificationEvent, Task>> _subscribers = new List<Func<INotificationEvent, Task>>();
 
-        public void Subscribe(Func<IEvent, Task> handler)
+        public void Subscribe(Func<INotificationEvent, Task> handler)
         {
             _subscribers.Add(handler);
         }
 
-        public async Task PublishAsync(IEvent notificationEvent)
+        public async Task PublishAsync(INotificationEvent notificationEvent)
         {
             foreach (var subscriber in _subscribers)
             {

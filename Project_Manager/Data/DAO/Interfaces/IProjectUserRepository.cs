@@ -16,3 +16,4 @@ namespace Project_Manager.Data.DAO.Interfaces
         Task<string?> GetAdminIdInProjectAsync(int projectId);
     }
 }
+

@@ -49,12 +49,12 @@ namespace Project_Manager.Services
             return await _projectUserRepository.DeleteAsync(projectId, userId);
         }
 
-        public async Task<IEnumerable<AppUserDTO>> GetUserFromProjectAsync(int projectId)
+        public async Task<IEnumerable<AppUserDTO>> GetUsersFromProjectAsync(int projectId)
         {
             return await _projectUserRepository.GetUsersByProjectIdAsync(projectId);
         }
 
-        public async Task<string?> GetAdminId(int projectId)
+        public async Task<string?> GetAdminIdAsync(int projectId)
         {
             return await _projectUserRepository.GetAdminIdInProjectAsync(projectId);
         }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Services.Interfaces;
 using Project_Manager.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Project_Manager.Controllers
 {
+    [Authorize]
     public class NotificationsController : Controller
     {
         private readonly INotificationService _notificationService;

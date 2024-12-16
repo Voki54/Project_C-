@@ -1,6 +1,6 @@
 ﻿namespace Project_Manager.Events.Notification
 {
-    public interface IEvent
+    public interface INotificationEvent
     {
         string? SenderId { get; }
         string? RecipientId { get; }

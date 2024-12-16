@@ -89,5 +89,5 @@ namespace Project_Manager.Data
                 .HasForeignKey(comment => comment.ProjectTaskId) 
                 .OnDelete(DeleteBehavior.Cascade);
         }
-	}
+    }
 }

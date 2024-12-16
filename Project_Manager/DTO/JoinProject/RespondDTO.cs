@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-
-namespace Project_Manager.DTO.JoinProject
+﻿namespace Project_Manager.DTO.JoinProject
 {
     public class RespondDTO
     {
@@ -17,6 +15,4 @@ namespace Project_Manager.DTO.JoinProject
             ProjectId = projectId;
         }
     }
-
-
 }

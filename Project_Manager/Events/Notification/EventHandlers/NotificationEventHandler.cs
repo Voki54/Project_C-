@@ -28,7 +28,7 @@ namespace Project_Manager.Events.Notification.EventHandlers
             _logger = logger;
         }
 
-        public async Task HandleAsync(IEvent notificationEvent)
+        public async Task HandleAsync(INotificationEvent notificationEvent)
         {
             if (!await _projectService.ExistProjectAsync(notificationEvent.ProjectId))
             {
@@ -54,7 +54,7 @@ namespace Project_Manager.Events.Notification.EventHandlers
                 await _notificationStateManager.ChangeNotificationState(notification);
         }
 
-        private async Task<Models.Notification?> HandleJoinProjectEvent(IEvent notificationEvent)
+        private async Task<Models.Notification?> HandleJoinProjectEvent(INotificationEvent notificationEvent)
         {
             if (notificationEvent.SenderId == null)
                 return null;
@@ -67,7 +67,7 @@ namespace Project_Manager.Events.Notification.EventHandlers
                 return null;
             }
 
-            var adminId = await _projectUserService.GetAdminId(notificationEvent.ProjectId);
+            var adminId = await _projectUserService.GetAdminIdAsync(notificationEvent.ProjectId);
 
             if (adminId == null)
             {
@@ -85,7 +85,7 @@ namespace Project_Manager.Events.Notification.EventHandlers
             };
         }
 
-        private async Task<Models.Notification?> HandleAcceptJoinEvent(IEvent notificationEvent)
+        private async Task<Models.Notification?> HandleAcceptJoinEvent(INotificationEvent notificationEvent)
         {
             if (notificationEvent.RecipientId == null)
                 return null;

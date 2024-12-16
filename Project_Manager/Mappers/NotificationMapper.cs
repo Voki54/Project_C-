@@ -1,5 +1,4 @@
-﻿using Mono.TextTemplating;
-using Project_Manager.DTO.Notification;
+﻿using Project_Manager.DTO.Notification;
 using Project_Manager.Models;
 
 namespace Project_Manager.Mappers

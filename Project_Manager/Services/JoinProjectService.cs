@@ -36,9 +36,9 @@ namespace Project_Manager.Services
             _eventPublisher.Subscribe(async e => await HandleEventAsync(e));
         }
 
-        private async Task HandleEventAsync(IEvent notificationEvent)
+        private async Task HandleEventAsync(INotificationEvent notificationEvent)
         {
-            if (notificationEvent is IEvent projectEvent)
+            if (notificationEvent is INotificationEvent projectEvent)
                 await _notificationHandler.HandleAsync(projectEvent);
         }
 

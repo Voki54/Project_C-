@@ -1,6 +1,5 @@
 ﻿using Project_Manager.DTO.Notification;
 using Project_Manager.Models;
-using Project_Manager.Models.Enums;
 
 namespace Project_Manager.Services.Interfaces
 {

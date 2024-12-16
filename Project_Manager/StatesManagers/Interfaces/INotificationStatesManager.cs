@@ -9,5 +9,3 @@ namespace Project_Manager.StatesManagers.Interfaces
         Task<bool> ChangeStatusMultipleNotifications(string recipientId, NotificationState notificationState);
     }
 }
-
-
