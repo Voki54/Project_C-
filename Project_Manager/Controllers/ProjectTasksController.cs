@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Project_Manager.Data;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
 using Project_Manager.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 using Project_Manager.Services;
-using System.Threading.Tasks;
 
 namespace Project_Manager.Controllers
 {
@@ -15,15 +11,17 @@ namespace Project_Manager.Controllers
     public class ProjectTasksController : Controller
     {
         private readonly ProjectTasksService _taskService;
+        private readonly UserAccessService _userAccessService;
 
-        public ProjectTasksController(ApplicationDbContext context, UserManager<AppUser> userManager, ProjectTasksService taskService)
+        public ProjectTasksController(ProjectTasksService taskService, UserAccessService userAccessService)
         {
             _taskService = taskService;
+            _userAccessService = userAccessService;
         }
 
         public async Task<IActionResult> Index(int projectId, int? categoryId, string? sortColumn, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
-            if (!await _taskService.IsCurrentUserExecutorOrManagerOrAdminWithProjectAccessAsync(projectId))
+            if (!await _userAccessService.IsCurrentUserExecutorOrManagerOrAdminWithProjectAccessAsync(projectId))
             {
                 return NotFound("Нет доступа к проекту.");
             }
@@ -45,9 +43,9 @@ namespace Project_Manager.Controllers
 
         public async Task<IActionResult> Create(int projectId)
         {
-            if (!await _taskService.IsCurrentUserManagerOrAdminWithProjectAccessAsync(projectId))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithProjectAccessAsync(projectId))
             {
-                return NotFound("Нет доступа к задаче.");
+                return NotFound("Нет доступа к проекту.");
             }
 
             return await GetCreateReadTaskVM(projectId, null);
@@ -57,9 +55,9 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProjectTask task, int projectId)
         {
-            if (!await _taskService.IsCurrentUserManagerOrAdminWithProjectAccessAsync(projectId))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithProjectAccessAsync(projectId))
             {
-                return NotFound("Нет доступа к задаче.");
+                return NotFound("Нет доступа к проекту.");
             }
 
             if (ModelState.IsValid)
@@ -81,7 +79,7 @@ namespace Project_Manager.Controllers
 
         public async Task<IActionResult> Edit(int id, int projectId)
         {
-            if (!await _taskService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(projectId))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(id))
             {
                 return NotFound("Нет доступа к задаче.");
             }
@@ -94,7 +92,7 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProjectTask task, int projectId)
         {
-            if (!await _taskService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(projectId))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(id))
             {
                 return NotFound("Нет доступа к задаче.");
             }
@@ -120,7 +118,7 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int projectId)
         {
-            if (!await _taskService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(projectId))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(id))
             {
                 return NotFound("Нет доступа к задаче.");
             }
@@ -135,7 +133,7 @@ namespace Project_Manager.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Ошибка при обновлении задачи.");
+                return StatusCode(500, "Ошибка при удалении задачи.");
             }
 
             return RedirectToAction("Index", new { projectId });
@@ -144,7 +142,7 @@ namespace Project_Manager.Controllers
 
         public async Task<IActionResult> ViewTask(int id, int projectId)
         {
-            if (!await _taskService.IsCurrentUserExecutorOrManagerOrAdminWithTaskAccessAsync(id))
+            if (!await _userAccessService.IsCurrentUserExecutorOrManagerOrAdminWithTaskAccessAsync(id))
             {
                 return NotFound("Нет доступа к задаче.");
             }
@@ -171,7 +169,7 @@ namespace Project_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int taskId, string content, int projectId)
         {
-            if (!await _taskService.IsCurrentUserExecutorWithTaskAccessAsync(taskId))
+            if (!await _userAccessService.IsCurrentUserExecutorWithTaskAccessAsync(taskId))
             {
                 return NotFound("Нет доступа к задаче.");
             }
@@ -193,7 +191,7 @@ namespace Project_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeStatus(int id, int projectId, ProjectTaskStatus taskStatus)
         {
-            if (!await _taskService.IsCurrentUserExecutorWithTaskAccessAsync(id))
+            if (!await _userAccessService.IsCurrentUserExecutorWithTaskAccessAsync(id))
             {
                 return NotFound("Нет доступа к задаче.");
             }

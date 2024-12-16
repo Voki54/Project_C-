@@ -2,12 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.DTO.ProjectTasks;
-using Project_Manager.DTO.Users;
-using Project_Manager.Helpers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 
 namespace Project_Manager.Data.DAO.Repository
@@ -37,7 +33,12 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task<ProjectTask?> FindByIdOrNullAsync(int? taskId)
         {
-            return await _context.Tasks.FindAsync(taskId);
+            return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+        }
+
+        public async Task<ProjectTask?> FindByIdOrNullAsNoTrackingAsync(int? taskId)
+        {
+            return await _context.Tasks.AsNoTracking().FirstOrDefaultAsync(t => t.Id == taskId);
         }
 
         public async Task<ProjectTask?> FindByIdOrNullIncludeUsersAndCategoriesAsync(int taskId)
@@ -46,6 +47,16 @@ namespace Project_Manager.Data.DAO.Repository
                         .Include(t => t.AppUser)
                         .Include(t => t.Category)
                             .ThenInclude(c => c.Project)
+                        .FirstOrDefaultAsync(t => t.Id == taskId);
+        }
+
+        public async Task<ProjectTask?> FindByIdOrNullIncludeUsersAndCategoriesAsNoTrackingAsync(int taskId)
+        {
+            return await _context.Tasks
+                        .Include(t => t.AppUser)
+                        .Include(t => t.Category)
+                            .ThenInclude(c => c.Project)
+                        .AsNoTracking()
                         .FirstOrDefaultAsync(t => t.Id == taskId);
         }
 

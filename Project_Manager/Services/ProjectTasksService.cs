@@ -3,7 +3,6 @@ using Project_Manager.Helpers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 using Project_Manager.ViewModels;
-using System.Security.Claims;
 
 namespace Project_Manager.Services
 {
@@ -14,18 +13,18 @@ namespace Project_Manager.Services
         private readonly IProjectUserRepository _projectUserRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly ICategoryRepository _categoryRepository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserAccessService _userAccessService;
 
         public ProjectTasksService(IProjectTaskRepository taskRepository, IProjectRepository projectRepository, 
             IProjectUserRepository projectUserRepository, ICommentRepository commentRepository, 
-            ICategoryRepository categoryRepository, IHttpContextAccessor httpContextAccessor)
+            ICategoryRepository categoryRepository, UserAccessService userAccessService)
         {
             _taskRepository = taskRepository;
             _projectRepository = projectRepository;
             _projectUserRepository = projectUserRepository;
             _commentRepository = commentRepository;
             _categoryRepository = categoryRepository;
-            _httpContextAccessor = httpContextAccessor;
+            _userAccessService = userAccessService;
         }
 
         public async Task<CreateReadTaskVM> GetCreateReadTaskVMAsync(int projectId, int? taskId)
@@ -37,31 +36,6 @@ namespace Project_Manager.Services
             }
             var model = await ToCreateReadTaskVM(projectId, taskId);
             return model;
-        }
-
-        public async Task<string> CurrentUserIdAsync()
-        {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return userId;
-        }
-
-        public async Task<UserRoles?> CurrentUserRoleInProjectOrNullAsync(int projectId)
-        {
-            var userId = await CurrentUserIdAsync();
-            return await _projectUserRepository.GetUserRoleInProjectAsync(userId, projectId);
-        }
-
-        public async Task<bool> IsCurrentUserManagerOrAdminWithProjectAccessAsync(int projectId)
-        {
-            var userRole = await CurrentUserRoleInProjectOrNullAsync(projectId);
-            return userRole == UserRoles.Manager || userRole == UserRoles.Admin;
-        }
-
-        public async Task<bool> IsCurrentUserManagerOrAdminWithTaskAccessAsync(int taskId)
-        {
-            var task = await FindTaskByIdOrNullIncludeUsersAndCategoriesAsync(taskId);
-            var userRole = await CurrentUserRoleInProjectOrNullAsync(task.Category.Project.Id);
-            return userRole == UserRoles.Manager || userRole == UserRoles.Admin;
         }
 
         public async Task<ProjectTask> CreateTaskAsync(ProjectTask task)
@@ -79,36 +53,9 @@ namespace Project_Manager.Services
             return await _taskRepository.FindByIdOrNullAsync(taskId);
         }
 
-        public async Task<ProjectTask> FindTaskByIdOrNullIncludeUsersAndCategoriesAsync(int taskId)
-        {
-            return await _taskRepository.FindByIdOrNullIncludeUsersAndCategoriesAsync(taskId);
-        }
-
         public async Task DeleteTaskAsync(int taskId)
         {
             await _taskRepository.DeleteByIdAsync(taskId);
-        }
-
-        public async Task<bool> IsCurrentUserExecutorWithTaskAccessAsync(int taskId)
-        {
-            var projectTask = await FindTaskByIdOrNullAsync(taskId);
-            if (projectTask == null) return false;
-            var taskExecutor = projectTask.ExecutorId;
-            var userId = await CurrentUserIdAsync();
-            return userId == taskExecutor;
-        }
-
-        public async Task<bool> IsCurrentUserExecutorOrManagerOrAdminWithTaskAccessAsync(int taskId)
-        {
-            var isManagerOrAdmin = await IsCurrentUserManagerOrAdminWithTaskAccessAsync(taskId);
-            var isExecutor = await IsCurrentUserExecutorWithTaskAccessAsync(taskId);
-            return isExecutor || isManagerOrAdmin;
-        }
-
-        public async Task<bool> IsCurrentUserExecutorOrManagerOrAdminWithProjectAccessAsync(int projectId)
-        {
-            var userRole = await CurrentUserRoleInProjectOrNullAsync(projectId);
-            return userRole == UserRoles.Manager || userRole == UserRoles.Admin || userRole == UserRoles.Executor;
         }
 
         public async Task ChangeTaskStatusAsync(int taskId, ProjectTaskStatus taskStatus)
@@ -133,7 +80,7 @@ namespace Project_Manager.Services
             ProjectTask task = null;
             if (taskId != null)
             {
-                task = await _taskRepository.FindByIdOrNullAsync(taskId);
+                task = await _taskRepository.FindByIdOrNullAsNoTrackingAsync(taskId);
                 if(task == null) throw new KeyNotFoundException($"Задача с ID {taskId} не найдена.");
             }
             var projectUsers = await _projectUserRepository.GetUsersDtoByProjectAsync(projectId);
@@ -159,7 +106,7 @@ namespace Project_Manager.Services
             {
                 Task = taskDTO,
                 ProjectId = projectId,
-                Role = (UserRoles)await CurrentUserRoleInProjectOrNullAsync(projectId),
+                Role = (UserRoles)await _userAccessService.CurrentUserRoleInProjectOrNullAsync(projectId),
             };
             return model;
         }
@@ -168,8 +115,8 @@ namespace Project_Manager.Services
             string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
             var categories = await _categoryRepository.GetCategoriesByProjectIdAsync(projectId);
-            var currUserId = await CurrentUserIdAsync();
-            var role = await CurrentUserRoleInProjectOrNullAsync(projectId);
+            var currUserId = await _userAccessService.CurrentUserIdAsync();
+            var role = await _userAccessService.CurrentUserRoleInProjectOrNullAsync(projectId);
             string orderBy = null;
             if (sortColumn != null)
             {

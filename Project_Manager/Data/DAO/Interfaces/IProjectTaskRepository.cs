@@ -8,7 +8,8 @@ namespace Project_Manager.Data.DAO.Interfaces
     {
         Task<ProjectTask> CreateAsync(ProjectTask task);
         Task<ProjectTask?> FindByIdOrNullAsync(int? taskId);
-        Task<ProjectTask?> FindByIdOrNullIncludeUsersAndCategoriesAsync(int taskId);
+        Task<ProjectTask?> FindByIdOrNullIncludeUsersAndCategoriesAsNoTrackingAsync(int taskId);
+        Task<ProjectTask?> FindByIdOrNullAsNoTrackingAsync(int? taskId);
         Task DeleteByIdAsync(int taskId);
         Task ChangeStatusByIdAsync(int taskId, ProjectTaskStatus taskStatus);
         Task<ProjectTask> UpdateAsync(ProjectTask task);

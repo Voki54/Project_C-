@@ -21,6 +21,8 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddScoped<ProjectUserService>()
 				.AddScoped<ProjectTasksService>()
+                .AddScoped<CategoryService>()
+                .AddScoped<UserAccessService>()
                 .AddHttpContextAccessor();
 
 //TODO отредактировать по завершении отладки пользователей!
