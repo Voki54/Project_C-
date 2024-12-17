@@ -52,7 +52,7 @@ namespace Project_Manager.Services
             Category category = null;
             try
             {
-                category = await _categoryRepository.FindByIdAsync(categoryId);
+                category = await _categoryRepository.FindByIdAsNoTrackingAsync(categoryId);
             }
             catch (Exception ex)
             {

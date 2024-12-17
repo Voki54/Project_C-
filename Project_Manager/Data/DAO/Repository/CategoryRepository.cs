@@ -43,7 +43,7 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task<Category> FindByIdAsync(int? categoryId)
         {
-            Category category = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(t => t.Id == categoryId);
+            Category category = await _context.Categories.FirstOrDefaultAsync(t => t.Id == categoryId);
             if (category == null)
             {
                 throw new KeyNotFoundException($"Категория с ID {categoryId} не найдена.");

@@ -3,17 +3,17 @@ using Project_Manager.Models;
 using Project_Manager.ViewModels;
 using Project_Manager.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Project_Manager.Services;
+using Project_Manager.Services.Interfaces;
 
 namespace Project_Manager.Controllers
 {
     [Authorize]
     public class ProjectTasksController : Controller
     {
-        private readonly ProjectTasksService _taskService;
-        private readonly UserAccessService _userAccessService;
+        private readonly IProjectTasksService _taskService;
+        private readonly IUserAccessService _userAccessService;
 
-        public ProjectTasksController(ProjectTasksService taskService, UserAccessService userAccessService)
+        public ProjectTasksController(IProjectTasksService taskService, IUserAccessService userAccessService)
         {
             _taskService = taskService;
             _userAccessService = userAccessService;

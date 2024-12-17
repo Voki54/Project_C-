@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Models;
-using Project_Manager.Services;
+using Project_Manager.Services.Interfaces;
 
 namespace Project_Manager.Controllers
 {
     [Authorize]
     public class CategoriesController : Controller
     {
-        private readonly UserAccessService _userAccessService;
-        private readonly CategoryService _categoryService;
+        private readonly IUserAccessService _userAccessService;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(UserAccessService userAccessService, CategoryService categoryService)
+        public CategoriesController(IUserAccessService userAccessService, ICategoryService categoryService)
         {
             _userAccessService = userAccessService;
             _categoryService = categoryService;
