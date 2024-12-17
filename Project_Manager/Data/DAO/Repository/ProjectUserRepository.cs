@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.DTO.Users;
 using Project_Manager.DTO.AppUser;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
@@ -85,6 +86,19 @@ namespace Project_Manager.Data.DAO.Repository
             existingProjectUser.Role = projectUser.Role;
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<UserDTO>> GetUsersDtoByProjectAsync(int projectId)
+        {
+            var projectUsers = await _context.ProjectsUsers
+                                    .Where(pu => pu.ProjectId == projectId)
+                                    .Select(pu => new UserDTO
+                                    {
+                                        Id = pu.AppUser.Id,
+                                        UserName = pu.AppUser.UserName
+                                    })
+                                    .ToListAsync();
+            return projectUsers;
         }
     }
 }

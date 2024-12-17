@@ -1,116 +1,140 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Project_Manager.Data;
 using Project_Manager.Models;
-using Project_Manager.Models.Enums;
-using Project_Manager.ViewModels;
-using System.Security.Claims;
+using Project_Manager.Services;
 
 namespace Project_Manager.Controllers
 {
     [Authorize]
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
+        private readonly UserAccessService _userAccessService;
+        private readonly CategoryService _categoryService;
 
-        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager)
+        public CategoriesController(UserAccessService userAccessService, CategoryService categoryService)
         {
-            _context = context;
-            _userManager = userManager;
+            _userAccessService = userAccessService;
+            _categoryService = categoryService;
         }
 
-        // GET: Categories/Create
-        public IActionResult Create(int projectId)
+
+        public async Task<IActionResult> Create(int projectId)
         {
-            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == projectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithProjectAccessAsync(projectId))
             {
-                return NotFound();
+                return NotFound("Нет доступа к проекту.");
             }
+
             ViewBag.ProjectId = projectId;
             return View();
         }
 
-        // POST: Categories/Create
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Category category)
+        public async Task<IActionResult> Create(Category category)
         {
-            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithProjectAccessAsync(category.ProjectId))
             {
-                return NotFound();
+                return NotFound("Нет доступа к проекту.");
             }
+
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
-                _context.SaveChanges();
+                try
+                {
+                    await _categoryService.CreateCategoryAsync(category);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, "Ошибка при добавлении категории.");
+                }
                 return RedirectToAction("Index", "ProjectTasks", new { projectId = category.ProjectId});
             }
-            return View(category);
-        }
 
-        // GET: Categories/Edit/5
-        public IActionResult Edit(int id)
-        {
-            var category = _context.Categories.Find(id);
-            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
-            {
-                return NotFound();
-            }
-            if (category == null)
-            {
-                return NotFound();
-            }
             ViewBag.ProjectId = category.ProjectId;
             return View(category);
         }
 
-        // POST: Categories/Edit/5
+
+        public async Task<IActionResult> Edit(int id, int projectId)
+        {
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithCategoryAccessAsync(id))
+            {
+                return NotFound("Нет доступа к категории.");
+            }
+
+            ViewBag.ProjectId = projectId;
+            return await GetEditModel(id);
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Category category)
+        public async Task<IActionResult> Edit(int id, Category category, int projectId)
         {
-            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithCategoryAccessAsync(id))
             {
-                return NotFound();
-            }
-            if (id != category.Id)
-            {
-                return NotFound();
+                return NotFound("Нет доступа к категории.");
             }
 
             if (ModelState.IsValid)
             {
-                _context.Update(category);
-                _context.SaveChanges();
-                return RedirectToAction("Index", "ProjectTasks", new { projectId = category.ProjectId }); // Перенаправление на страницу задач
+                try
+                {
+                    await _categoryService.UpdateCategoryAsync(category);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, "Ошибка при обновлении категории.");
+                }
+                return RedirectToAction("Index", "ProjectTasks", new { projectId });
             }
-            return View(category);
+
+            ViewBag.ProjectId = projectId;
+            return await GetEditModel(category.Id);
         }
 
-        // POST: Categories/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int projectId)
         {
-            var category = _context.Categories.Find(id);
-            var projectUser = _context.ProjectsUsers.FirstOrDefault(pu => pu.ProjectId == category.ProjectId && pu.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (projectUser == null || projectUser.Role != UserRoles.Manager && projectUser.Role != UserRoles.Admin)
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithCategoryAccessAsync(id))
             {
-                return NotFound();
+                return NotFound("Нет доступа к категории.");
             }
-            if (category != null)
+
+            try
             {
-                _context.Categories.Remove(category);
-                _context.SaveChanges();
+                await _categoryService.DeleteCategoryAsync(id);
             }
-            return RedirectToAction("Index", "ProjectTasks", new { projectId = category.ProjectId }); // Перенаправление на страницу задач
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Ошибка при удалении категории.");
+            }
+
+            return RedirectToAction("Index", "ProjectTasks", new { projectId }); 
+        }
+
+        private async Task<IActionResult> GetEditModel(int categoryId)
+        {
+            try
+            {
+                var category = await _categoryService.FindCategoryByIdAsNoTrackingAsync(categoryId);
+                return View(category);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Ошибка получения данных для создания или редактирования категории.");
+            }
         }
     }
 }

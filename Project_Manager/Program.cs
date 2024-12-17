@@ -14,8 +14,7 @@ using Project_Manager.StatesManagers.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
@@ -31,6 +30,14 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
                 .AddScoped<INotificationStatesManager, NotificationStatesManager>()
 				.AddScoped<EventPublisher>()
 				.AddScoped<NotificationEventHandler>();
+                .AddScoped<IProjectTaskRepository, ProjectTaskRepository>()
+                .AddScoped<ICommentRepository, CommentRepository>()
+                .AddScoped<ICategoryRepository, CategoryRepository>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+				.AddScoped<ProjectTasksService>()
+                .AddScoped<CategoryService>()
+                .AddScoped<UserAccessService>()
+                .AddHttpContextAccessor();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<AppUser, IdentityRole>(

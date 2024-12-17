@@ -22,7 +22,6 @@ namespace Project_Manager.Data
 		{
 			base.OnModelCreating(modelBuilder);
 
-
 			modelBuilder.Entity<ProjectUser>()
 				.HasKey(pu => new { pu.ProjectId, pu.UserId });
 			

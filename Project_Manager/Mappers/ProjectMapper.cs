@@ -1,4 +1,5 @@
 ﻿using Project_Manager.DTO.Project;
+using Project_Manager.DTO.Users;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
 
@@ -27,5 +28,21 @@ namespace Project_Manager.Mappers
         {
             return new CreateAndEditProjectVM(project.Name);
         }
+
+        /*
+        //Метод для ProjectTasksService
+        public static CreateReadTaskVM ToCreateReadTaskVM(this Project project)
+        {
+            return new CreateReadTaskVM
+            {
+                ProjectId = project.Id,
+                Categories = project.Categories.ToList(),
+                Users = project.ProjectUser.Select(u => new UserDTO
+                {
+                    Id = u.AppUser.Id,
+                    UserName = u.AppUser.UserName
+                }).ToList()
+            };
+        }*/
     }
 }

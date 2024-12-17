@@ -1,4 +1,5 @@
-﻿using Project_Manager.DTO.AppUser;
+﻿using Project_Manager.DTO.Users;
+using Project_Manager.DTO.AppUser;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 
@@ -13,6 +14,7 @@ namespace Project_Manager.Data.DAO.Interfaces
         Task<ProjectUser> CreateAsync(ProjectUser projectUser);
         Task<bool> UpdateAsync(ProjectUser projectUser);
         Task<bool> DeleteAsync(int projectId, string userId);
+        Task<List<UserDTO>> GetUsersDtoByProjectAsync(int projectId);
         Task<string?> GetAdminIdInProjectAsync(int projectId);
     }
 }

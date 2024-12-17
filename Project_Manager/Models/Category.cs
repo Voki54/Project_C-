@@ -8,6 +8,7 @@ namespace Project_Manager.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required(ErrorMessage = "Название категории обязательно")]
         public string Name { get; set; }
         public int ProjectId { get; set; }

@@ -1,5 +1,5 @@
 ﻿@using Project_Manager.Models.Enums
-@model Project_Manager.Models.ProjectTask
+@model Project_Manager.ViewModels.CreateReadTaskVM
 @{
     ViewData["Title"] = "Создание задачи";
 }
@@ -8,54 +8,55 @@
 
 <form class="formCreate" asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="Title" class="control-label">Название</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+        <label asp-for="Task.Title" class="control-label">Название</label>
+        <input asp-for="Task.Title" class="form-control" />
+        <span asp-validation-for="Task.Title" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Description" class="control-label">Описание</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
+        <label asp-for="Task.Description" class="control-label">Описание</label>
+        <textarea asp-for="Task.Description" class="form-control"></textarea>
+        <span asp-validation-for="Task.Description" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Status" class="control-label">Статус</label>
-        <input asp-for="Status" class="form-control" value="@ProjectTaskStatus.Required" readonly />
-        <span asp-validation-for="Status" class="text-danger"></span>
+        <label asp-for="Task.Status" class="control-label">Статус</label>
+        <input asp-for="Task.Status" class="form-control" value="@ProjectTaskStatus.Требует_выполнения" readonly />
+        <span asp-validation-for="Task.Status" class="text-danger"></span>
     </div>
 
-    <input type="hidden" name="projectId" value="@ViewBag.ProjectId" />
     <div class="form-group">
-        <label asp-for="CategoryId" class="control-label">Категория</label>
-        <select asp-for="CategoryId" class="form-control">
-            @foreach (var category in ViewBag.Categories)
+        <label asp-for="Task.CategoryId" class="control-label">Категория</label>
+        <select asp-for="Task.CategoryId" class="form-control">
+            @foreach (var category in Model.Categories)
             {
                 <option value="@category.Id">@category.Name</option>
             }
         </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
+        <span asp-validation-for="Task.CategoryId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="ExecutorId" class="control-label">Исполнитель</label>
-        <select asp-for="ExecutorId" class="form-control">
-            @foreach (var user in ViewBag.Users)
+        <label asp-for="Task.ExecutorId" class="control-label">Исполнитель</label>
+        <select asp-for="Task.ExecutorId" class="form-control">
+            @foreach (var user in Model.Users)
             {
                 <option value="@user.Id">@user.UserName</option>
             }
         </select>
-        <span asp-validation-for="ExecutorId" class="text-danger"></span>
+        <span asp-validation-for="Task.ExecutorId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="DueDateTime" class="control-label">Дата завершения</label>
-        <input asp-for="DueDateTime" class="form-control" type="datetime-local" />
-        <span asp-validation-for="DueDateTime" class="text-danger"></span>
+        <label asp-for="Task.DueDateTime" class="control-label">Дата завершения</label>
+        <input asp-for="Task.DueDateTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="Task.DueDateTime" class="text-danger"></span>
     </div>
 
+    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+
     <button type="submit" class="btn btn-primary">Создать задачу</button>
-    <a href="@Url.Action("Index", new{ projectId = ViewBag.ProjectId})" class="btn btn-secondary">Назад</a>
+    <a href="@Url.Action("Index", new{ projectId = Model.ProjectId})" class="btn btn-secondary">Назад</a>
 </form>
 
 @section Scripts {
