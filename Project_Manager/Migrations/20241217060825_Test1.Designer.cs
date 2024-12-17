@@ -12,8 +12,8 @@ using Project_Manager.Data;
 namespace Project_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241207142129_ChangeNotification")]
-    partial class ChangeNotification
+    [Migration("20241217060825_Test1")]
+    partial class Test1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

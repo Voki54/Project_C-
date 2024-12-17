@@ -2,22 +2,23 @@
 using Project_Manager.Helpers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
+using Project_Manager.Services.Interfaces;
 using Project_Manager.ViewModels;
 
 namespace Project_Manager.Services
 {
-    public class ProjectTasksService
+    public class ProjectTasksService: IProjectTasksService
     {
         private readonly IProjectTaskRepository _taskRepository;
         private readonly IProjectRepository _projectRepository;
         private readonly IProjectUserRepository _projectUserRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly ICategoryRepository _categoryRepository;
-        private readonly UserAccessService _userAccessService;
+        private readonly IUserAccessService _userAccessService;
 
         public ProjectTasksService(IProjectTaskRepository taskRepository, IProjectRepository projectRepository, 
             IProjectUserRepository projectUserRepository, ICommentRepository commentRepository, 
-            ICategoryRepository categoryRepository, UserAccessService userAccessService)
+            ICategoryRepository categoryRepository, IUserAccessService userAccessService)
         {
             _taskRepository = taskRepository;
             _projectRepository = projectRepository;

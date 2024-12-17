@@ -1,11 +1,12 @@
 ﻿using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
+using Project_Manager.Services.Interfaces;
 using System.Security.Claims;
 
 namespace Project_Manager.Services
 {
-    public class UserAccessService
+    public class UserAccessService: IUserAccessService
     {
         private readonly IProjectTaskRepository _taskRepository;
         private readonly ICategoryRepository _categoryRepository;

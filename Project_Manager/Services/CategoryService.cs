@@ -1,9 +1,10 @@
 ﻿using Project_Manager.Data.DAO.Interfaces;
 using Project_Manager.Models;
+using Project_Manager.Services.Interfaces;
 
 namespace Project_Manager.Services
 {
-    public class CategoryService
+    public class CategoryService: ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
 

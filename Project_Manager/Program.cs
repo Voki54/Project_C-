@@ -29,14 +29,14 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>()
                 .AddScoped<IAccountService, AccountService>()
                 .AddScoped<INotificationStatesManager, NotificationStatesManager>()
 				.AddScoped<EventPublisher>()
-				.AddScoped<NotificationEventHandler>();
+				.AddScoped<NotificationEventHandler>()
                 .AddScoped<IProjectTaskRepository, ProjectTaskRepository>()
                 .AddScoped<ICommentRepository, CommentRepository>()
                 .AddScoped<ICategoryRepository, CategoryRepository>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-				.AddScoped<ProjectTasksService>()
-                .AddScoped<CategoryService>()
-                .AddScoped<UserAccessService>()
+				.AddScoped<IProjectTasksService, ProjectTasksService>()
+                .AddScoped<ICategoryService, CategoryService>()
+                .AddScoped<IUserAccessService, UserAccessService>()
                 .AddHttpContextAccessor();
 
 builder.Services.AddControllersWithViews();

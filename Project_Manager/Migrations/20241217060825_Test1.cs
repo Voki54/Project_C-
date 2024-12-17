@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project_Manager.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangeNotification : Migration
+    public partial class Test1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
