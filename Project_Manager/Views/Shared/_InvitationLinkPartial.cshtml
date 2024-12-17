@@ -1,0 +1,49 @@
+﻿@model int
+
+<a href="#" id="copyButton"
+   data-link="@Url.Action("Join", "JoinProject", new { projectId = @Model }, "https")">
+    Ссылка
+</a>
+
+<div id="toast" class="toast">Ссылка скопирована</div>
+
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #28a745;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 14px;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast.show {
+        display: block;
+        opacity: 1;
+    }
+</style>
+
+<script>
+    document.getElementById("copyButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        var link = event.target.getAttribute("data-link");
+        navigator.clipboard.writeText(link).then(function () {
+            showToast();
+        }).catch(function () {
+            alert("Не удалось скопировать ссылку.");
+        });
+    });
+
+    function showToast() {
+        var toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(function () { toast.classList.remove("show"); }, 3000);
+    }
+</script>

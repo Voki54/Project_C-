@@ -1,10 +1,12 @@
 ﻿using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.DTO.AppUser;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
+using Project_Manager.Services.Interfaces;
 
 namespace Project_Manager.Services
 {
-    public class ProjectUserService
+    public class ProjectUserService : IProjectUserService
     {
         private readonly IProjectUserRepository _projectUserRepository;
 
@@ -18,17 +20,48 @@ namespace Project_Manager.Services
             return await _projectUserRepository.GetProjectsByUserIdAsync(userId);
         }
 
-        public async Task<bool> AddUserToProjectAsync(int projectId, string userId, UserRoles userRole)
+        public async Task AddUserToProjectAsync(int projectId, string userId, UserRoles userRole)
         {
             await _projectUserRepository.CreateAsync(
                 new ProjectUser
-                {
+                    {
+                        ProjectId = projectId,
+                        UserId = userId,
+                        Role = userRole
+                    }
+                );
+        }
+
+        public async Task<bool> UpdateUserRoleAsync(int projectId, string userId, UserRoles userRole)
+        {
+            return await _projectUserRepository.UpdateAsync(
+                new ProjectUser
+                {           
                     ProjectId = projectId,
                     UserId = userId,
                     Role = userRole
                 }
-                );
-            return true;
+            );
+        }
+
+        public async Task<bool> ExcludeParticipantAsync(int projectId, string userId)
+        {
+            return await _projectUserRepository.DeleteAsync(projectId, userId);
+        }
+
+        public async Task<IEnumerable<AppUserDTO>> GetUsersFromProjectAsync(int projectId)
+        {
+            return await _projectUserRepository.GetUsersByProjectIdAsync(projectId);
+        }
+
+        public async Task<string?> GetAdminIdAsync(int projectId)
+        {
+            return await _projectUserRepository.GetAdminIdInProjectAsync(projectId);
+        }
+
+        public async Task<bool> IsUserInProjectAsync(string userId, int projectId)
+        {
+            return await _projectUserRepository.IsUserInProjectAsync(userId, projectId);
         }
     }
 

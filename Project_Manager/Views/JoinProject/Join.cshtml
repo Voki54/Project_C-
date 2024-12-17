@@ -1,20 +1,44 @@
 ﻿@model Project_Manager.ViewModels.JoinProjectVM
 
 @{
-    ViewData["Title"] = "Join Project page";
+    ViewData["Title"] = "Присоединиться к проекту";
 }
 
-@if (Model.RequestStatus == null)
+@if (Model == null)
 {
-    <h2>Присоединиться к проекту: @Model.ProjectName</h2>
-    <form asp-action="SubmitJoinRequest" method="post">
-        <input type="hidden" name="projectId" value="@Model.ProjectId" />
-        <button type="submit" class="btn btn-primary">Подать заявку</button>
+    <h2>Присоединиться к проекту</h2>
+
+    <form class="formCreate" asp-action="SubmitJoinWithUri" method="post">
+        <div class="form-group">
+            <label for="projectLink">Введите ссылку на проект:</label>
+            <input type="url" id="projectLink" name="projectLink" class="form-control" required />
+            <button type="submit" class="btn btn-primary">Присоединиться</button>
+            <a asp-controller="Projects" asp-action="Index" class="btn btn-secondary">Назад</a>
+        </div>
     </form>
 }
 else
 {
-    <h2>Заявка на присоединение к проекту @Model.ProjectName успешно подана</h2>
+    @if (Model.RequestStatus == null)
+    {
+        <h2>Присоединиться к проекту @Model.ProjectName</h2>
+        <form class="formCreate" asp-action="SubmitJoinWithoutUri" method="post">
+            <div class="form-group">
+                <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                <button type="submit" class="btn btn-primary">Подать заявку</button>
+                <a asp-controller="Projects" asp-action="Index" class="btn btn-secondary">Назад</a>
+            </div>
+        </form>
+    }
+    else
+    {
+        <h2>Заявка на присоединение к проекту @Model.ProjectName успешно подана</h2>
+        <form class="formCreate" asp-action="SubmitJoinWithoutUri" method="post">
+            <div class="form-group">
+                <a asp-controller="Projects" asp-action="Index" class="btn btn-secondary">Назад</a>
+            </div>
+        </form>
+    }
 }
 
 

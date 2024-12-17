@@ -1,48 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Project_Manager.Data.DAO.Interfaces;
-using Project_Manager.Mappers;
-using Project_Manager.Models;
-using Project_Manager.Models.Enums;
-using Project_Manager.Services;
+using Project_Manager.Helpers;
+using Project_Manager.Services.Interfaces;
 using Project_Manager.ViewModels;
-using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
     [Authorize]
     public class ProjectsController : Controller
     {
-        private readonly IProjectRepository _projectRepository;
-        private readonly IProjectUserRepository _projectUserRepository;
-        private readonly ProjectUserService _projectUserService;
-        //private readonly UserManager<AppUser> _userManager;
+        private readonly IProjectService _projectService;
 
-        public ProjectsController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            ProjectUserService projectUserService/*, UserManager<AppUser> userManager*/)
+        public ProjectsController(IProjectService projectService)
         {
-            _projectRepository = projectRepository;
-            _projectUserRepository = projectUserRepository;
-            _projectUserService = projectUserService;
-            //_userManager = userManager;
-        }
-
-        private string? GetUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _projectService = projectService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized("User is not authenticated.");
-
-            var projects = await _projectUserService.GetUserProjectsAsync(userId);
-            var projectsDTO = projects.Select(t => t.ToProjectDTO()).ToList();
-            return View(projectsDTO);
+            return View(await _projectService.GetUserProjectsAsync(User.GetUserId()));
         }
 
         [HttpGet]
@@ -55,96 +32,50 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> Create(CreateAndEditProjectVM createProjectVM)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return View(createProjectVM);
 
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized("User is not authenticated.");
+            var createdProject = await _projectService.CreateProjectAsync(User.GetUserId(), createProjectVM);
 
-            var createdProject = await _projectRepository.CreateAsync(createProjectVM.ToProject());
-            await _projectUserService.AddUserToProjectAsync(createdProject.Id, userId, UserRoles.Admin);
+            if (createdProject != null)
+                return RedirectToAction("Index", "ProjectTasks", new { projectId = createdProject.Id });
 
-            return RedirectToAction("Details", "Projects", new { projectId = createdProject.Id });
+            TempData["ErrorMessage"] = "Не удалось создать проект.";
+            return RedirectToAction("Index", "Error");
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int projectId)
+        public async Task<IActionResult> Edit(int projectId)
         {
-            //TODO логика поиска задач заданной команды
+            var projectName = await _projectService.GetProjectName(projectId);
 
-            var project = await _projectRepository.GetProjectByIdAsync(projectId);
-            if (project == null) return NotFound("Project not found.");
+            if (projectName != null)
+                return View(new CreateAndEditProjectVM(projectId, projectName));
 
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized("User is not authenticated.");
-
-            var userRole = await _projectUserRepository.GetUserRoleInProjectAsync(userId, projectId);
-            if (userRole == null) return NotFound("User is not in the project.");
-
-            var projectDetailsVM = new ProjectDetailsVM
-            {
-                ProjectId = projectId,
-                ProjectName = project.Name,
-                UserRoles = (UserRoles)userRole,
-                InvitationLink = Url.Action("Join", "JoinProject", new { projectId }, Request.Scheme)
-                //TODO список задач команды
-            };
-
-            return View(projectDetailsVM);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var project = await _projectRepository.GetProjectByIdAsync(id);
-
-            if (project == null)
-                return NotFound("Project not found");
-
-            return View(project.ToCreateAndEditProjectVM());
+            TempData["ErrorMessage"] = "Не удалось найти проект.";
+            return RedirectToAction("Index", "Error");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, CreateAndEditProjectVM editProjectVM)
+        public async Task<IActionResult> Edit(CreateAndEditProjectVM editProjectVM)
         {
             if (!ModelState.IsValid)
-            {
-                //ModelState.AddModelError("", "Failed to edit car");
-                return View("Edit", editProjectVM);
-            }
+                return View(editProjectVM);
 
-            await _projectRepository.UpdateAsync(
-                new Project
-                {
-                    Id = id,
-                    Name = editProjectVM.Name
-                }
-                );
-
-            return RedirectToAction("Details", "Projects", new { projectId = id });
+            if (await _projectService.UpdateProjectAsync(editProjectVM))
+                return RedirectToAction("Index", "ProjectTasks", new { projectId = editProjectVM.Id });
+            
+            TempData["ErrorMessage"] = "Ошибка при обновлении проекта.";
+            return RedirectToAction("Index", "Error");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int projectId)
         {
-            var project = await _projectRepository.GetProjectByIdAsync(id);
-            if (project == null)
-            {
-                return View("Error");
-            }
-            return View(project.ToProjectDTO());
-        }
+            if (await _projectService.DeleteProjectAsync(projectId))
+                return RedirectToAction("Index", "Projects");
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            bool deleteResponse = await _projectRepository.DeleteAsync(id);
-            if (!deleteResponse)
-            {
-                return View("Error");
-            }
-            return RedirectToAction("Index", "Projects");
+            TempData["ErrorMessage"] = "Ошибка при удалении проекта.";
+            return RedirectToAction("Index", "Error");
         }
     }
 }

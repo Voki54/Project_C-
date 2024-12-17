@@ -4,10 +4,10 @@ namespace Project_Manager.Models.Dictionary
 {
     public static class UserRolesDict
     {
-        public static Dictionary<int, string> userRoles = new Dictionary<int, string>
+        public static Dictionary<UserRoles, string> userRoles = new Dictionary<UserRoles, string>
         {
-            { (int)UserRoles.Manager, "Менеджер" },
-            { (int)UserRoles.Executor, "Исполнитель" }
+            { UserRoles.Manager, "Менеджер" },
+            { UserRoles.Executor, "Исполнитель" }
         };
     }
 }

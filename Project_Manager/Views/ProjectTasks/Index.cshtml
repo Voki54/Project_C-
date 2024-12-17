@@ -1,6 +1,10 @@
 ﻿@using Project_Manager.Models.Enums
 @model Project_Manager.ViewModels.TaskCategoryVM
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin_menu.css" asp-append-version="true" />
+}
+
 <div class="row">
     <!-- Левый столбец с категориями -->
     <div class="category-list">
@@ -96,6 +100,33 @@
                 {
                     <a href="@Url.Action("Create", new{ projectId = Model.ProjectId})" class="btn btn-add">Добавить задачу</a>
                 }
+
+
+                @if (Model.Role == UserRoles.Admin)
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-add btn-to-project">Меню</button>
+                        <div class="dropdown-content filter-popup" id="admin-menu">
+                            <ul filter-list>
+                                <li  class="filter-item">
+                                    <a asp-controller="Projects" asp-action="Edit" asp-route-projectId="@Model.ProjectId">Изменить</a>
+                                </li>
+                                <li class="filter-item">
+                                    <a asp-controller="Participants" asp-action="Index" asp-route-projectId="@Model.ProjectId"
+                                         onclick="localStorage.setItem('lastVisitedPage', window.location.href) ">Участники</a>
+                                </li>
+                                <li class="filter-item">
+                                    <partial name="_InvitationLinkPartial" model="@Model.ProjectId" />
+                                </li>
+                                <li class="filter-item">
+                                    <a asp-controller="JoinProject" asp-action="Respond" asp-route-projectId="@Model.ProjectId"
+                                        onclick="localStorage.setItem('lastVisitedPage', window.location.href) ">Заявки</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
             </div>
         </div>
 

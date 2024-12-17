@@ -5,10 +5,8 @@ using Project_Manager.DTO.ProjectTasks;
 using Project_Manager.Models;
 using Project_Manager.ViewModels;
 using Project_Manager.Models.Enums;
-using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Project_Manager.Helpers;
-using Microsoft.Build.Framework;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Identity;
@@ -467,6 +465,5 @@ namespace Project_Manager.Controllers
         {
             return _context.Tasks.Any(e => e.Id == id);
         }
-
     }
 }

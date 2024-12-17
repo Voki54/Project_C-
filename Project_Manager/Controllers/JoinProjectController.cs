@@ -1,127 +1,96 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Project_Manager.Data.DAO.Interfaces;
-using Project_Manager.DTO.JoinProject;
-using Project_Manager.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Project_Manager.Helpers;
+using Project_Manager.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Project_Manager.Models.Enums;
 using Project_Manager.ViewModels;
-using System.Security.Claims;
 
 namespace Project_Manager.Controllers
 {
+    [Authorize]
     public class JoinProjectController : Controller
     {
-        private readonly IProjectRepository _projectRepository;
-        private readonly IProjectUserRepository _projectUserRepository;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly IJoinProjectRequestRepository _joinProjectRequestRepository;
+        private readonly IJoinProjectService _joinProjectService;
 
-        public JoinProjectController(IProjectRepository projectRepository, IProjectUserRepository projectUserRepository,
-            UserManager<AppUser> userManager, IJoinProjectRequestRepository joinProjectRequestRepository)
+        public JoinProjectController(IJoinProjectService joinProjectService)
         {
-            _projectRepository = projectRepository;
-            _projectUserRepository = projectUserRepository;
-            _userManager = userManager;
-            _joinProjectRequestRepository = joinProjectRequestRepository;
+            _joinProjectService = joinProjectService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Join(int projectId)
+        public async Task<IActionResult> Join(int? projectId)
         {
-            var project = await _projectRepository.GetProjectByIdAsync(projectId);
-            if (project == null)
-                return NotFound("Команда не найдена.");
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            var userId = User.GetUserId();
+            if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("Login", "Account");
 
-            JoinProjectRequestStatus? requestStatus;
-            var joinProjectRequest = await _joinProjectRequestRepository.GetJoinProjectRequestAsync(projectId, userId);
-            if (joinProjectRequest == null)
-                requestStatus = null;
-            else
-                requestStatus = joinProjectRequest.Status;
+            JoinProjectVM? joinProjectVM = null;
 
-            return View(new JoinProjectVM
-            {
-                ProjectId = project.Id,
-                ProjectName = project.Name,
-                RequestStatus = requestStatus
-            });
+            if (projectId == null)
+                return View(joinProjectVM);
+
+            joinProjectVM = await _joinProjectService.JoinProjectAsync(projectId!.Value, userId);
+            if (joinProjectVM != null)
+                return View(joinProjectVM);
+
+            TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
+            return RedirectToAction("Index", "Error");
         }
 
-        [HttpPost]
+        [HttpPost("JoinProject/SubmitJoinWithoutUri")]
         public async Task<IActionResult> SubmitJoinRequest(int projectId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return Unauthorized();
+            var userId = User.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return RedirectToAction("Login", "Account");
 
-            await _joinProjectRequestRepository.CreateAsync(new JoinProjectRequest
-            {
-                ProjectId = projectId,
-                UserId = userId,
-                Status = JoinProjectRequestStatus.Pending
-            });
+            if (await _joinProjectService.SubmitJoinRequestAsync(projectId, userId))
+                return RedirectToAction("Join", "JoinProject", new { projectId });
 
-            return RedirectToAction("Join", "JoinProject", new { projectId });
+            TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
+            return RedirectToAction("Index", "Error");
+        }
+
+        [HttpPost("JoinProject/SubmitJoinWithUri")]
+        public async Task<IActionResult> SubmitJoinRequest(string projectLink)
+        {
+            var userId = User.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return RedirectToAction("Login", "Account");
+
+            var projectId = await _joinProjectService.SubmitJoinRequestAsync(projectLink, userId);
+
+            if (projectId != null)
+                return RedirectToAction("Join", "JoinProject", new { projectId });
+
+            TempData["ErrorMessage"] = "Ошибка при подачи заявки. Убедитесь, что вы используете правильную ссылку-приглашение.";
+            return RedirectToAction("Index", "Error");
         }
 
         [HttpGet]
         public async Task<IActionResult> Respond(int projectId)
         {
-            var usersId = await _joinProjectRequestRepository.GetUsersIdWithUnprocessedRequestsAsync(projectId);
-            List<RespondDTO> respondDTOs = new List<RespondDTO>();
-            AppUser? user;
-
-            foreach (string userId in usersId)
-            {
-                user = await _userManager.FindByIdAsync(userId);
-
-                if (user != null)
-                {
-                    respondDTOs.Add(new RespondDTO
-                    {
-                        UserId = userId,
-                        UserEmail = user.Email,
-                        UserName = user.UserName,
-                        ProjectId = projectId
-                    });
-                }
-
-            }
-            //удали дто joinProjectRequest
-            //ViewBag.RespondDTOs = respondDTOs;
-            return View(respondDTOs);
+            return View(await _joinProjectService.GetJoiningRequestsAsync(projectId));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Accept(string userId, int projectId, int userRole)
+        public async Task<IActionResult> AcceptApplication(string userId, int projectId, UserRoles userRole)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return NotFound("Пользователь не найден");
+            if (await _joinProjectService.AcceptApplicationAsync(userId, projectId, userRole))
+                return RedirectToAction("Respond", new { projectId });
 
-            if (!await _projectUserRepository.IsUserInProjectAsync(userId, projectId))
-            {
-                await _projectUserRepository.CreateAsync(new ProjectUser
-                {
-                    UserId = userId,
-                    ProjectId = projectId,
-                    Role = (UserRoles)userRole
-                });
-            }
+            TempData["ErrorMessage"] = "Что-то пошло не так при подтверждении заявки.";
+            return RedirectToAction("Index", "Error");
+        }
 
-            await _joinProjectRequestRepository.UpdateAsync(new JoinProjectRequest
-            {
-                ProjectId = projectId,
-                UserId = userId,
-                Status = JoinProjectRequestStatus.Accepted
-            });
+        [HttpPost]
+        public async Task<IActionResult> RejectApplication(string userId, int projectId)
+        {
+            if (await _joinProjectService.RejectApplicationAsync(userId, projectId))
+                return RedirectToAction("Respond", new { projectId });
 
-            return RedirectToAction("Respond", new { projectId });
+            TempData["ErrorMessage"] = "Что-то пошло не так при отклонении заявки.";
+            return RedirectToAction("Index", "Error");
         }
     }
 }

@@ -13,18 +13,21 @@ namespace Project_Manager.Data.DAO.Repository
 			_context = context;
 		}
 
-		//TODO добавить возможность обработки разных sql запросов
-		public async Task<IEnumerable<Project>> GetAllAsync()
-		{
-			return await _context.Projects.ToListAsync();
-		}
-
 		public async Task<Project?> GetProjectByIdAsync(int id)
 		{
-			return await _context.Projects.FirstOrDefaultAsync(c => c.Id == id);
+			return await _context.Projects.FindAsync(id);
 		}
 
-		public async Task<Project> CreateAsync(Project project)
+        public async Task<string?> GetProjectNameAsync(int id)
+        {
+			var project = await _context.Projects.FindAsync(id);
+			if (project == null)
+				return null;
+
+			return project.Name;
+        }
+
+        public async Task<Project> CreateAsync(Project project)
 		{
 			await _context.Projects.AddAsync(project);
 			await _context.SaveChangesAsync();
@@ -33,7 +36,7 @@ namespace Project_Manager.Data.DAO.Repository
 
 		public async Task<bool> DeleteAsync(int id)
 		{
-			var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);
+			var project = await _context.Projects.FindAsync(id);
 
 			if (project == null)
 				return false;
@@ -43,14 +46,17 @@ namespace Project_Manager.Data.DAO.Repository
 			return true;
 		}
 
-		public async Task<bool> UpdateAsync(Project project)
+        public async Task<bool> ExistProjectAsync(int projectId)
+        {
+            return await _context.Projects.AnyAsync(p => p.Id == projectId);
+        }
+
+        public async Task<bool> UpdateAsync(Project project)
 		{
 			var existingProject = await _context.Projects.FindAsync(project.Id);
 
 			if (existingProject == null)
-			{
 				return false;
-			}
 
 			existingProject.Name = project.Name;
 			await _context.SaveChangesAsync();

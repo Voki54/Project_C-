@@ -8,11 +8,9 @@ namespace Project_Manager.Models
 	{
 		[Key]
 		public int Id { get; set; }
-		public string Name { get; set; } = string.Empty;
+		public string Name { get; set; }
         public ICollection<ProjectUser> ProjectUser { get; set; } = new List<ProjectUser>();
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<JoinProjectRequest> JoinProjectRequests { get; set; } = new List<JoinProjectRequest>();
-		
-		//public ICollection<string> TasksId { get; set; }
 	}
 }
