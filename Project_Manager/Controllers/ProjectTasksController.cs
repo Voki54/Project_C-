@@ -118,7 +118,7 @@ namespace Project_Manager.Controllers
             _logger.LogInformation("Вызван метод Edit (POST) с id: {Id} ," +
                 "projectId: {projectId}, задачей: {@ProjectTask}", id, projectId, task);
 
-            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(id))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithTaskAccessAsync(id) || (id != task.Id))
             {
                 _logger.LogError($"Пользователь не имеет доступа к задаче с ID: {id}");
                 return NotFound("Нет доступа к задаче.");

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Models;
 using Project_Manager.Services;
 using Project_Manager.Services.Interfaces;
+using System.Threading.Tasks;
 
 namespace Project_Manager.Controllers
 {
@@ -91,7 +92,7 @@ namespace Project_Manager.Controllers
             _logger.LogInformation("Вызван метод Edit (POST) с id: {Id}, категорией: {@Category}, " +
                 "projectId: {projectId}", id, category, projectId);
 
-            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithCategoryAccessAsync(id))
+            if (!await _userAccessService.IsCurrentUserManagerOrAdminWithCategoryAccessAsync(id) || (id != category.Id))
             {
                 _logger.LogError("Пользователь не имеет доступа к категории с ID {CategoryId}", id);
                 return NotFound("Нет доступа к категории.");
