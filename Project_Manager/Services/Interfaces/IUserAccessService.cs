@@ -6,6 +6,7 @@ namespace Project_Manager.Services.Interfaces
     {
         Task<string?> CurrentUserIdAsync();
         Task<UserRoles?> CurrentUserRoleInProjectOrNullAsync(int projectId);
+        Task<UserRoles?> CurrentUserRoleInProjectOrTaskExecutorOrNullAsync(int taskId, int projectId);
         Task<bool> IsCurrentUserManagerOrAdminWithProjectAccessAsync(int projectId);
         Task<bool> IsCurrentUserManagerOrAdminWithTaskAccessAsync(int taskId);
         Task<bool> IsCurrentUserManagerOrAdminWithCategoryAccessAsync(int categoryId);

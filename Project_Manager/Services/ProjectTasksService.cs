@@ -128,7 +128,7 @@ namespace Project_Manager.Services
             {
                 Task = taskDTO,
                 ProjectId = projectId,
-                Role = (UserRoles)await _userAccessService.CurrentUserRoleInProjectOrNullAsync(projectId),
+                Role = (UserRoles)await _userAccessService.CurrentUserRoleInProjectOrTaskExecutorOrNullAsync(taskId, projectId),
             };
             _logger.LogInformation("Создана модель ViewTaskVM для задачи с ID {TaskId}.", taskId);
             return model;

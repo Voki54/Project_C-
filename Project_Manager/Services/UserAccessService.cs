@@ -42,6 +42,20 @@ namespace Project_Manager.Services
             return userRole;
         }
 
+        public async Task<UserRoles?> CurrentUserRoleInProjectOrTaskExecutorOrNullAsync(int taskId, int projectId)
+        {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: projectId = {ProjectId}", nameof(CurrentUserRoleInProjectOrNullAsync), projectId);
+            var userId = await CurrentUserIdAsync();
+            var task = await _taskRepository.FindByIdOrNullAsNoTrackingAsync(taskId);
+            if (task != null && task.ExecutorId == userId)
+            {
+                return UserRoles.Executor;
+            }
+            var userRole = await _projectUserRepository.GetUserRoleInProjectAsync(userId, projectId);
+            _logger.LogInformation("Роль пользователя с ID {User Id} в проекте с ID {ProjectId}: {User Role}", userId, projectId, userRole);
+            return userRole;
+        }
+
         public async Task<bool> IsCurrentUserManagerOrAdminWithProjectAccessAsync(int projectId)
         {
             _logger.LogInformation("Вызван метод {MethodName} с параметрами: projectId = {ProjectId}", nameof(IsCurrentUserManagerOrAdminWithProjectAccessAsync), projectId);

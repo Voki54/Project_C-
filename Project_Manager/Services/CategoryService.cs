@@ -13,7 +13,7 @@ namespace Project_Manager.Services
         {
             _categoryRepository = categoryRepository;
             _logger = logger;
-    }
+        }
 
         public async Task<Category> CreateCategoryAsync(Category category)
         {
