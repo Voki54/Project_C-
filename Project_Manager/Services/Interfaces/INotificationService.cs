@@ -1,5 +1,5 @@
-﻿using Project_Manager.DTO.Notification;
-using Project_Manager.Models;
+﻿using Project_Manager.Models;
+using Project_Manager.ViewModels;
 
 namespace Project_Manager.Services.Interfaces
 {
@@ -7,7 +7,7 @@ namespace Project_Manager.Services.Interfaces
     {
         Task<bool> CreateAsync(Notification notification);
         Task<bool> DeleteAsync(int notificationId);
-        Task<IEnumerable<NotificationDTO>> GetAvailableUserNotificationsAsync(string userId);
+        Task<IEnumerable<NotificationVM>> GetAvailableUserNotificationsAsync(string userId);
         Task<bool> UpdateStateAsync(Notification notification);
         Task<bool> MarkAllUserNotificationsAsReadAsync(string userId);
         Task<bool> DeleteReadNotificationsAsync(string userId);

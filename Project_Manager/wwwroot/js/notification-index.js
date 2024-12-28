@@ -129,9 +129,6 @@ function updateNotificationList(notifications) {
         return;
     }
 
-    //<td>${notification.sendDate}</td>
-
-
     notifications.forEach(notification => {
         const notificationItem = document.createElement('tr');
         notificationItem.Id = `notification-${notification.id}`;
@@ -173,7 +170,7 @@ function formatDate(inputDate) {
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'flex';  // Показываем модальное окно
+        modal.style.display = 'flex'; 
     }
 }
 
@@ -181,6 +178,6 @@ function openModal(modalId) {
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
-        modal.style.display = 'none';  // Скрываем модальное окно
+        modal.style.display = 'none';
     }
 }

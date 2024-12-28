@@ -1,10 +1,10 @@
 ﻿using Project_Manager.Data.DAO.Interfaces;
-using Project_Manager.DTO.Notification;
 using Project_Manager.Mappers;
 using Project_Manager.Models;
 using Project_Manager.Models.Enums;
 using Project_Manager.Services.Interfaces;
 using Project_Manager.StatesManagers.Interfaces;
+using Project_Manager.ViewModels;
 
 namespace Project_Manager.Services
 {
@@ -38,9 +38,9 @@ namespace Project_Manager.Services
             return await _notificationStatesManager.ChangeNotificationState(notification, NotificationState.Deleted);
         }
 
-        public async Task<IEnumerable<NotificationDTO>> GetAvailableUserNotificationsAsync(string userId)
+        public async Task<IEnumerable<NotificationVM>> GetAvailableUserNotificationsAsync(string userId)
         {
-            List<NotificationDTO> notificationDTOs = new List<NotificationDTO>();
+            List<NotificationVM> notificationDTOs = new List<NotificationVM>();
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogInformation("Invalid user ID.");
@@ -55,7 +55,7 @@ namespace Project_Manager.Services
                 ).OrderByDescending(n => n.SendDate);
 
             foreach (var notification in allUserNotifications)
-                notificationDTOs.Add(notification.ToNotificationDTO());
+                notificationDTOs.Add(notification.ToNotificationVM());
 
             return notificationDTOs;
         }
@@ -73,7 +73,7 @@ namespace Project_Manager.Services
                 return false;
             }
 
-           return await _notificationStatesManager.ChangeStatusMultipleNotifications(userId, NotificationState.Sent);
+           return await _notificationStatesManager.ChangeStatesMultipleNotifications(userId, NotificationState.Sent);
         }
 
         public async Task<bool> DeleteReadNotificationsAsync(string userId)
@@ -84,7 +84,7 @@ namespace Project_Manager.Services
                 return false;
             }
 
-            return await _notificationStatesManager.ChangeStatusMultipleNotifications(userId, NotificationState.Read);
+            return await _notificationStatesManager.ChangeStatesMultipleNotifications(userId, NotificationState.Read);
         }
     }
 }

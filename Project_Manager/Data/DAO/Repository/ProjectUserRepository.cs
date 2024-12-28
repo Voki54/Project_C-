@@ -88,6 +88,7 @@ namespace Project_Manager.Data.DAO.Repository
             return true;
         }
 
+        //метод Морозова
         public async Task<List<UserDTO>> GetUsersDtoByProjectAsync(int projectId)
         {
             var projectUsers = await _context.ProjectsUsers

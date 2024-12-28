@@ -6,6 +6,6 @@ namespace Project_Manager.StatesManagers.Interfaces
     public interface INotificationStatesManager
     {
         Task<bool> ChangeNotificationState(Notification notification, NotificationState? nextState = null);
-        Task<bool> ChangeStatusMultipleNotifications(string recipientId, NotificationState notificationState);
+        Task<bool> ChangeStatesMultipleNotifications(string recipientId, NotificationState notificationState);
     }
 }

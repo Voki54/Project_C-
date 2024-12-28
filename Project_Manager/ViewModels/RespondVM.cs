@@ -1,13 +1,13 @@
-﻿namespace Project_Manager.DTO.JoinProject
+﻿namespace Project_Manager.ViewModels
 {
-    public class RespondDTO
+    public class RespondVM
     {
         public string UserId { get; set; }
         public string UserName { get; set; }
         public string UserEmail { get; set; }
         public int ProjectId { get; set; }
 
-        public RespondDTO(string userId, string userName, string userEmail, int projectId)
+        public RespondVM(string userId, string userName, string userEmail, int projectId)
         {
             UserId = userId;
             UserName = userName;

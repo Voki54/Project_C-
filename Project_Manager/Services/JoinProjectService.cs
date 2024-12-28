@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Project_Manager.Data.DAO.Interfaces;
-using Project_Manager.Events.Notification.EventHandlers;
-using Project_Manager.Events.Notification;
-using Project_Manager.Models;
-using Project_Manager.Services.Interfaces;
-using Project_Manager.Models.Enums;
-using Project_Manager.ViewModels;
-using Project_Manager.DTO.JoinProject;
 using Microsoft.AspNetCore.WebUtilities;
+using Project_Manager.Data.DAO.Interfaces;
+using Project_Manager.Events.Notification;
+using Project_Manager.Events.Notification.EventHandlers;
+using Project_Manager.Models;
+using Project_Manager.Models.Enums;
+using Project_Manager.Services.Interfaces;
+using Project_Manager.ViewModels;
 
 namespace Project_Manager.Services
 {
@@ -17,9 +16,8 @@ namespace Project_Manager.Services
         private readonly IProjectUserService _projectUserService;
         private readonly IJoinProjectRequestRepository _joinProjectRequestRepository;
         private readonly UserManager<AppUser> _userManager;
-
         private readonly EventPublisher _eventPublisher;
-        private readonly NotificationEventHandler _notificationHandler;
+        private readonly NotificationEventHandler _notificationEventHandler;
 
         public JoinProjectService(IProjectService projectService, IProjectUserService projectUserService,
             UserManager<AppUser> userManager, IJoinProjectRequestRepository joinProjectRequestRepository,
@@ -31,15 +29,9 @@ namespace Project_Manager.Services
             _joinProjectRequestRepository = joinProjectRequestRepository;
 
             _eventPublisher = eventPublisher;
-            _notificationHandler = notificationHandler;
+            _notificationEventHandler = notificationHandler;
 
-            _eventPublisher.Subscribe(async e => await HandleEventAsync(e));
-        }
-
-        private async Task HandleEventAsync(INotificationEvent notificationEvent)
-        {
-            if (notificationEvent is INotificationEvent projectEvent)
-                await _notificationHandler.HandleAsync(projectEvent);
+            _eventPublisher.Subscribe(async e => await _notificationEventHandler.HandleAsync(e));
         }
 
         public async Task<JoinProjectVM?> JoinProjectAsync(int projectId, string userId)
@@ -48,11 +40,9 @@ namespace Project_Manager.Services
             if (projectName == null)
                 return null;
 
-            JoinProjectRequestStatus? requestStatus;
+            JoinProjectRequestStatus? requestStatus = null;
             var joinProjectRequest = await _joinProjectRequestRepository.GetJoinProjectRequestAsync(projectId, userId);
-            if (joinProjectRequest == null)
-                requestStatus = null;
-            else
+            if (joinProjectRequest != null)
                 requestStatus = joinProjectRequest.Status;
 
             return (new JoinProjectVM(projectId, projectName, requestStatus));
@@ -62,6 +52,16 @@ namespace Project_Manager.Services
         {
             if (!await _projectService.ExistProjectAsync(projectId))
                 return false;
+
+            if (await _joinProjectRequestRepository.GetJoinProjectRequestAsync(projectId, userId) != null)
+                return true;
+
+            if (await _projectUserService.IsUserInProjectAsync(userId, projectId))
+            {
+                await _joinProjectRequestRepository.CreateAsync(
+                    new JoinProjectRequest(projectId, userId, JoinProjectRequestStatus.Accepted));
+                return true;
+            }
 
             await _joinProjectRequestRepository.CreateAsync(
                 new JoinProjectRequest(projectId, userId, JoinProjectRequestStatus.Pending));
@@ -78,10 +78,7 @@ namespace Project_Manager.Services
             if (projectId == null)
                 return null;
 
-            if (await _joinProjectRequestRepository.GetJoinProjectRequestAsync(projectId!.Value, userId) != null)
-                return projectId;
-
-            if (await SubmitJoinRequestAsync(projectId!.Value, userId)) 
+            if (await SubmitJoinRequestAsync(projectId!.Value, userId))
                 return projectId;
 
             return null;
@@ -94,19 +91,19 @@ namespace Project_Manager.Services
 
             if (queryParams.TryGetValue("projectId", out var projectIdValue) && int.TryParse(projectIdValue, out int projectId))
                 return projectId;
-            
+
             return null;
         }
 
-        public async Task<IEnumerable<RespondDTO>> GetJoiningRequestsAsync(int projectId)
+        public async Task<IEnumerable<RespondVM>> GetJoiningRequestsAsync(int projectId)
         {
             var users = await _joinProjectRequestRepository.GetUsersWithUnprocessedRequestsAsync(projectId);
-            List<RespondDTO> respondDTOs = new List<RespondDTO>();
+            List<RespondVM> respondVMs = new List<RespondVM>();
 
             foreach (AppUser user in users)
-                respondDTOs.Add(new RespondDTO(user.Id, user.Email, user.UserName, projectId));
+                respondVMs.Add(new RespondVM(user.Id, user.Email, user.UserName, projectId));
 
-            return respondDTOs;
+            return respondVMs;
         }
 
         public async Task<bool> AcceptApplicationAsync(string userId, int projectId, UserRoles userRole)

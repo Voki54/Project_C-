@@ -14,19 +14,5 @@ namespace Project_Manager.Models
         public NotificationState State { get; set; } = NotificationState.Created;
         public DateTime SendDate { get; set; } = DateTime.UtcNow;
         public AppUser AppUser { get; set; }
-
-        //private readonly NotificationStatesManager _stateManager;
-
-/*        public Notification(NotificationStatesManager statesManager)
-        {
-            _stateManager = statesManager;
-        }
-
-        //Изменение состояния уведомления
-        public async Task HandleEventAsync(*//*NotificationEvent*//* IEvent notificationEvent) // ProjectApplicationSubmittedEvent
-        {
-            State = await _stateManager.ChangeNotificationState(this);
-            //await Task.CompletedTask;
-        }*/
     }
 }

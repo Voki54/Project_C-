@@ -49,7 +49,7 @@ namespace Project_Manager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] DeleteNotificationRequest request) //
+        public async Task<IActionResult> Delete([FromBody] DeleteNotificationRequest request)
         {
             if (await _notificationService.DeleteAsync(request.Id))
                 return Ok(new { success = true, message = "Notification was found." });

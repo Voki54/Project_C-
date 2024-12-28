@@ -10,6 +10,7 @@ namespace Project_Manager.Data
 			: base(options)
 		{
 		}
+
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -28,14 +29,16 @@ namespace Project_Manager.Data
 			modelBuilder.Entity<ProjectUser>()
 				.HasOne<Project>(pu => pu.Project)
 				.WithMany(p => p.ProjectUser)
-				.HasForeignKey(pu => pu.ProjectId);
+				.HasForeignKey(pu => pu.ProjectId)
+				.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<ProjectUser>()
+            modelBuilder.Entity<ProjectUser>()
 				.HasOne<AppUser>(pu => pu.AppUser)
 				.WithMany(u => u.ProjectUser)
-				.HasForeignKey(ut => ut.UserId);
+				.HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<ProjectUser>()
+            modelBuilder.Entity<ProjectUser>()
 				.Property(pu => pu.Role);
 
 
@@ -45,12 +48,14 @@ namespace Project_Manager.Data
 			modelBuilder.Entity<JoinProjectRequest>()
 				.HasOne<Project>(p => p.Project)
 				.WithMany(j => j.JoinProjectRequests)
-				.HasForeignKey(jp => jp.ProjectId);
+				.HasForeignKey(jp => jp.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<JoinProjectRequest>()
+            modelBuilder.Entity<JoinProjectRequest>()
 				.HasOne<AppUser>(u => u.AppUser)
 				.WithMany(j => j.JoinProjectRequests)
-				.HasForeignKey(ju => ju.UserId);
+				.HasForeignKey(ju => ju.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<JoinProjectRequest>()
                 .Property(j => j.Status);

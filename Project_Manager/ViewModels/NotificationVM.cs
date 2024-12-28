@@ -1,8 +1,8 @@
 ﻿using Project_Manager.Models.Enums;
 
-namespace Project_Manager.DTO.Notification
+namespace Project_Manager.ViewModels
 {
-    public class NotificationDTO
+    public class NotificationVM
     {
         public int Id { get; set; }
         public string Message { get; set; }

@@ -1,7 +1,7 @@
-﻿@using Project_Manager.DTO.JoinProject
+﻿@using Project_Manager.ViewModels
 @using Project_Manager.Models.Enums
 @using Project_Manager.ViewModels.Dictionaries
-@model IEnumerable<RespondDTO>
+@model IEnumerable<RespondVM>
 
 @{
     ViewData["Title"] = "Заявки";
@@ -21,11 +21,11 @@ else
                 <tr><th colspan="4">Заявки</th></tr>
             </thead>
             <tbody>
-                @foreach (var respondDTOs in Model)
+                @foreach (var respondVMs in Model)
                 {
                     <tr class="task-tr">
-                        <td>@respondDTOs.UserName</td>
-                        <td>@respondDTOs.UserEmail</td>
+                        <td>@respondVMs.UserName</td>
+                        <td>@respondVMs.UserEmail</td>
                         <td>
                             <form asp-action="AcceptApplication" method="post">
                                 <div class="form-group">
@@ -37,15 +37,15 @@ else
                                     </select>
                                 </div>
 
-                                <input type="hidden" name="userId" value="@respondDTOs.UserId" />
-                                <input type="hidden" name="projectId" value="@respondDTOs.ProjectId" />
+                                <input type="hidden" name="userId" value="@respondVMs.UserId" />
+                                <input type="hidden" name="projectId" value="@respondVMs.ProjectId" />
                                 <button type="submit" class="btn btn-success btn-change-role">Принять</button>
                             </form>
                         </td>
                         <td class="td-btn">
                             <form asp-action="RejectApplication" method="post">
-                                <input type="hidden" name="userId" value="@respondDTOs.UserId" />
-                                <input type="hidden" name="projectId" value="@respondDTOs.ProjectId" />
+                                <input type="hidden" name="userId" value="@respondVMs.UserId" />
+                                <input type="hidden" name="projectId" value="@respondVMs.ProjectId" />
                                 <button type="submit" class="btn btn-danger">Отклонить</button>
                             </form>
                         </td>

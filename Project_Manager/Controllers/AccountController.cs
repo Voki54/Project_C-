@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Project_Manager.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Project_Manager.Services.Interfaces;
 using Project_Manager.ViewModels;
 

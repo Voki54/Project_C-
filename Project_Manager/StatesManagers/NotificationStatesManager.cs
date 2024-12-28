@@ -34,7 +34,7 @@ namespace Project_Manager.StatesManagers
             }
         }
 
-        public async Task<bool> ChangeStatusMultipleNotifications(string recipientId, NotificationState currentState)
+        public async Task<bool> ChangeStatesMultipleNotifications(string recipientId, NotificationState currentState)
         {
             switch (currentState)
             {
