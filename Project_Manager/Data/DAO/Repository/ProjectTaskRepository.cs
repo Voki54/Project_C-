@@ -11,38 +11,47 @@ namespace Project_Manager.Data.DAO.Repository
     public class ProjectTaskRepository:IProjectTaskRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ProjectTaskRepository> _logger;
 
-        public ProjectTaskRepository(ApplicationDbContext context)
+        public ProjectTaskRepository(ApplicationDbContext context, ILogger<ProjectTaskRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<ProjectTask> CreateAsync(ProjectTask task)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: {@Task}", nameof(CreateAsync), task);
             await _context.Tasks.AddAsync(task);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Задача с ID {TaskId} успешно создана.", task.Id);
             return task;
         }
 
         public async Task<ProjectTask> UpdateAsync(ProjectTask task)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: {@Task}", nameof(UpdateAsync), task);
             _context.Update(task);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Задача с ID {TaskId} успешно обновлена.", task.Id);
             return task;
         }
 
         public async Task<ProjectTask?> FindByIdOrNullAsync(int? taskId)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}", nameof(FindByIdOrNullAsync), taskId);
             return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
         }
 
         public async Task<ProjectTask?> FindByIdOrNullAsNoTrackingAsync(int? taskId)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}", nameof(FindByIdOrNullAsNoTrackingAsync), taskId);
             return await _context.Tasks.AsNoTracking().FirstOrDefaultAsync(t => t.Id == taskId);
         }
 
         public async Task<ProjectTask?> FindByIdOrNullIncludeUsersAndCategoriesAsync(int taskId)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}", nameof(FindByIdOrNullIncludeUsersAndCategoriesAsync), taskId);
             return await _context.Tasks
                         .Include(t => t.AppUser)
                         .Include(t => t.Category)
@@ -52,6 +61,7 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task<ProjectTask?> FindByIdOrNullIncludeUsersAndCategoriesAsNoTrackingAsync(int taskId)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}", nameof(FindByIdOrNullIncludeUsersAndCategoriesAsNoTrackingAsync), taskId);
             return await _context.Tasks
                         .Include(t => t.AppUser)
                         .Include(t => t.Category)
@@ -62,6 +72,7 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task<ProjectTaskDTO?> GetTaskDtoByIdAsync(int taskId)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}", nameof(GetTaskDtoByIdAsync), taskId);
             return await _context.Tasks
                             .Include(t => t.Comments)
                             .Include(t => t.AppUser)
@@ -82,30 +93,41 @@ namespace Project_Manager.Data.DAO.Repository
 
         public async Task DeleteByIdAsync(int taskId)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}", nameof(DeleteByIdAsync), taskId);
             ProjectTask projectTask = await FindByIdOrNullAsync(taskId);
             if (projectTask == null)
             {
+                _logger.LogError("Задача с ID {TaskId} не найдена для удаления.", taskId);
                 throw new KeyNotFoundException($"Задача с ID {taskId} не найдена.");
             }
             _context.Tasks.Remove(projectTask);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Задача с ID {TaskId} успешно удалена.", taskId);
         }
 
         public async Task ChangeStatusByIdAsync(int taskId, ProjectTaskStatus taskStatus)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: taskId = {TaskId}, taskStatus = {TaskStatus}", nameof(ChangeStatusByIdAsync), taskId, taskStatus);
             ProjectTask projectTask = await FindByIdOrNullAsync(taskId);
             if (projectTask == null)
             {
+                _logger.LogError("Задача с ID {TaskId} не найдена для изменения статуса.", taskId);
                 throw new KeyNotFoundException($"Задача с ID {taskId} не найдена.");
             }
             projectTask.Status = taskStatus;
             _context.Update(projectTask);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Статус задачи с ID {TaskId} успешно изменен на {TaskStatus}.", taskId, taskStatus);
         }
 
         public async Task<List<ProjectTaskDTO>> GetTasksDtoWithParamsAsync(int projectId, int? categoryId, string? sortColumn, 
             string? userId, UserRoles? userRole, string? filterStatus, string? filterExecutor, DateTime? filterDate)
         {
+            _logger.LogInformation("Вызван метод {MethodName} с параметрами: projectId = {ProjectId}, categoryId = {CategoryId}, " +
+                "userId = {User Id}, userRole = {User Role}, filterStatus = {FilterStatus}, filterExecutor = {FilterExecutor}, " +
+                "filterDate = {FilterDate}", nameof(GetTasksDtoWithParamsAsync), projectId, categoryId, userId, userRole, filterStatus, 
+                filterExecutor, filterDate);
+
             var tasksQuery = _context.Tasks
                                 .Include(t => t.AppUser)
                                 .Include(t => t.Category)
@@ -150,6 +172,7 @@ namespace Project_Manager.Data.DAO.Repository
                 Description = t.Description
             }).ToListAsync();
 
+            _logger.LogInformation("Найдено {Count} задач для проекта с ID {ProjectId}.", tasks.Count, projectId);
             return tasks;
         }
     }
