@@ -2,18 +2,23 @@
 {
     public class EventPublisher
     {
-        private readonly List<Func<INotificationEvent, Task>> _subscribers = new List<Func<INotificationEvent, Task>>();
+        private event Func<INotificationEvent, Task> _onEventPublished;
 
         public void Subscribe(Func<INotificationEvent, Task> handler)
         {
-            _subscribers.Add(handler);
+            _onEventPublished += handler;
         }
 
         public async Task PublishAsync(INotificationEvent notificationEvent)
         {
-            foreach (var subscriber in _subscribers)
+            if (_onEventPublished != null)
             {
-                await subscriber(notificationEvent);
+                var invocationList = _onEventPublished.GetInvocationList();
+                foreach (var handler in invocationList)
+                {
+                    var func = (Func<INotificationEvent, Task>)handler;
+                    await func(notificationEvent);
+                }
             }
         }
     }
